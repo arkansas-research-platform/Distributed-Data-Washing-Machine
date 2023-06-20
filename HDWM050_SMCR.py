@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -29,7 +29,9 @@ def convertToBoolean(value):
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S9P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
+parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS    
+#parameterFile = open('parmStore') 
+
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -347,7 +349,8 @@ for pairList in sys.stdin:
         print(pairSelf) 
 
 # Report to reportBlkPairList.txt
-with open('reportLinkPairList.txt','w') as f:
+#with open('reportLinkPairList.txt','w') as f:
+with open('tmpReport.txt','w') as f:
     f.write(str(links))
 # Reporting to logfile
 print('   Number of Pairs Linked: ', links, file=logfile)
