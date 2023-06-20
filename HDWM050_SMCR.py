@@ -27,8 +27,8 @@ def convertToBoolean(value):
         return False
 
 ####### READ PARAMETER FILE #######
-#parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS    
+#parameterFile = open('S9P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
+parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -55,6 +55,9 @@ while True:
     if parmName=='removeExcludedBlkTokens':
         removeExcludedBlkTokens = convertToBoolean(parmValue)
         continue 
+    if parmName=='removeDuplicateTokens':
+        removeDuplicateTokens = convertToBoolean(parmValue)
+        continue 
     if parmName=='minBlkTokenLen':
         minBlkTokenLen = int(parmValue)
         continue
@@ -64,30 +67,33 @@ while True:
     if parmName=='comparator':
         comparator = parmValue
         continue 
-
 ############################
 
 ########### Remove StopWords Function ###############
 def removestopwords(RefTokenList):
-    newList = []
+    cleanList = []
     for x in RefTokenList:
-        notStopWord = True
-        tokenRef = x.split("^")[0].strip()
+        carryToken = True
+        tokenRef = x.split("^")[0].strip().replace('"','').replace("'","")
         #print(tokenRef)
-        freqRef = x.split("^")[1].strip()
+        freqRef = x.split("^")[1].strip().replace('"','').replace("'","")
         #print(freqRef)
+        # Remove all tokens with freq higher or equal to sigma
         if int(freqRef) >= sigma:
-            notStopWord = False
+            carryToken = False
+        # Check for other rules (Duplicate tokens, Excluded Block Tokens)
+        if removeDuplicateTokens and (tokenRef in cleanList):
+            carryToken = False  
         if removeExcludedBlkTokens:
             if len(tokenRef) < minBlkTokenLen:
-                notStopWord = False
+                carryToken = False
                 #print('tokenRef, len(tokenRef))
-            if tokenRef.isdigit() and excludeNumericBlocks:
-                notStopWord = False
-                #print('tokenRef)       
-        if notStopWord:
-            newList.append(tokenRef)
-    return newList
+            if excludeNumericBlocks and tokenRef.isdigit():
+                carryToken = False
+                #print('tokenRef)     
+        if carryToken:
+            cleanList.append(tokenRef)
+    return cleanList
 ########### End of Remove StopWords Function ###############
 
 ##### ScoringMatrixStd Function #####
@@ -106,9 +112,9 @@ def scoringMatrix_Std(refList1, refList2):
     maxVal = -1.0
     #populate matrix with similarities between tokens
     for j in range(0,m):
-        token1 = refList1[j].replace("'", "")
+        token1 = refList1[j].strip().replace('"','').replace("'","")
         for k in range(0,n):
-            token2 = refList2[k].replace("'", "")
+            token2 = refList2[k].strip().replace('"','').replace("'","")
             simVal = 0.0
             #print('-Comparing',token1, token2)
             # Numeric Token Rule, if both tokens numeric, only exact match
@@ -190,16 +196,16 @@ def scoringMatrix_Kris(refList1, refList2):
     n = len(ref2)
     #print(ref1,'***',ref2)
     # set base for weight function to length of short (first) list
-    base = float(m*(m+1)/2)
+    base = float(m*(m+1)/2)    
     #print('base=',base)
     #generate m x n matrix
     matrix = [[0.0 for j in range(n)] for i in range(m)]
     maxVal = -1.0
     #populate matrix with similarities between tokens
     for j in range(0,m):
-        token1 = ref1[j]
+        token1 = ref1[j].strip().replace('"','').replace("'","")
         for k in range(0,n):
-            token2 = ref2[k]
+            token2 = ref2[k].strip().replace('"','').replace("'","")
             simVal = 0.0
             # Numeric Token Rule, if both tokens numeric, only exact match
             if matrixNumTokenRule:
@@ -225,7 +231,7 @@ def scoringMatrix_Kris(refList1, refList2):
             #simVal = damerauLevenshtein(token1.lower(),token2.lower())
             simVal = Class.normalized_similarity(token1,token2)
             #print('*Fired Rule 3', j, k, token1, token2, simVal)
-            matrix[j][k] = simVal
+            matrix[j][k] = simVal                
     #end of matrix population       
     loops = 0 
     total = 0.0
@@ -244,7 +250,7 @@ def scoringMatrix_Kris(refList1, refList2):
             #print('-Normal Ending no more postive values, loops =', loops, score)
             return score
         numerator = m - saveJ
-        wgtSim = maxVal*float(numerator)/base
+        wgtSim = maxVal*float(numerator)/base  
         score = score + wgtSim
         #print('saveJ=',saveJ,'numer=',numerator,'wgtSim=',wgtSim,'score=',score)
         loops +=1
@@ -269,14 +275,14 @@ for pairList in sys.stdin:
     splitPairList = stripPairs.split('<>')
                 # Right-side (Ref1) Prep
     reference1 = splitPairList[0].split(",", maxsplit=1)
-    refID1 = reference1[0].strip()
+    refID1 = reference1[0].strip().replace("'","")
     ref1 = reference1[1].strip()
     full_ref1 = ref1.replace("{", "").replace("}", "").split(",")  #ref with position info
     #List of token & Freq before stopword removal, to get the position info,use tokFreq.split(":")[0]
     Ref1TokenFreq = [tokFreq.split(":")[1].strip().replace("'" , "") for tokFreq in full_ref1]
                 # Left-side (Ref2) Prep
     reference2 = splitPairList[1].split(",", maxsplit=1)
-    refID2 = reference2[0].strip()
+    refID2 = reference2[0].strip().replace("'","")
     ref2 = reference2[1].strip()
     full_ref2 = ref2.replace("{", "").replace("}", "").split(",") #ref with position info
     #List of token & Freq before stopword removal, to get the position info,use tokFreq.split(":")[0]
@@ -293,8 +299,8 @@ for pairList in sys.stdin:
 ###### Remove all Stopword using frequency information ###### 
     refList1 = removestopwords(Ref1TokenFreq)
     refList2 = removestopwords(Ref2TokenFreq)
-    #print(refList1, '**', refList2)
-    #print('Count of Tokens after Stopwords Removal: ', len(refList1), '**', len(refList2))
+    #print(refID1, '-', refList1, '**', refID2, '-', refList2)
+    #print('Count of Tokens after Stopwords Removal: ', refID1, '-', len(refList1), '**', refID2, '-', len(refList2))
 
 ###### Get Similarity comparison Score using Scoring Matrix ###### 
     if comparator == 'MongeElkan':
@@ -312,9 +318,9 @@ for pairList in sys.stdin:
         #print('Linked Pair:', refID1, '**', refID2, 'has a similarity of:', similarity_comparison)
         # Outpout the original linked pairs and their inverse, which will be the input 
         # for the Transitive Closure algorithm in the next reducer
-        linkedPairs = '%s.%s,%s' % (refID1.replace("'",""),refID2.replace("'",""),refID2.replace("'","")) # Original Linked Pairs  
-        inversedLinkedPairs = '%s.%s,%s' % (refID2.replace("'",""), refID1.replace("'",""), refID1.replace("'","")) # Inverted Linked Pairs
-        pairSelf = '%s.%s,%s' % (refID1.replace("'",""), refID1.replace("'",""), refID1.replace("'","")) # PairSelf
+        linkedPairs = '%s.%s,%s' % (refID1,refID2,refID2) # Original Linked Pairs  
+        inversedLinkedPairs = '%s.%s,%s' % (refID2, refID1,refID1) # Inverted Linked Pairs
+        pairSelf = '%s.%s,%s' % (refID1,refID1,refID1) # PairSelf
         print(linkedPairs)   
         print(inversedLinkedPairs) 
         print(pairSelf) 
