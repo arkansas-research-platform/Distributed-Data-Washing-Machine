@@ -4,12 +4,14 @@
 # Importing libraries
 import itertools
 import sys
-
+import os
  #########################################################
  #        TOKENIZATION Reducer (Frequency Computation)
  # Takes input comes from the output of Tokenization mapper
  # Computes the frequencies of each of the tokens keys.     
  #########################################################
+# Loading the Log_File from the bash driver
+logfile = open(os.environ["Log_File"],'a')
 
 # This is the current word key
 current_tok_key = None 
@@ -17,7 +19,7 @@ current_tok_key = None
 current_metadata = None   
 tok_key = None  
 current_count = 0 
-
+uniqueTokCnt = 0
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:
     line = items.strip()
@@ -34,13 +36,18 @@ for items in sys.stdin:
         if current_tok_key:
 			# Write result to STDOUT
             print ('%s | %s' % (current_tok_key, current_count))
+            uniqueTokCnt +=1
         #current_metadata = metadata
         current_count = 1
         current_tok_key = tok_key
       
 # Output the last word
 if current_tok_key == tok_key:
-    print ('%s | %s' % (current_tok_key, current_count))    
+    print ('%s | %s' % (current_tok_key, current_count)) 
+    uniqueTokCnt +=1
+
+# Reporting to logfile
+print('   Unique Tokens Found: ', uniqueTokCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

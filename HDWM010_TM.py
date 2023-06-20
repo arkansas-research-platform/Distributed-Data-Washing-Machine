@@ -7,6 +7,7 @@ import re
 import json
 from collections import Counter
 from itertools import count
+import os
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--
@@ -42,6 +43,11 @@ def tokenizerSplitter(line):
         if len(token)>0:
             newList.append(token)
     return newList
+
+# Loading the Log_File from the bash driver
+logfile = open(os.environ["Log_File"],'a')
+#print(file)
+print('\n>> Starting Tokenization Process', file=logfile)
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
@@ -81,10 +87,15 @@ while True:
 if hasHeader:
     next(sys.stdin)
 
+refCnt = 0
+tokCnt = 0
+tokensLeft = 0
 # Read and tokenize each line
 for line in sys.stdin:
+    cnt = 0
     # Convert dataset into uppercase
     uc_file = line.upper()
+    refCnt += 1
     #print(uppercase_file)    
     # Remove leading and trailing whitespaces
     unclean_file = uc_file.strip()
@@ -94,9 +105,14 @@ for line in sys.stdin:
 
     value = cleanLine[0]
     keyTokens = cleanLine[1:]
+    # Counting total tokens
+    for tok in keyTokens:
+        cnt += 1
+    tokCnt += cnt
     # Remove Duplicate tokens or not
     if removeDuplicateTokens:
         keyTokens = list(dict.fromkeys(keyTokens))
+    tokensLeft = tokensLeft + len(keyTokens)
     #print(keyTokens)
     
     for n,key in enumerate(keyTokens,1): #n is a num/position using enumerate and starts from 1
@@ -104,9 +120,19 @@ for line in sys.stdin:
         mypair = {'refID':value, 
                 'pos': n, 
                 'tok': key}
-
         mypair = str(mypair).replace('(', '').replace(')', '')
         print('%s | %s | %s'% (key, mypair, 'one'))
+
+removedTokens = tokCnt - tokensLeft
+# Reporting to logfile
+print('   Total References Read: ', refCnt, file=logfile)
+print('   Total Tokens Found: ', tokCnt, file=logfile)
+print('   Duplicate Tokens Found: ', removedTokens, file=logfile)
+print('   Tokens Left after Duplicates Removal: ', tokensLeft, file=logfile)
+
+#import subprocess
+#variable='Tester!'
+#subprocess.call['bash','HDWM00_Driver.sh',variable > "$variable"]
 ############################################################
 #               END OF MAPPER       
 ############################################################
