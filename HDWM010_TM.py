@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -50,8 +50,10 @@ logfile = open(os.environ["Log_File"],'a')
 print('\n>> Starting Tokenization Process', file=logfile)
 
 ####### READ PARAMETER FILE #######
-#parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS
+#parameterFile = open('S1G-parms-copy.txt', 'r') 
+parameterFile = open('parmStage.txt') 
+#parameterFile = open('parmStore') 
+#parameterFile = "hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt"
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -90,6 +92,7 @@ if hasHeader:
 refCnt = 0
 tokCnt = 0
 tokensLeft = 0
+numericTokCnt = 0
 # Read and tokenize each line
 for line in sys.stdin:
     cnt = 0
@@ -100,28 +103,31 @@ for line in sys.stdin:
     # Remove leading and trailing whitespaces
     unclean_file = uc_file.strip()
     #print(unclean_file)
-    cleanLine = tokenizerFunction(unclean_file)
-    #print(cleanLine)
+    firstDelimiter = unclean_file.find(delimiter)
+    value = unclean_file[0:firstDelimiter]
+    keyTokens = unclean_file[firstDelimiter+1:]
+    cleanLine = tokenizerFunction(keyTokens)
+    #print(value)
 
-    value = cleanLine[0]
-    keyTokens = cleanLine[1:]
     # Counting total tokens
-    for tok in keyTokens:
+    for tok in cleanLine:
+        tok = tok.strip().replace('"','').replace("'","")
+        if tok.isdigit():
+            numericTokCnt +=1
         cnt += 1
     tokCnt += cnt
     # Remove Duplicate tokens or not
     if removeDuplicateTokens:
-        keyTokens = list(dict.fromkeys(keyTokens))
-    tokensLeft = tokensLeft + len(keyTokens)
-    #print(keyTokens)
+        cleanLine = list(dict.fromkeys(cleanLine))
+    tokensLeft = tokensLeft + len(cleanLine)
     
-    for n,key in enumerate(keyTokens,1): #n is a num/position using enumerate and starts from 1
+    for n,key in enumerate(cleanLine,1): #n is a num/position using enumerate and starts from 1
         # Generate json-like output with metadata information
         mypair = {'refID':value, 
                 'pos': n, 
                 'tok': key}
         mypair = str(mypair).replace('(', '').replace(')', '')
-        print('%s | %s | %s'% (key, mypair, 'one'))
+        print('%s | %s | %s'% (key, mypair, 'one')) 
 
 removedTokens = tokCnt - tokensLeft
 # Reporting to logfile
@@ -129,10 +135,7 @@ print('   Total References Read: ', refCnt, file=logfile)
 print('   Total Tokens Found: ', tokCnt, file=logfile)
 print('   Duplicate Tokens Found: ', removedTokens, file=logfile)
 print('   Tokens Left after Duplicates Removal: ', tokensLeft, file=logfile)
-
-#import subprocess
-#variable='Tester!'
-#subprocess.call['bash','HDWM00_Driver.sh',variable > "$variable"]
+print('   Total Numeric Tokens Found: ', numericTokCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

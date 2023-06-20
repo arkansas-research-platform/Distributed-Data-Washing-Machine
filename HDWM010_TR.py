@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -23,6 +23,11 @@ uniqueTokCnt = 0
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:
     line = items.strip()
+
+    # First phase, print all the input that came in (this part replaced Job 1 in the old code)
+    print(line)
+
+    # Second phase: calculate frequency
     file = line.replace('(', '').replace(')', '').split("|" , 1) #max split is set to 1 to split on only the first comma
     #print(file)
     tok_key = file[0]
@@ -34,7 +39,7 @@ for items in sys.stdin:
         current_count += 1
     else:
         if current_tok_key:
-			# Write result to STDOUT
+	  # Write result to STDOUT
             print ('%s | %s' % (current_tok_key, current_count))
             uniqueTokCnt +=1
         #current_metadata = metadata
