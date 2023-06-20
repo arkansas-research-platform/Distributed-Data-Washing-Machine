@@ -6,6 +6,11 @@ import sys
 import re
 import os
 #pip install textdistance  
+
+#Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
+#       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
+sys.path.append('/home/nick/.local/lib/python3.10/site-packages')
+
 from textdistance import DamerauLevenshtein
 from textdistance import Cosine
 from textdistance import MongeElkan
@@ -18,8 +23,6 @@ from textdistance import MongeElkan
  #  Reducer Job only
  ##############################################################
 ############################
-# PARAMETER FOR DISCTRIBUTED CACHE
-# Linking parameters
 
 def convertToBoolean(value):
     if value=='True':
@@ -27,10 +30,19 @@ def convertToBoolean(value):
     if value=='False':
         return False
 
+# Loading the Log_File from the bash driver
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#mu = os.environ["mu"]
+with open('/usr/local/jobTmp/muReport.txt', 'r') as m:
+    mu = m.readline()
+mu = float(mu)
+print('\n>> Starting Linking Process', file=logfile)
+
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S9P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS    
-#parameterFile = open('parmStore') 
+#parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS    
+parameterFile = open('parms', 'r') 
 
 while True:
     pline = (parameterFile.readline()).strip()
@@ -272,16 +284,14 @@ def scoringMatrix_Kris(refList1, refList2):
     return score
 ########### End of ScoringMatrixStd Function ###############
 
-# Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
-mu = os.environ["mu"]
-mu = float(mu)
-print('\n>> Starting Linking Process', file=logfile)
-
+############################################################
+#                     MAIN PROGRAM     
+############################################################
+###### Input Prepping ######
 isLinkedIndex = False
 isUsedRef = False
 links = 0
-###### Input Prepping ######
+
 for pairList in sys.stdin:
     stripPairs = pairList.strip().replace('\t','.')
     # Check if the ref has already been used
@@ -350,7 +360,7 @@ for pairList in sys.stdin:
 
 # Report to reportBlkPairList.txt
 #with open('reportLinkPairList.txt','w') as f:
-with open('tmpReport.txt','w') as f:
+with open('/usr/local/jobTmp/tmpReport.txt','w') as f:
     f.write(str(links))
 # Reporting to logfile
 print('   Number of Pairs Linked: ', links, file=logfile)
