@@ -4,8 +4,8 @@ from collections import Counter
 
  #########################################################
  #                  DEVELOPER's NOTES
- # EEPR - takes output from ERMM & EEMR and and calculate
- # Total Equivalent Pairs
+ # EFCR - takes output from EEPR and calculate
+ # LP, TP, P, R, F-score
  #########################################################
 def countPairs(cnt):
     #totalPairs = 0
@@ -30,48 +30,52 @@ truthID = None
 for line in sys.stdin:
     line = line.strip()
     #print(line)
+    keepLine = True
     if 'equivalent' in line:
         equivalentPairs = float(line.split(',')[1])
         #print(equivalentPairs)
+        keepLine = False
     if 'ID' in line:
-        continue
+        keepLine = False
     #print(line)
-    lineSplit = line.split(',')
-    erLinkID = lineSplit[0].strip()
-    truthID = lineSplit[1].strip()
-    #print(lineSplit)
 
-    # Counting ER linked pairs
-    if currlinkID == erLinkID:
-        currLinkIDcount += 1
-        tIDgroup = tIDgroup+','+truthID
+    if keepLine:
+        lineSplit = line.split(',')
+        erLinkID = lineSplit[0].strip()
+        truthID = lineSplit[1].strip()
+        #print(lineSplit)
 
-    else:
-        if currlinkID:
-            #print (currlinkID,currLinkIDcount)
-            #  Count total linked records
-            pairCount = countPairs(int(currLinkIDcount))
-            #print(currlinkID,pairCount)
-            totalERlinkPairs += pairCount
+        # Counting ER linked pairs
+        if currlinkID == erLinkID:
+            currLinkIDcount += 1
+            tIDgroup = tIDgroup+','+truthID
 
-            # Count all truthIDs in each linked group
-            #print(currlinkID,tIDgroup)
-            tIDlist = [x for x in tIDgroup.split(',')]
-            #print(tIDlist)
-            countTidGroup = {a:tIDlist.count(a) for a in tIDlist}
-            #print(currlinkID,countTidGroup)
-            # Get the pairs in each group
-            for i in list(countTidGroup.values()):
-                #print(i)
-                TPpairs = countPairs(i) 
-                #print(tIDlist, i, TPpairs)
-                #print(TPpairs)
-                # Third Count needed: Get Total True Positive Pairs
-                totalTruePositives += TPpairs
-        currLinkIDcount = 1
-        currlinkID = erLinkID
-        tIDgroup = truthID
-      
+        else:
+            if currlinkID:
+                #print (currlinkID,currLinkIDcount)
+                #  Count total linked records
+                pairCount = countPairs(int(currLinkIDcount))
+                #print(currlinkID,pairCount)
+                totalERlinkPairs += pairCount
+
+                # Count all truthIDs in each linked group
+                #print(currlinkID,tIDgroup)
+                tIDlist = [x for x in tIDgroup.split(',')]
+                #print(tIDlist)
+                countTidGroup = {a:tIDlist.count(a) for a in tIDlist}
+                #print(currlinkID,countTidGroup)
+                # Get the pairs in each group
+                for i in list(countTidGroup.values()):
+                    #print(i)
+                    TPpairs = countPairs(i) 
+                    #print(tIDlist, i, TPpairs)
+                    #print(TPpairs)
+                    # Third Count needed: Get Total True Positive Pairs
+                    totalTruePositives += TPpairs
+            currLinkIDcount = 1
+            currlinkID = erLinkID
+            tIDgroup = truthID
+
 # Output the last record
 if currlinkID == erLinkID:
     #print (currlinkID,currLinkIDcount)
