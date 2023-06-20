@@ -41,9 +41,9 @@ while True:
     part = pline.split('=')
     parmName = part[0].strip()
     parmValue = part[1].strip()
-    if parmName == 'mu':
-        mu = float(parmValue)
-        continue
+    #if parmName == 'mu':
+    #    mu = float(parmValue)
+    #    continue
     if parmName == 'sigma':
         sigma = int(parmValue)
         continue    
@@ -272,6 +272,8 @@ def scoringMatrix_Kris(refList1, refList2):
 
 # Loading the Log_File from the bash driver
 logfile = open(os.environ["Log_File"],'a')
+mu = os.environ["mu"]
+mu = float(mu)
 print('\n>> Starting Linking Process', file=logfile)
 
 isLinkedIndex = False
