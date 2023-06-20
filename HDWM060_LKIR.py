@@ -27,7 +27,6 @@ currClusterID = clusterID
 currClusterID2 = None
 currTokenList = None
 currTokenList2 = None
-refIDtag = ' -lineUtilized'
 currRefIDCnt = 0
 refIDcnt = 0
 tag = 'unprocessedRef'  # This tag is used as the clusterID for all unprocessed Refs. 
@@ -36,15 +35,19 @@ isLinkedIndex = False
 isUsedRef = False
 for line in sys.stdin:
     # Check if the ref has already been used
-    if '*used*' in line:
-        isUsedRef = True
-        print(line.strip().replace('|','-').replace(',','')) 
-        continue
+    #if '*used*' in line:
+    #    isUsedRef = True
+    #    print(line.strip().replace('|','-').replace(',','')) 
+    #    continue
     # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
     if 'GoodCluster' in line:
         isLinkedIndex = True
-        print((line.strip().replace('|','-').replace(',','')))
-        continue
+        goodSplit=line.strip().replace('-1','').split('|')#replace('|','<>')
+        rID = goodSplit[0]
+        cID = goodSplit[1].replace('.','<>').replace('*usedRef*','')
+        #print(goodPart1)
+        print('%s<>%s'%(rID,cID))
+        #continue
     lineSplit = line.strip().split('.')
     #print(lineSplit)
     refID_value = lineSplit[0].split('|')
@@ -57,7 +60,7 @@ for line in sys.stdin:
     clusterID2 = clusterID_mdata[0].strip()
     tokenList = clusterID_mdata[1].strip()
     tokenList2 = clusterID_mdata[1].strip()
-    #print(refID,clusterID)
+    #print(refID2)
     
 #-----> Phase 1: Update the clustered references with their corresponding tokens
     # First line should be a mapping line that contains 
@@ -80,7 +83,7 @@ for line in sys.stdin:
 
 ##-----> Phase 3: Get all the single refs that were not clustered and are from the original ref
     #print('---Debug',refID,clusterID,tokenList2)
-    if currentRefID2 == refID:
+    if currentRefID2 == refID2:
         currRefIDCnt = currRefIDCnt+1
         currTokenList2 = currTokenList2+'@'+tokenList2
         currClusterID2 = currClusterID2+'@'+clusterID2
@@ -89,7 +92,7 @@ for line in sys.stdin:
             if currRefIDCnt == 1:
                 #print('---Debug',currentRefID2,currClusterID2,currRefIDCnt,currTokenList2)
                 print('%s-%s-%s'%(tag,currentRefID2,currTokenList2)) # Send this to stdout
-        currentRefID2 = refID
+        currentRefID2 = refID2
         currRefIDCnt = 1
         currTokenList2 = tokenList2
         currClusterID2 = clusterID2

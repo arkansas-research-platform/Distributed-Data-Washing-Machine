@@ -32,10 +32,19 @@ for line in sys.stdin:
         isUsedRef = True
         print(line.strip().replace('.','|').replace(' ','')) 
         continue
+    
     # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
     if 'GoodCluster' in line:
         isLinkedIndex = True
-        print((line.strip().replace('.','|').replace(' ','')))
+##        print((line.strip().replace('.','|').replace(' ','')))
+        copyRef = line.strip().replace('.','|').replace(' ','').split('<>')
+        refID = copyRef[1].strip()
+        clusterID = copyRef[2].strip()
+        oldTag = copyRef[3].strip()
+        main = '%s|%s.%s|%s' % (refID,clusterID,oldTag,'-1')
+        copy = '%s|%s.%s%s|%s' % (clusterID,refID,oldTag.replace('GoodCluster','DeleteLine'),'copy','-1')
+        print(main)
+        print(copy)
         continue
     line = line.strip().replace('-',',').replace("'","")
     splits = line.split(',')
