@@ -33,7 +33,7 @@ def convertToBoolean(value):
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS
+parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -59,38 +59,36 @@ while True:
 for items in sys.stdin:
     line = items.strip()
     #print(line)
-#    refID, token = line.split("|")
-    refID, mdata = line.split("|")
+    line = line.split('|')
+    refID = line[0].strip()
+    mdata = line[1].strip()
+    #refID, mdata = line.split("|")
     #print(refID)
 #---------------------------------------------   
     # Getting the refID description and value from embedded metadata
-    split_mdata = str(mdata).replace("{",'').replace("}",'')
-    split_mdata1 = split_mdata.split(',')
-    #print(split_mdata1)
-#-------------------------------------------    
+    split_mdata = str(mdata).replace("{",'').replace("}",'').split(',')
+    #print(split_mdata)
+#-------------------------------------------   
+    isBlkToken = True 
     # Getting the token
-    token = (split_mdata1[2]).split(':')[1].strip().replace('"','').replace("'","")
+    token = (split_mdata[2]).split(':')[1].strip().replace('"','').replace("'","")
     #print(token, len(token))
     # Getting the frequency
-    frequency = int(split_mdata1[3].split(':')[1])
+    frequency = int(split_mdata[3].split(':')[1].strip().replace('"','').replace("'",""))
     #print(frequency)
 #--------------------------------------------
 # Checking for all Bloking Tokens
 #--------------------------------------------
-    isBlkToken = True
 # Checking for blocking tokens and stopwords using frequency info
         # If the frequency of the refID tokens is 1, skip it
-    if frequency == 1:
+    if frequency < 2:
         isBlkToken = False
-        #continue
         # If the frequency of the refID tokens is greater than beta, skip it
     if frequency > beta:
         isBlkToken = False
-        #continue
         # Exclude or include numeric tokens
     if excludeNumericBlocks and token.isdigit():
         isBlkToken = False
-        #continue
     if len(token)<minBlkTokenLen:
         isBlkToken = False
 #--------------------------------------------
@@ -108,9 +106,10 @@ for items in sys.stdin:
             current_token= token
 
 # Output the last word
-if current_refID == refID:
-    curr_TokenSet = list([vals.strip() for vals in current_token.split(',')])
-    print ('%s : %s' % (current_refID,curr_TokenSet))
+#if isBlkToken:
+    #if current_refID == refID:
+curr_TokenSet = list([vals.strip() for vals in current_token.split(',')])
+print ('%s : %s' % (current_refID,curr_TokenSet))
 ############################################################
 #               END OF MAPPER       
 ############################################################
