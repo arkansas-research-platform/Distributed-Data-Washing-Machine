@@ -26,7 +26,7 @@ def convertToBoolean(value):
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS
+parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -59,7 +59,7 @@ for record in sys.stdin:
 #---------------------------------------------
 #### Deciding Blocking Tokens ####
     # If there are no tokens in a list, nothing to do
-    #if len(tok_list) < 1:
+    #if len(tok_list) == 1:
     #    continue
     ### Blocking-by-Pairs ###
     # Exclude single tokens freq of refID tokens is 1, skip it and "Block-by-Pairs" 
@@ -69,18 +69,20 @@ for record in sys.stdin:
         #print(tok_list)
         # Create a nested for loop to build pairs of refIDs to be compared
         for x in range(0, len(tok_list)-1):
+            Xtoken = tok_list[x].strip()
+            #print(Xtoken)
             for y in range(x+1, len(tok_list)):
-                Xtoken = tok_list[x]
-                Ytoken = tok_list[y]
-                #print(Xtoken)
+                Ytoken = tok_list[y].strip()
                 #print(Ytoken)
                 # Keeping Pairs in Ascending Order
                 if Xtoken < Ytoken:
-                    pair = (Xtoken + "," + Ytoken)
+                    #pair = (Xtoken + "," + Ytoken)
+                    pair = (Xtoken+Ytoken)
                     print ('%s : %s' % (pair, refID))
                 else:
-                    pair2 = (Ytoken + "," + Xtoken)
-                    print ('%s : %s' % (pair2, refID))
+                    #pair = (Ytoken + "," + Xtoken)
+                    pair = (Ytoken+Xtoken)
+                    print ('%s : %s' % (pair, refID))
 #---------------------------------------------
     # If BlockByPairs was set to False, that means blockBySingles
     else:
