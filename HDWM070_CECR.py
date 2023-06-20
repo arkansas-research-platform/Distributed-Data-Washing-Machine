@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -17,6 +17,8 @@ import math
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S2G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
 parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
+#parameterFile = open('parmStore') 
+
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
