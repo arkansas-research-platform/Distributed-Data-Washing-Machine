@@ -74,16 +74,31 @@ then
             removeExcBlkTok="$val"
             echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $Log_File  
             continue
-        elif [[ "$line" = mu ]]
-        then
-            mu="$val"
-            echo "Mu                         -->  $mu" >> $Log_File           
-            continue
         elif [[ "$line" = comparator* ]]
         then
             comparator="$val"
             echo "Matrix Comparator          -->  $comparator" >> $Log_File   
-            echo "***********************************************" >> $Log_File 
+            continue
+        elif [[ "$line" = mu ]]
+        then
+            export mu="$val"
+            echo "Mu                         -->  $mu" >> $Log_File           
+            continue
+        elif [[ "$line" = muIterate ]]
+        then
+            muIter="$val"
+            echo "Mu Iterate                 -->  $muIter" >> $Log_File           
+            continue
+        elif [[ "$line" = epsilon ]]
+        then
+            export epsilon="$val"
+            echo "Epsilon                    -->  $epsilon" >> $Log_File           
+            continue
+        elif [[ "$line" = epsilonIterate ]]
+        then
+            epsilonIter="$val"
+            echo "Epsilon Iterate            -->  $epsilonIter" >> $Log_File 
+            echo "***********************************************" >> $Log_File           
             continue
         fi
     done < "$(pwd)/$parmFile"
@@ -166,18 +181,32 @@ then
 ####################################################
 ########## STARTING PROGRAM ITERATIVE LOOP #########
 ####################################################
-    echo "--- STARTING PROGRAM ITERATIVE LOOP"
+    echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++"
     echo "        " >> $Log_File
     echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++" >> $Log_File
 
-    proLoopCounter=0
+    programCounter=0
     while true
     do
-    # Update loop counter
-    echo "--- STARTING NEXT ITERATION!!!!"
-    echo "        " >> $Log_File
-    echo " >>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
-    proLoopCounter=$((proLoopCounter+1))
+        # Update loop counter
+        echo " >>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
+        echo "        " >> $Log_File
+        echo " >>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
+        echo "   New Mu --> " $mu >> $Log_File
+        echo "   New Epsilon --> " $epsilon >> $Log_File
+        programCounter=$((programCounter+1))
+
+        if [[ "$mu" > 1 ]]
+        then
+            echo "--- Ending because Mu > 1"
+            echo "--- Ending because Mu > 1" >> $Log_File
+            echo "--- END OF PROGRAM LOOP"
+            echo "        " >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
+            # Copy this job's output to a file ready to be processed for final LinkedIndex
+            hdfs dfs -cp HadoopDWM/progLoop_in HadoopDWM/job_LinkIndexDirty
+        break
+        fi
     
     #--------->  PHASE 4: BLOCKING PROCESS <---------
         # JOB 5: Extract all Blocking Tokens, and Create of Blocking refID Pairs
@@ -208,7 +237,7 @@ then
             echo "--- Ending because Block Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP with $proLoopCounter total iterations +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job5_out HadoopDWM/job_LinkIndexDirty
         break
@@ -266,7 +295,7 @@ then
             echo "--- Ending because Link Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP with $proLoopCounter total iterations +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job8_out HadoopDWM/job_LinkIndexDirty
         break
@@ -320,7 +349,7 @@ then
             echo "--- Ending because Cluster List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP with $proLoopCounter total iterations +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job9_temp_in HadoopDWM/job_LinkIndexDirty
         break
@@ -365,10 +394,14 @@ then
             -output HadoopDWM/job11_tmpLinkIndex \
             -mapper HDWM075_TCRM.py \
             -reducer HDWM075_TCRR.py
-    
+
         # Coping and Deleting
         hdfs dfs -rm -r HadoopDWM/progLoop_in  
         hdfs dfs -cp HadoopDWM/job11_tmpLinkIndex HadoopDWM/progLoop_in
+
+        # Increase the values of Mu and Epsilon at the end of each iteration
+        mu="$(awk 'BEGIN{ print '$mu'+'$muIter' }')"
+
     done    
 ####################################################
 ########## END OF PROGRAM LOOP #########
