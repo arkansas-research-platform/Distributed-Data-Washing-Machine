@@ -4,7 +4,6 @@
 # Importing libraries
 import sys 
 import re
-from operator import itemgetter
  ##############################################################
  #                     DEVELOPER's NOTES
  #  -- LIST OF TOKENS THAT MEET BETA Threashold <REDUCER only>-- 
@@ -26,7 +25,15 @@ refID = None
 # Type: BLOCKING PARAMETER #
 # Task: Setting BETA Threshold
 
-parameterFile = open('HDWM/parmStage.txt', 'r')
+def convertToBoolean(value):
+    if value=='True':
+        return True
+    if value=='False':
+        return False
+
+####### READ PARAMETER FILE #######
+#parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
+parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -39,9 +46,14 @@ while True:
     parmName = part[0].strip()
     parmValue = part[1].strip()
     if parmName == 'beta':
-        #beta = convertToInteger(lineNbr, parmValue)
         beta = int(parmValue)
         continue
+    if parmName=='excludeNumericBlocks':
+        excludeNumericBlocks = convertToBoolean(parmValue)
+        continue 
+    if parmName=='minBlkTokenLen':
+        minBlkTokenLen = int(parmValue)
+        continue  
 ############################
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:
@@ -50,7 +62,6 @@ for items in sys.stdin:
 #    refID, token = line.split("|")
     refID, mdata = line.split("|")
     #print(refID)
-    #print(mdata)
 #---------------------------------------------   
     # Getting the refID description and value from embedded metadata
     split_mdata = str(mdata).replace("{",'').replace("}",'')
@@ -58,50 +69,48 @@ for items in sys.stdin:
     #print(split_mdata1)
 #-------------------------------------------    
     # Getting the token
-    token = split_mdata1[2].split(':')[1]
-    #print(token)
+    token = (split_mdata1[2]).split(':')[1].strip().replace('"','').replace("'","")
+    #print(token, len(token))
     # Getting the frequency
     frequency = int(split_mdata1[3].split(':')[1])
     #print(frequency)
 #--------------------------------------------
-# Checking for blocking tokens 
+# Checking for all Bloking Tokens
+#--------------------------------------------
+    isBlkToken = True
+# Checking for blocking tokens and stopwords using frequency info
         # If the frequency of the refID tokens is 1, skip it
     if frequency == 1:
-        continue
+        isBlkToken = False
+        #continue
         # If the frequency of the refID tokens is greater than beta, skip it
     if frequency > beta:
-        continue
-# ------------------------------------------
-    #num_pattern = r'[0-9]'
-    #tokensLeft = re.sub(num_pattern, '', token)
-    #print(tokensLeft)
-    #if token.isdigit:
-    #    continue
-# ------------------------------------------
+        isBlkToken = False
+        #continue
+        # Exclude or include numeric tokens
+    if excludeNumericBlocks and token.isdigit():
+        isBlkToken = False
+        #continue
+    if len(token)<minBlkTokenLen:
+        isBlkToken = False
 #--------------------------------------------
-    # Blocking Tokens for a refID saved in a list 
-    if current_refID == refID:
-        current_token = current_token + "," + token        
-    else:
-        if current_refID:
-			# Write result to STDOUT
-            curr_TokenSet = list(set([vals.strip() for vals in current_token.split(',')]))
-            print ('%s : %s' % (current_refID,curr_TokenSet))
-            #print ('%s : %s' % (current_refID,current_token))
-            # Discard Numeric Tokens
-            #tokensLeft = ''.join(filter(lambda x: not x.isdigit(), current_token))
-            #print(tokensLeft) 
-        current_refID = refID
-        current_token= token
+    if isBlkToken:
+        #print(token,frequency)
+        # Blocking Tokens for a refID saved in a list 
+        if current_refID == refID:
+            current_token = current_token + "," + token        
+        else:
+            if current_refID:
+			    # Write result to STDOUT
+                curr_TokenSet = list([vals.strip() for vals in current_token.split(',')])
+                print ('%s : %s' % (current_refID,curr_TokenSet))
+            current_refID = refID
+            current_token= token
 
 # Output the last word
 if current_refID == refID:
-    # Discard Numeric Tokens
-    #tokensLeft = ''.join(filter(lambda x: not x.isdigit(), current_token))
-    #print(tokensLeft)
-    curr_TokenSet = list(set([vals.strip() for vals in current_token.split(',')]))
+    curr_TokenSet = list([vals.strip() for vals in current_token.split(',')])
     print ('%s : %s' % (current_refID,curr_TokenSet))
-    #print ('%s : %s' % (current_refID,current_token))
 ############################################################
 #               END OF MAPPER       
 ############################################################
