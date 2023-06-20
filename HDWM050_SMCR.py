@@ -9,7 +9,8 @@ import os
 
 #Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
 #       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
-sys.path.append('/home/nick/.local/lib/python3.10/site-packages')
+textdistanceDir = '/home/nick/.local/lib/python3.10/site-packages'
+sys.path.append(textdistanceDir)
 
 from textdistance import DamerauLevenshtein
 from textdistance import Cosine
