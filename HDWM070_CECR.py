@@ -15,7 +15,7 @@ import math
  #  if bad cluster, they are sent back to blocking for reprocessing
  ##############################################################
 ####### READ PARAMETER FILE #######
-#parameterFile = open('S1G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
+#parameterFile = open('S2G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
 parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
 while True:
     pline = (parameterFile.readline()).strip()
@@ -32,16 +32,20 @@ while True:
         epsilon = float(parmValue)
         continue 
 
+# Loading the Log_File from the bash driver
+logfile = open(os.environ["Log_File"],'a')
+print('\n>> Starting Cluster Evaluation Process', file=logfile)
+
 ########### Entropy Calculator Function ###############
 # Note: The function takes (cluster group list, cluster size, total tokens in each group)
 def entropyCalculator(ClusterGroupList):
-    #print('DO SOMETHING')
     cluster = ClusterGroupList
+    #print('--', cluster)
     baseProb = 1/float(sizeOfClusterGrp)  # Worse case 
     denominator = -totalTokensInClusterGrp*(baseProb*math.log(baseProb,2))
     entropy = 0.0
     # Iterate each cluster group
-    for x in range(sizeOfClusterGrp-1):
+    for x in range(0, sizeOfClusterGrp-1):
         xList = cluster[x]
         #print('x=',x,'xList=', xList)
         for token in xList:
@@ -64,7 +68,7 @@ def entropyCalculator(ClusterGroupList):
             qualityScore = 1.0 - entropy/denominator
             #print('--ClusterID:', curClusterID, ', Normalized etropy -->', qualityScore)
             # Compare Quality score with Entropy
-            if qualityScore < entropy:
+            if qualityScore < epsilon:
                 #print('quit early top row, entropy=', entropy, ' quality=',qualityScore)
                 return qualityScore
             cnt = 0
@@ -80,18 +84,15 @@ def entropyCalculator(ClusterGroupList):
         # Normalized the entropy score
         qualityScore = 1.0 - entropy/denominator
         #print('--ClusterID:', curClusterID, ', Normalized etropy -->', qualityScore)
-        if qualityScore < entropy:
+        if qualityScore < epsilon:
             #print('quit early top row, entropy=', entropy, ' quality=',qualityScore)
             return qualityScore
         cnt = 0
     #print('--Entire cluster scanned, entropy=', entropy, ' normalized=',qualityScore)    
-    quality = 1.0 - entropy/denominator
-    return quality
+    qualityScore = 1.0 - entropy/denominator
+    #print(qualityScore)
+    return qualityScore
 ########### End of Remove StopWords Function ###############
-
-# Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
-print('\n>> Starting Cluster Evaluation Process', file=logfile)
 
 ####################################################
 ################### Main Program ###################
@@ -114,6 +115,8 @@ totalRefsInClusters = 0
 goodClusterProcessed = 0
 totalRefsInGoodClusters = 0
 
+tokensInAllClusters = 0
+
 for line in sys.stdin:
     line = line.strip()
     #print(line)
@@ -125,12 +128,9 @@ for line in sys.stdin:
     
     line = line.strip().split('-', maxsplit=1)
     clusterID = line[0].strip()
-    clusterID2 = line[0].strip()
     refIDbody = line[1].split('-',maxsplit=1)
     refID = refIDbody[0].strip()
-    refID2 = refIDbody[0].strip()
     tokens = refIDbody[1].strip().replace(',','.').replace("'",'')
-    tokens2 = refIDbody[1].strip().replace(',','.').replace("'",'')
 
     # Separate Clustered Refs from Unprocessed Refs
 #-----> Phase 1: Reserving all unprocessed references
@@ -144,6 +144,12 @@ for line in sys.stdin:
 
 #-----> Phase 2: Process Clusters for Good and Bad Clusters
     # Evaluate only formed clusters
+    clusterID2 = line[0].strip()
+    refID2 = refIDbody[0].strip()
+    tokens2 = refIDbody[1].strip().replace(',','.').replace("'",'')
+    # Extract only tokens, ignoring position and frequency info
+    #tokens2 = tokens2.replace('{','').replace('}','').split('.')
+    #print(tokens2)
     if curClusterID == clusterID2:
         currTokenList = currTokenList + '@' + tokens2
         currRefIDList = currRefIDList + '@' + refID2
@@ -159,12 +165,14 @@ for line in sys.stdin:
             #print('---Debug', 'CID',curClusterID,'RefID List ',currRefIDList)
             for refs in clusterGroup:
                 totalRefsInClusters +=1
-                refs =  refs.replace('[','').replace(']','').replace("'","").replace(' ','').split('.')
-                #print('--- Reference', refs)
+                #print(refs)
+                ###refs =  refs.replace('[','').replace(']','').replace("'","").replace(' ','').split('.')
+                tokInRef = [str(x.split(':')[1]).split('^')[0] for x in refs.split('.')]
+                #print('--- Reference', curClusterID, tokInRef)
                 # Get total tokens in each cluster group
-                newClusterGroup.extend(refs)
+                newClusterGroup.extend(tokInRef)
                 # Get list of each cluster list (list comprehension)
-                ClusterGroupList.append(refs)
+                ClusterGroupList.append(tokInRef)
             #print('--- Coount of Refs in cluster group:', curClusterID, '--->', clusterGroup,clusterSize)
             #print('--- Total Tokens in cluster:', curClusterID, '--->', newClusterGroup, len(newClusterGroup))
             #print('--- List of refs in cluster:', curClusterID, '--->', ClusterGroupList)
@@ -176,24 +184,26 @@ for line in sys.stdin:
                 cluSizeGreaterThanOne +=1
                 #print('-- calculate entropy of cluster',clusterID, 'Size-', sizeOfClusterGrp)
                 qualityScore = entropyCalculator(ClusterGroupList)
-                #print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)
+                ##print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)
             else:
                 qualityScore = 1.0
-                #print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)  
+                ##print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)  
             
             # Get Good vs Bad Cluster (Output both - when all clusters are good, the iteration will exit)
+                # Good Clusters
             if qualityScore >= epsilon:
                 goodClusterProcessed +=1
                 for rID in refIDgroup:
                     totalRefsInGoodClusters +=1
                     rID = rID.strip()
-                    #print('-- CID-', curClusterID, '-- RefID-',refID, 'Good Cluster')
-                    print('%s-%s-%s'%(rID, curClusterID,tag1))
+                    #print('-- CID-', curClusterID, '-- RefID-',rID, 'Good Cluster')
+                    print('%s-%s-%s'%(rID, curClusterID,tag1))             
+              # Bad Clusters
             else:
-                for tok in clusterGroup:
-                    tok = tok.strip().replace('.',',')
-                    #print('-- Bad Cluster ', '-- RefID-',refID, '-- Tokens', token) 
-                    print('%s-%s-%s'% (refID, tok, tag2))
+                for rID,tkns in zip(refIDgroup,clusterGroup):
+                    tkns = tkns.replace('.', ',')
+                    #print('-- Bad Cluster ', '-- RefID-',rID, '-- Tokens', tkns) 
+                    print('%s-%s-%s'% (rID, tkns, tag2))
         curClusterID = clusterID2
         currRefIDList = refID2
         currTokenList = tokens2
@@ -208,12 +218,13 @@ if curClusterID:
     #print('---Debug', 'CID',curClusterID,'RefID List ',currRefIDList)
     for refs in clusterGroup:
         totalRefsInClusters +=1
-        refs =  refs.replace('[','').replace(']','').replace(' ','').split('.')
-        #print('--- Reference', type(refs))
+        ###refs =  refs.replace('[','').replace(']','').replace(' ','').split('.')
+        tokInRef = [str(x.split(':')[1]).split('^')[0] for x in refs.split('.')]
+        #print('--- Reference', tokInRef)
         # Get total tokens in each cluster group
-        newClusterGroup.extend(refs)
+        newClusterGroup.extend(tokInRef)
         # Get list of each cluster list (list comprehension)
-        ClusterGroupList.append(refs)
+        ClusterGroupList.append(tokInRef)
     #print('--- Coount of Refs in cluster group:', curClusterID, '--->', clusterGroup,clusterSize)
     #print('--- Total Tokens in cluster:', curClusterID, '--->', newClusterGroup, len(newClusterGroup))
     #print('--- Total Refs in cluster:', curClusterID, '--->',ClusterGroupList)
@@ -221,28 +232,31 @@ if curClusterID:
     # Checking for cluster Quality using Entropy 
     sizeOfClusterGrp = len(ClusterGroupList)
     totalTokensInClusterGrp = len(newClusterGroup)
+
     if sizeOfClusterGrp > 1:
         cluSizeGreaterThanOne +=1
         #print('-- calculate entropy of cluster',curClusterID, 'Size-', sizeOfClusterGrp)
         qualityScore = entropyCalculator(ClusterGroupList)
-        #print('-- CID-',clusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)
+        ##print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)
     else:
         qualityScore = 1.0
-        #print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)   
+        ##print('-- CID-',curClusterID, 'Size-', sizeOfClusterGrp, 'Qscore-', qualityScore)   
 
     # Get Good vs Bad Cluster (Output both - when all clusters are good, the iteration will exit)
+       # Good Clusters
     if qualityScore >= epsilon:
         goodClusterProcessed +=1
         for rID in refIDgroup:
             totalRefsInGoodClusters +=1
             rID = rID.strip()
-            #print('-- CID-', curClusterID, '-- RefID-',refID, 'Good Cluster') 
+            #print('-- CID-', curClusterID, '-- RefID-',rID, 'Good Cluster') 
             print('%s-%s-%s'%(rID, curClusterID, tag1)) # Good cluster
+      # Bad Clusters
     else:
-        for tok in clusterGroup:
-            tok = tok.strip().replace('.',',')
-            #print('-- Bad Cluster ', '-- RefID-',refID, '-- Tokens', token) 
-            print('%s-%s-%s'% (refID, tok, tag2)) 
+        for rID,tkns in zip(refIDgroup,clusterGroup):
+            tkns = tkns.replace('.', ',')
+            #print('-- Bad Cluster ', '-- RefID-',rID, '-- Tokens', tkns) 
+            print('%s-%s-%s'% (rID, tkns, tag2))
 
 # Reporting to logfile
 print('   Total Cluster Processed: ', totalClustersProcessed, file=logfile)
