@@ -12,7 +12,8 @@ def countPairs(cnt):
     return pairs
 
 # Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
 #print(file)
 print('\n>> Starting ER Matrix Process', file=logfile)
 

@@ -16,8 +16,8 @@ import math
  ##############################################################
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S2G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
-#parameterFile = open('parmStore') 
+#parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
+parameterFile = open('parms', 'r') 
 
 while True:
     pline = (parameterFile.readline()).strip()
@@ -35,7 +35,8 @@ while True:
         continue 
 
 # Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_Log.txt', 'a')
 print('\n>> Starting Cluster Evaluation Process', file=logfile)
 
 ########### Entropy Calculator Function ###############

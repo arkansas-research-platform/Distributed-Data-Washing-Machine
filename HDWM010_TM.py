@@ -45,14 +45,15 @@ def tokenizerSplitter(line):
     return newList
 
 # Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
 #print(file)
 print('\n>> Starting Tokenization Process', file=logfile)
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S1G-parms-copy.txt', 'r') 
-parameterFile = open('parmStage.txt') 
-#parameterFile = open('parmStore') 
+#parameterFile = open('parmStage.txt') 
+parameterFile = open('parms') 
 #parameterFile = "hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt"
 while True:
     pline = (parameterFile.readline()).strip()

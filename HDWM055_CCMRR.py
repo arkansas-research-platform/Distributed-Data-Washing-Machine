@@ -143,13 +143,13 @@ if groupKey == key:
 #f1.close()
 #with open('HDWM/check.txt','w') as f:
 
-with open('reportTCiteration.txt','w') as f:
+with open('/usr/local/jobTmp/reportTCiteration.txt','w') as f:
 #with open('tmpReport.txt','w') as f:
     f.write(str(count))
 
 # Report to reportBlkPairList.txt
 #with open('reportClusterList.txt','w') as f:
-with open('tmpReport.txt','w') as f:
+with open('/usr/local/jobTmp/tmpReport.txt','w') as f:
     f.write(str(proLoopCnt))
 ############################################################
 #               END OF PROGRAM      

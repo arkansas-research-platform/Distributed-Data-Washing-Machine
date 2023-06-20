@@ -11,7 +11,8 @@ import os
  # iterations. If not tagged, they will be processed again    
  #########################################################
 #Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
 
 # Give Header to Linked Index File
 print('RefID * ClusterID')

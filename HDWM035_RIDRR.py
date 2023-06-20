@@ -20,7 +20,8 @@ isUsedRef = False
 isLinkedIndex = False
 
  # Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
 
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:

@@ -10,7 +10,8 @@ import os
  # profile of all the clusters that were formed   
  #########################################################
 # Loading the Log_File from the bash driver
-logfile = open(os.environ["Log_File"],'a')
+#logfile = open(os.environ["Log_File"],'a')
+logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
 
 # Header for the final output
 print('\n>> Starting Cluster Profile Process', file=logfile)
