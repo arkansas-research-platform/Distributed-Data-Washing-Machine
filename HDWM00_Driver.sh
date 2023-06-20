@@ -136,7 +136,6 @@ then
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,$(pwd)/parmStage.txt \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/$inputFile \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
@@ -146,7 +145,6 @@ then
     #        one Mapper & one Reducer....Outputs keys and their frequency
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM015_JM.py,$(pwd)/HDWM015_JR.py \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/job1_Tokens-Freq \
         -output HadoopDWM/job2_Updated-Mdata \
         -mapper HDWM015_JM.py \
@@ -157,7 +155,6 @@ then
     #        one Mapper & one Reducer....Outputs rebuilt references for each refID
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM020_PBM.py,$(pwd)/HDWM020_FSR.py \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/job2_Updated-Mdata\
         -output HadoopDWM/job3_RecreateRefs \
         -mapper HDWM020_PBM.py \
@@ -210,7 +207,6 @@ then
             -D stream.map.output.field.separator=: \
             -D stream.reduce.input.field.separator=: \
             -D stream.reduce.output.field.separator=: \
-            -D mapreduce.job.reduces=1 \
             -input HadoopDWM/progLoop_in \
             -output HadoopDWM/job4_BlockTokens \
             -mapper HDWM025_BTPM.py \
@@ -235,7 +231,6 @@ then
         hdfs dfs -rm -r HadoopDWM/job5_BlockDedup
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM030_RPDR.py \
-            -D mapreduce.job.reduces=1  \
             -input HadoopDWM/job4_BlockTokens \
             -output HadoopDWM/job5_BlockDedup \
             -mapper $Identity_Mapper \
@@ -246,7 +241,6 @@ then
         hdfs dfs -rm -r HadoopDWM/job6_tmp_out
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM035_RIDM.py,$(pwd)/HDWM035_RIDR.py \
-            -D mapreduce.job.reduces=1 \
             -Dstream.num.map.output.key.fields=2 \
             -input HadoopDWM/job3_RecreateRefs \
             -input HadoopDWM/job5_BlockDedup \
@@ -258,7 +252,6 @@ then
         hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM035_RIDRR.py \
-            -D mapreduce.job.reduces=1 \
             -input HadoopDWM/job6_tmp_out \
             -output HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
@@ -314,7 +307,6 @@ then
                 -files $(pwd)/HDWM055_CCMRR.py \
                 -D stream.map.output.field.separator=, \
                 -D stream.num.map.output.key.fields=2 \
-                -D mapreduce.job.reduces=1  \
                 -input HadoopDWM/job8_tmpIn \
                 -output HadoopDWM/job8_tmpOut \
                 -mapper $Identity_Mapper \
@@ -354,7 +346,6 @@ then
         hdfs dfs -rm -r HadoopDWM/job9_TCout-Mdata
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM060_LKIM.py,$(pwd)/HDWM060_LKIR.py \
-            -D mapreduce.job.reduces=1 \
             -input HadoopDWM/job8_tmpIn \
             -input HadoopDWM/job3_RecreateRefs \
             -output HadoopDWM/job9_TCout-Mdata  \
@@ -365,7 +356,6 @@ then
         # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM070_CECR.py,$(pwd)/parmStage.txt \
-            -D mapreduce.job.reduces=1 \
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
@@ -375,7 +365,6 @@ then
         # JOB 10b: Check if a ref is already processed, add another tag as used
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM075_TCRM.py,$(pwd)/HDWM075_TCRR.py \
-            -D mapreduce.job.reduces=1 \
             -input HadoopDWM/job10_ClusterEval \
             -output HadoopDWM/job10_tmpLinkIndex \
             -mapper HDWM075_TCRM.py \
@@ -399,7 +388,6 @@ then
     # JOB 11a: Create a Linked Index File
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/job_LinkIndexDirty \
         -input HadoopDWM/job3_RecreateRefs \
         -output HadoopDWM/LinkedIndex_$inputFile \
@@ -409,7 +397,6 @@ then
     # JOB 11b: Get Clusters and Sizes
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM080_CPM.py,$(pwd)/HDWM080_CPR.py \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/LinkedIndex_$inputFile \
         -output HadoopDWM/job_PreClusterProfile \
         -mapper HDWM080_CPM.py \
@@ -418,7 +405,10 @@ then
     # JOB 11c: Generate Cluster Profile
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM080_CPRR.py \
-        -D mapreduce.job.reduces=1 \
+        -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
+        -Dstream.num.map.output.key.fields=2 \
+        -D mapreduce.map.output.key.field.separator=, \
+        -D mapreduce.partition.keycomparator.options="-k1,1n -k2,2" \
         -input HadoopDWM/job_PreClusterProfile \
         -output HadoopDWM/job11_ClusterProfile\
         -mapper $Identity_Mapper \
@@ -431,7 +421,6 @@ then
     # JOB 12: Merge Truth Dataset and the outputs of Job 11
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM095_PERMM.py,$(pwd)/HDWM095_PERMR.py \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/$truthFile \
         -input HadoopDWM/LinkedIndex_$inputFile \
         -output HadoopDWM/job12_PreMatrix \
@@ -445,7 +434,6 @@ then
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
         -D mapreduce.partition.keycomparator.options="-k1,1 -k2,2n" \
-        -D mapreduce.job.reduces=1 \
         -input HadoopDWM/job12_PreMatrix \
         -output HadoopDWM/job13_ERmatrix \
         -mapper $Identity_Mapper \
@@ -484,3 +472,5 @@ echo "The file, '$parmFile', is not a valid parameter file. Try again!"
     #-D stream.num.map.output.key.fields=2 \
     #-D mapreduce.reduce.output.key.field.separator=. \
     #-D stream.num.reduce.output.key.fields=2 \
+
+#     #    -D mapreduce.job.reduces=1 \ This is removed
