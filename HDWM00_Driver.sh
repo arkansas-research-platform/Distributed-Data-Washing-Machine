@@ -130,8 +130,12 @@ then
     hdfs dfs -rm -r HadoopDWM   
     hdfs dfs -mkdir HadoopDWM
 
+    # Prep input data (copy to a tmpFile, remove data header)
+     cp $(pwd)/$inputFile $(pwd)/inputStage.txt
+     sed -i '1d' $(pwd)/inputStage.txt
+
     # Copy input data and truthSet from local directory to HDFS
-    hdfs dfs -put $(pwd)/$inputFile HadoopDWM
+    hdfs dfs -put $(pwd)/inputStage.txt HadoopDWM
     hdfs dfs -put $(pwd)/$truthFile HadoopDWM
 
     # Copy contents of the given parameter file to a staging area to be shipped to Distributed Cache
@@ -153,7 +157,7 @@ then
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
-        -input HadoopDWM/$inputFile \
+        -input HadoopDWM/inputStage.txt \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
         -reducer HDWM010_TR.py
