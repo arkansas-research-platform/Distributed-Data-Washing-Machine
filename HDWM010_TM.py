@@ -45,7 +45,7 @@ def tokenizerSplitter(line):
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS
+parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -99,10 +99,10 @@ for line in sys.stdin:
         keyTokens = list(dict.fromkeys(keyTokens))
     #print(keyTokens)
     
-    for key in keyTokens:
+    for n,key in enumerate(keyTokens,1): #n is a num/position using enumerate and starts from 1
         # Generate json-like output with metadata information
         mypair = {'refID':value, 
-                'pos': cleanLine.index(key), 
+                'pos': n, 
                 'tok': key}
 
         mypair = str(mypair).replace('(', '').replace(')', '')
