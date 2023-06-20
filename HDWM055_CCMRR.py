@@ -4,6 +4,7 @@
 # Importing libraries
 import sys 
 import subprocess
+import os
 # sortedcontainers, source: https://grantjenks.com/docs/sortedcontainers/
 
  ##############################################################
@@ -21,8 +22,8 @@ locMaxState = False
 mergeState = False
 recordToSkip = False
 runNextIteration=False
-#runNextIteration = "iterateNo"
 count = 0
+proLoopCnt = 0
 ###### TRANSITIVE CLOSURE FUNCTION #####
 def trasitiveClosure(curr_KeySet, curr_valSet):
     # START OF TRANSITIVE CLOSURE CONDITIONS
@@ -43,6 +44,7 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
         if groupSize > 1:
             global runNextIteration
             global count
+            global proLoopCnt
             runNextIteration=True
             count+=1
             # << Condition 2a: Generate chains from the values for that key group >>
@@ -54,12 +56,15 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
                 #print('     --Condition 2a fired with NEW PAIR **', '%s.%s,%s'%(x, y, y))
                 #print('     --Condition 2a fired with NEW PAIR INVERSE **', '%s.%s,%s'%(y, x, x))
                 print('%s.%s,%s'%(x, y, y))     # New pair
-                print('%s.%s,%s'%(y, x, x))     # New pair inverse   
+                proLoopCnt +=1
+                print('%s.%s,%s'%(y, x, x))     # New pair inverse 
+                proLoopCnt +=1  
         
             # << CONDITION 3: Check if first key of this group is less than last value of the group >>
             if groupKey < lastValue:
                 #print('     --Condition 3a fired FIRST PAIR in group CARRIED OVER **', '%s,%s'%(firstCompKey, firstValue))
                 print('%s,%s'%(firstCompKey, firstValue))
+                proLoopCnt +=1
     else:
         # << CONDITION 1: check if key of key-group < firstValue of that group >>
         # << Condition 1a: Copy over key group(dont change anything) >>
@@ -67,16 +72,29 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
         for i in range(len(curr_KeySet)):
             #print('     --Condition 1a fired for this group with output **', curr_KeySet[i], curr_valSet[i])
             print('%s,%s'%(curr_KeySet[i], curr_valSet[i]))
+            proLoopCnt +=1
     return
 
 ###### Input Prepping ######
+isLinkedIndex = False
+isUsedRef = False
 for file in sys.stdin:
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    file1 = file.strip().replace(',','.').replace('\t','.')
+    # Check if the ref has already been used
+    if '*used*' in file1:
+        isUsedRef = True
+        print(file1.strip()) 
+        continue
+    if 'GoodCluster' in file1:
+        isLinkedIndex = True
+        print(file1.strip())
+        continue
     kv = file.strip().split(',')
     compKey = kv[0]
     key = compKey.split('.')[0]
     value = kv[1]
     #print(compositeKey,value)
-
 
     # Creating a data structure in the form, "key {val1, val2, val3,...valn}",
     # for each key group. This data structure is what will be used for the 
@@ -109,6 +127,7 @@ if groupKey == key:
     curr_KeySet.sort()
 
     trasitiveClosure(curr_KeySet,curr_valSet)
+    
 
 # Check how many times we had mergeState cases. This number is used by the driver file
 # to determine whether or not to run the next iteration. The iterations stops when 
@@ -121,11 +140,13 @@ if groupKey == key:
 #f1.write(str(runNextIteration))
 #f1.write(str(count))
 #f1.close()
-with open('HDWM/check.txt','w') as f:
+#with open('HDWM/check.txt','w') as f:
+with open('reportTCiteration.txt','w') as f:
     f.write(str(count))
 
-#count='echo "$runNextIteration"'
-#subprocess.call(count, shell=True) 
+# Report to reportBlkPairList.txt
+with open('reportClusterList.txt','w') as f:
+    f.write(str(proLoopCnt))
 ############################################################
 #               END OF PROGRAM      
 ############################################################

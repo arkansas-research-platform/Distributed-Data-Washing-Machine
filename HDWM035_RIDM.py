@@ -11,6 +11,8 @@ import re
  # the reformed refs then merges them
  # 
  #########################################################
+isLinkedIndex = False
+isUsedRef = False
 for line in sys.stdin:
     # Setting some defaults
     key = -1    #default sorted as first
@@ -18,8 +20,18 @@ for line in sys.stdin:
     constant = -1   #default sorted as first
     metadata = -1  #default sorted as first
 
-
-    line = line.strip()
+    line = line.strip().replace('"','').replace("'","")
+    #print(line)
+    # Check if the ref has already been used
+    if '*used*' in line:
+        isUsedRef = True
+        print('%s > %s'%('-1',line.strip().replace('-','>')) )
+        continue
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    if 'GoodCluster' in line:
+        isLinkedIndex = True
+        print('%s > %s'%('-1',line.strip().replace('-','>'))) 
+        continue
     splits = line.split("-")
     #print(splits)
     

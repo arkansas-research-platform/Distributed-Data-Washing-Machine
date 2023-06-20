@@ -4,6 +4,7 @@
 # Importing libraries
 import sys 
 import re
+import os
 #pip install textdistance  
 from textdistance import DamerauLevenshtein
 from textdistance import Cosine
@@ -269,9 +270,26 @@ def scoringMatrix_Kris(refList1, refList2):
     return score
 ########### End of ScoringMatrixStd Function ###############
 
+# Loading the Log_File from the bash driver
+logfile = open(os.environ["Log_File"],'a')
+print('\n>> Starting Linking Process', file=logfile)
+
+isLinkedIndex = False
+isUsedRef = False
+links = 0
 ###### Input Prepping ######
 for pairList in sys.stdin:
-    stripPairs = pairList.strip()
+    stripPairs = pairList.strip().replace('\t','.')
+    # Check if the ref has already been used
+    if '*used*' in stripPairs:
+        isUsedRef = True
+        print(stripPairs.strip()) 
+        continue
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    if 'GoodCluster' in stripPairs:
+        isLinkedIndex = True
+        print(stripPairs.strip())#.replace('<>',',')))
+        continue
     splitPairList = stripPairs.split('<>')
                 # Right-side (Ref1) Prep
     reference1 = splitPairList[0].split(",", maxsplit=1)
@@ -318,12 +336,19 @@ for pairList in sys.stdin:
         #print('Linked Pair:', refID1, '**', refID2, 'has a similarity of:', similarity_comparison)
         # Outpout the original linked pairs and their inverse, which will be the input 
         # for the Transitive Closure algorithm in the next reducer
-        linkedPairs = '%s.%s,%s' % (refID1,refID2,refID2) # Original Linked Pairs  
+        linkedPairs = '%s.%s,%s' % (refID1,refID2,refID2) # Original Linked Pairs 
+        links += 1 
         inversedLinkedPairs = '%s.%s,%s' % (refID2, refID1,refID1) # Inverted Linked Pairs
         pairSelf = '%s.%s,%s' % (refID1,refID1,refID1) # PairSelf
         print(linkedPairs)   
         print(inversedLinkedPairs) 
         print(pairSelf) 
+
+# Report to reportBlkPairList.txt
+with open('reportLinkPairList.txt','w') as f:
+    f.write(str(links))
+# Reporting to logfile
+print('   Number of Pairs Linked: ', links, file=logfile)
 ############################################################
 #               END OF REDUCER      
 ############################################################

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
  #########################################################
  #                  DEVELOPER's NOTES
  #   --JOIN Reducer (Update metadata with Frequency)--               
@@ -8,6 +9,7 @@ import sys
  # A one-to-many join operation happens to add frequency 
  # information 
  #########################################################
+
 # maps words to their counts
 currentKey = -1    #default sorted as first
 identifier = -1   #default sorted as first
@@ -16,8 +18,18 @@ currentMetadata = -1  #default sorted as first
 currentIdentifier = ''
 currentReference = None
 isMetadataMappingLine = False
-
+isUsedRef = False
 for line in sys.stdin:
+    # Check if the ref has already been used
+    if '*used*' in line:
+        isUsedRef = True
+        print(line.strip().replace('>',',')) 
+        continue
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    if 'GoodCluster' in line:
+        isLinkedIndex = True
+        print((line.strip().replace('>',',')))
+        continue
     line = line.strip().split(">")
     key = line[0].strip()
     metadata = line[1].strip()
@@ -40,7 +52,6 @@ for line in sys.stdin:
     #join = '%s : %s : %s' % (identifier, key, currentMetadata)
     #print(join)
     print('%s - %s , %s' % (identifier, key, currentMetadata))
-
 ############################################################
 #               END OF REDUCER       
 ############################################################

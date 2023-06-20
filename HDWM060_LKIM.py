@@ -18,13 +18,25 @@ import re
  # the remainder 183 (clusters of size = 1) will be added to
  # the 817. This will now show all clusters for the entire file                     
  #########################################################
-
+isLinkedIndex = False
+isUsedRef = False
 for line in sys.stdin:
     # Setting some defaults
     refID = -1    #default sorted as first
     clusterID = -1  #default sorted as first
     value = -1   #default sorted as first
-
+    mdata = -1
+    tokenList = -1
+    # Check if the ref has already been used
+    if '*used*' in line:
+        isUsedRef = True
+        print(line.strip().replace('.','|').replace(' ','')) 
+        continue
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    if 'GoodCluster' in line:
+        isLinkedIndex = True
+        print((line.strip().replace('.','|').replace(' ','')))
+        continue
     line = line.strip().replace('-',',').replace("'","")
     splits = line.split(',')
     #print(len(splits))
@@ -32,13 +44,16 @@ for line in sys.stdin:
     if len(splits) == 2: # TC output
         compKey = splits[0].split('.')
         refID = compKey[1].strip()      
-        clusterID = compKey[0].strip()
+        clusterID = compKey[0].strip() + ' ClusterLine'
         value = splits[1]
     else:                # Original Data
         refID = splits[0].strip()      
-        clusterID = refID
-
-    print ('%s.%s,%s' % (refID, clusterID, value))
+        clusterID = refID.strip()  
+        #mdata = str(splits[1:-1]).replace(' ','').replace("['{",'').replace("}']",'')#.split(',')
+        #mdata = str(splits[1:-1]).replace(' ','').replace("[",'').replace("]",'')
+        mdata = str(splits[1:-1]).replace(' ','').replace("[",'').replace("]",'')
+        #print(mdata)
+    print ('%s|%s.%s|%s' % (refID, value, clusterID, mdata))
 ############################################################
 #               END OF MAPPER       
 ############################################################

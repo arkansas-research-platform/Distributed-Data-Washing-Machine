@@ -11,10 +11,22 @@ from itertools import groupby
  # unique pairs of refIDs which will be sent to the 
  # Similarity comparison stage
  #########################################################
+isLinkedIndex = False
+isUsedRef = False
 # Read the data from STDIN and use the lambda function to
 # spit out the pair_key from every group   
 for key, group in groupby(sys.stdin, key = lambda x: x[0:]):
     #print(key) 
+    # Check if the ref has already been used
+    if '*used*' in key:
+        isUsedRef = True
+        print(key.strip().replace(',','-')) 
+        continue
+    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+    if 'GoodCluster' in key:
+        isLinkedIndex = True
+        print(key.strip().replace(',','-')) 
+        continue
     ref = (key.strip()).split(':')
     #print(ref)
     ref_pair = ref[0]
