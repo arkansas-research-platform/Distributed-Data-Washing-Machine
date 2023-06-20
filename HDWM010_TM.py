@@ -7,7 +7,6 @@ import re
 import json
 from collections import Counter
 from itertools import count
-
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--
@@ -22,31 +21,31 @@ def convertToBoolean(value):
         return True
     if value=='False':
         return False
-    '''
-    #Replace delimiter with blanks, then compress token by replacing non-word characters with null
-    def tokenizerCompress(string):
-        string = string.upper()
-        string = string.replace(delimiter,' ')
-        tokenList = re.split('[\s]+',string)
-        newList = []
-        for token in tokenList:
-            newToken = re.sub('[\W]+','',token)
-            if len(newToken)>0:
-                newList.append(newToken)
-        return newList
-    #***********Inner Function*******************************
-    #Replace all non-words characters with blanks, then split on blanks
-    def tokenizerSplitter(string):
-        string = string.upper()
-        string = re.sub('[\W]+',' ',string)
-        tokenList = re.split('[\s]+',string)
-        newList = []
-        for token in tokenList:
-            if len(token)>0:
-                newList.append(token)
-        return newList
-    '''     
-parameterFile = open('HDWM/parmStage.txt', 'r')
+
+#Replace delimiter with blanks, then compress token by replacing non-word characters with null
+def tokenizerCompress(line):
+    string = line.replace(delimiter,' ')
+    tokenList = re.split('[\s]+',string)
+    newList = []
+    for token in tokenList:
+        newToken = re.sub('[\W]+','',token)
+        if len(newToken)>0:
+            newList.append(newToken)
+    return newList
+
+#Replace all non-words characters with blanks, then split on blanks
+def tokenizerSplitter(line):
+    string = re.sub('[\W]+',' ',line)
+    tokenList = re.split('[\s]+',string)
+    newList = []
+    for token in tokenList:
+        if len(token)>0:
+            newList.append(token)
+    return newList
+
+####### READ PARAMETER FILE #######
+#parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
+parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -62,41 +61,52 @@ while True:
         hasHeader = convertToBoolean(parmValue)
         continue
     if parmName=='delimiter':
-        #global delimiter
         if ',;:|\t'.find(parmValue)>=0:
             delimiter = parmValue
             continue
-
-##############
-# MAIN PROGRAM
-##############
+    if parmName=='tokenizerType':
+        tokenizerType = parmValue
+        if tokenizerType=='Splitter':
+            tokenizerFunction = tokenizerSplitter
+        if tokenizerType=='Compress':
+            tokenizerFunction = tokenizerCompress
+        continue
+    if parmName=='removeDuplicateTokens':
+        removeDuplicateTokens = convertToBoolean(parmValue)
+        continue
+########################################################
+                # START OF MAPPER PROGRAM #
+########################################################
 # Remove(skip) the header from the record if hasHeader is True
 if hasHeader:
-    next (sys.stdin)
+    next(sys.stdin)
 
+# Read and tokenize each line
 for line in sys.stdin:
     # Convert dataset into uppercase
     uc_file = line.upper()
     #print(uppercase_file)    
     # Remove leading and trailing whitespaces
     unclean_file = uc_file.strip()
-    #print(unclean_file)   
-    # Remove unwanted characters
-    file = re.sub('[\W]+', ' ', unclean_file)
-    #print(file)    
-    file_split = file.split()
-    #print(file_split)
+    #print(unclean_file)
+    cleanLine = tokenizerFunction(unclean_file)
+    #print(cleanLine)
 
-    value = file_split[0]
-    for key in file_split[1:]:
-        # Generate json-like output with metadata information (JSON style)
+    value = cleanLine[0]
+    keyTokens = cleanLine[1:]
+    # Remove Duplicate tokens or not
+    if removeDuplicateTokens:
+        keyTokens = list(dict.fromkeys(keyTokens))
+    #print(keyTokens)
+    
+    for key in keyTokens:
+        # Generate json-like output with metadata information
         mypair = {'refID':value, 
-                                    'pos': file_split.index(key), 
-                                    #'char':  character(key), 
-                                    'tok': key}
+                'pos': cleanLine.index(key), 
+                'tok': key}
+
         mypair = str(mypair).replace('(', '').replace(')', '')
         print('%s | %s | %s'% (key, mypair, 'one'))
-        
 ############################################################
 #               END OF MAPPER       
 ############################################################
