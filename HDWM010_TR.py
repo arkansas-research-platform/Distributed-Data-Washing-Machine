@@ -34,12 +34,13 @@ for items in sys.stdin:
         if current_tok_key:
 			# Write result to STDOUT
             print ('%s | %s' % (current_tok_key, current_count))
+        #current_metadata = metadata
         current_count = 1
         current_tok_key = tok_key
       
 # Output the last word
 if current_tok_key == tok_key:
-    print ('%s | %s' % (current_tok_key, current_count))
+    print ('%s | %s' % (current_tok_key, current_count))    
 ############################################################
 #               END OF MAPPER       
 ############################################################
