@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#echo "HADOOP DATA WASHING MACHINE" << $logFile
 #### GETTING PARAMETER FILE FROM USER ####
 read -p "Enter parameter file: " parmFile
 #-files hdfs://snodemain:9000/user/nick/$(pwd)/$parameter_file 
@@ -9,10 +8,15 @@ then
     # Creating logfile using current date and time
     startTime=$( date '+%F_%H:%M:%S' )
     export Log_File="$(pwd)/HDWM_log_$startTime.txt"
+
+    # Create tmp file for local reporting
+    touch "$(pwd)/tmpReport.txt"
+
     while IFS='=' read -r line val
     do
         if [[ "$line" = inputFileName* ]]
         then
+            echo "HADOOP DATA WASHING MACHINE" >> $Log_File
             echo "***********************************************" >> $Log_File
             echo "         Summary of Parameter Settings         " >> $Log_File
             echo "         -----------------------------         " >> $Log_File
@@ -116,67 +120,51 @@ then
 
     # Copy contents of the given parameter file to a staging area to be shipped to Distributed Cache
     cp $(pwd)/$parmFile $(pwd)/parmStage.txt
-
+    hdfs dfs -put $(pwd)/parmStage.txt HadoopDWM
     # Create some variables to be reused. These are just paths to important repetitive JAR Libraries
     Identity_Mapper=/bin/cat
     Identity_Reducer=org.apache.hadoop.mapred.lib.IdentityReducer
     STREAMJAR=/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar
 
+    #hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt
+
     #################################################
     # START EXECUTION OF HDWM JOBS
     #################################################
-#--------->  PHASE 1: TOKENIZATION PROCESS <---------
-    # JOB 1: Tokenization
-    # Tokenize each row of Ref and form Metadata 
-    #        one Mapper with Identity Reducer. outputs tokens with metadata (there are duplicates) without frequency
-    hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM010_TM.py,$(pwd)/parmStage.txt \
-        -D mapreduce.job.reduces=1 \
-        -input HadoopDWM/$inputFile \
-        -output HadoopDWM/job1_out \
-        -mapper HDWM010_TM.py \
-        -reducer $Identity_Reducer
-
-#--------->  PHASE 2: FREQUENCY GENERATION PROCESS <---------
-    # JOB 2: Calculate Frequency of Tokens 
+#--------->  PHASE 1: TOKENIZATION & FREQUENCY CALCULATION PROCESS <---------
+    # JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,$(pwd)/parmStage.txt \
         -D mapreduce.job.reduces=1 \
         -input HadoopDWM/$inputFile \
-        -output HadoopDWM/job2_out \
+        -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
         -reducer HDWM010_TR.py
 
-    # JOB 3: Update the Metadata information with Calculated Freq (Joining outputs of Job 1 & Job 2)
+    # JOB 2: Update the Metadata information with Calculated Freq (Joining outputs of Job 1 & Job 2)
     #        one Mapper & one Reducer....Outputs keys and their frequency
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM015_JM.py,$(pwd)/HDWM015_JR.py \
         -D mapreduce.job.reduces=1 \
-        -Dstream.num.map.output.key.fields=2 \
-        -input HadoopDWM/job1_out \
-        -input HadoopDWM/job2_out \
-        -output HadoopDWM/job3_out \
+        -input HadoopDWM/job1_Tokens-Freq \
+        -output HadoopDWM/job2_Updated-Mdata \
         -mapper HDWM015_JM.py \
         -reducer HDWM015_JR.py
 
-    # In Jobs 4&5, the goal is to produce two types of outputs:
-    #     output1 (Job 4) - Full references with all tokens, frequencies, and position
-    #     output2 (Job 5) - List of all tokens that satisfy the BETA Threshold
-
-#--------->  PHASE 3: REFERENCE RECREATION PROCESS <---------
-    # JOB 4: Pre-Blocking Full References 
+#--------->  PHASE 2: REFERENCE RECREATION PROCESS <---------
+    # JOB 3: Pre-Blocking Full References 
     #        one Mapper & one Reducer....Outputs rebuilt references for each refID
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM020_PBM.py,$(pwd)/HDWM020_FSR.py \
         -D mapreduce.job.reduces=1 \
-        -input HadoopDWM/job3_out \
-        -output HadoopDWM/job4_out \
+        -input HadoopDWM/job2_Updated-Mdata\
+        -output HadoopDWM/job3_RecreateRefs \
         -mapper HDWM020_PBM.py \
         -reducer HDWM020_FSR.py
 
     # Copy job 4 output to a tmp file
-    hdfs dfs -cp HadoopDWM/job4_out HadoopDWM/progLoop_in
+    hdfs dfs -cp HadoopDWM/job3_RecreateRefs HadoopDWM/progLoop_in
 
 ####################################################
 ########## STARTING PROGRAM ITERATIVE LOOP #########
@@ -189,12 +177,11 @@ then
     while true
     do
         # Update loop counter
-        echo " >>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
+        echo ">>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
         echo "        " >> $Log_File
-        echo " >>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
+        echo ">>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
         echo "   New Mu --> " $mu >> $Log_File
         echo "   New Epsilon --> " $epsilon >> $Log_File
-        programCounter=$((programCounter+1))
 
         if [[ "$mu" > 1 ]]
         then
@@ -202,16 +189,16 @@ then
             echo "--- Ending because Mu > 1" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/progLoop_in HadoopDWM/job_LinkIndexDirty
         break
         fi
     
     #--------->  PHASE 4: BLOCKING PROCESS <---------
-        # JOB 5: Extract all Blocking Tokens, and Create of Blocking refID Pairs
+        # JOB 4: Extract all Blocking Tokens, and Create of Blocking refID Pairs
         #        one Mapper & one Reducer....Outputs pairs of refIDs to be compared
-        hdfs dfs -rm -r HadoopDWM/job5_out  
+        hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,$(pwd)/parmStage.txt \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
@@ -225,111 +212,115 @@ then
             -D stream.reduce.output.field.separator=: \
             -D mapreduce.job.reduces=1 \
             -input HadoopDWM/progLoop_in \
-            -output HadoopDWM/job5_out \
+            -output HadoopDWM/job4_BlockTokens \
             -mapper HDWM025_BTPM.py \
             -reducer HDWM025_BTPR.py
         
         # Check if Block Pair List is empty
-        blkPairListCheck=$(cat $(pwd)/reportBlkPairList.txt)
+        blkPairListCheck=$(cat $(pwd)/tmpReport.txt)
         if (( "$blkPairListCheck" == 0 ))
         then
             echo "--- Ending because Block Pair List is empty"
             echo "--- Ending because Block Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job5_out HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp HadoopDWM/job4_BlockTokens HadoopDWM/job_LinkIndexDirty
         break
         fi
         
-        # JOB 6: Block Deduplication 
+        # JOB 5: Block Deduplication 
         #        Identity Mapper & one Reducer....Outputs pairs of refIDs to be compared
-        hdfs dfs -rm -r HadoopDWM/job6_out
+        hdfs dfs -rm -r HadoopDWM/job5_BlockDedup
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM030_RPDR.py \
             -D mapreduce.job.reduces=1  \
-            -input HadoopDWM/job5_out \
-            -output HadoopDWM/job6_out \
+            -input HadoopDWM/job4_BlockTokens \
+            -output HadoopDWM/job5_BlockDedup \
             -mapper $Identity_Mapper \
             -reducer HDWM030_RPDR.py
     
-        # JOB 7: Merge and Join BlockPairs with Original References to update BlockPairsRefID with full Metadata Information
+        # JOB 6a: Merge and Join BlockPairs with Original References to update BlockPairsRefID with full Metadata Information
         #        One Mapper, One Reducer |sort| Another Reducer . Takes and merge two inputs (job4 output, job7 output)
         hdfs dfs -rm -r HadoopDWM/job6_tmp_out
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM035_RIDM.py,$(pwd)/HDWM035_RIDR.py \
             -D mapreduce.job.reduces=1 \
             -Dstream.num.map.output.key.fields=2 \
-            -input HadoopDWM/job4_out \
-            -input HadoopDWM/job6_out \
+            -input HadoopDWM/job3_RecreateRefs \
+            -input HadoopDWM/job5_BlockDedup \
             -output HadoopDWM/job6_tmp_out  \
             -mapper HDWM035_RIDM.py \
             -reducer HDWM035_RIDR.py
     
-        hdfs dfs -rm -r HadoopDWM/job7_out
+        # Job 6b: Final unduplicated Block Pairs
+        hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM035_RIDRR.py \
             -D mapreduce.job.reduces=1 \
             -input HadoopDWM/job6_tmp_out \
-            -output HadoopDWM/job7_out \
+            -output HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM035_RIDRR.py
     
     #--------->  PHASE 5: SIMILARITY COMPARISON & LINKING PROCESS <---------
-        # JOB 9: Linked Pairs
+        # JOB 7: Linked Pairs
         #        Identity Mapper & one Reducer....Outputs Linked Pairs
-        hdfs dfs -rm -r HadoopDWM/job8_out
+        hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM050_SMCR.py,$(pwd)/parmStage.txt \
-            -input HadoopDWM/job7_out \
-            -output HadoopDWM/job8_out \
+            -input HadoopDWM/job6_UndupBlockPairs \
+            -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM050_SMCR.py
 
         # Check if Linked Pair List is empty
-        linkPairListCheck=$(cat $(pwd)/reportLinkPairList.txt)
+        linkPairListCheck=$(cat $(pwd)/tmpReport.txt)
         if (( "$linkPairListCheck" == 0 ))
         then
             echo "--- Ending because Link Pair List is empty"
             echo "--- Ending because Link Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job8_out HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job_LinkIndexDirty
         break
         fi
 
     #--------->  PHASE 6: TRANSITIVE CLOSURE PROCESS <---------
-        # JOB 9: Transitive Closure Iteration
+        # JOB 8: Transitive Closure Iteration
         # It finds all the connected components until no more merge state
         #        Identity Mapper & one Reducer
         
-        # Move job 8 output into a temp_in directory which will serve as input for TC 
-        hdfs dfs -rm -r HadoopDWM/job9_temp_in
-        hdfs dfs -cp HadoopDWM/job8_out HadoopDWM/job9_temp_in
+        # Move job 7 output into a temp_in directory which will serve as input for TC 
+        hdfs dfs -rm -r HadoopDWM/job8_tmpIn
+        hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job8_tmpIn
         iterationCounter=0
+        # Write a '9999' value into tmpReport file to be used by 1st iteration
+        #echo "9999" > $(pwd)/tmpReport.txt
         while true
         do
             #bool=$(cat $(pwd)/$(pwd)/reportTCiteration.txt)
             count=$(cat $(pwd)/reportTCiteration.txt)
+            #count=$(cat $(pwd)/tmpReport.txt)
             echo "Current RunNextIteration Counter is:---->>>> $count"
             #if [[ "$bool" == "True" ]]
             if (( "$count" > 0 ))
             then
-            hdfs dfs -rm -r HadoopDWM/job9_temp_out
+            hdfs dfs -rm -r HadoopDWM/job8_tmpOut
             hadoop jar $STREAMJAR \
                 -files $(pwd)/HDWM055_CCMRR.py \
                 -D stream.map.output.field.separator=, \
                 -D stream.num.map.output.key.fields=2 \
                 -D mapreduce.job.reduces=1  \
-                -input HadoopDWM/job9_temp_in \
-                -output HadoopDWM/job9_temp_out \
+                -input HadoopDWM/job8_tmpIn \
+                -output HadoopDWM/job8_tmpOut \
                 -mapper $Identity_Mapper \
                 -reducer HDWM055_CCMRR.py
-            hdfs dfs -rm -r HadoopDWM/job9_temp_in    
-            hdfs dfs -mv HadoopDWM/job9_temp_out HadoopDWM/job9_temp_in
+            hdfs dfs -rm -r HadoopDWM/job8_tmpIn    
+            hdfs dfs -mv HadoopDWM/job8_tmpOut HadoopDWM/job8_tmpIn
             iterationCounter=$((iterationCounter+1))
             else
             #echo "True" > $(pwd)/reportTCiteration.txt
@@ -342,100 +333,112 @@ then
         echo "   Total Transitive Closure Iterations: " $iterationCounter >> $Log_File
     
         # Check if Cluster List is empty
-        clusterListCheck=$(cat $(pwd)/reportClusterList.txt)
+        clusterListCheck=$(cat $(pwd)/tmpReport.txt)
+        # Report clusterList to log file
+        echo "   Size of Cluster List Formed from TC: " $clusterListCheck >> $Log_File
         if (( "$clusterListCheck" == 0 ))
         then
             echo "--- Ending because Cluster List is empty"
             echo "--- Ending because Cluster List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
             echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  < $programCounter > ITERATIONS +++++++++" >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job9_temp_in HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp HadoopDWM/job8_tmpIn HadoopDWM/job_LinkIndexDirty
         break
         fi
 
     #--------->  PHASE 7: CLUSTER EVALUATION PROCESS <---------
-        # JOB 10: Update RefIDs in Clusters with their token metadata
+        # JOB 9: Update RefIDs in Clusters with their token metadata
         #         by using output from Transitive Closure and original dataset
-        hdfs dfs -rm -r HadoopDWM/job10_out
+        hdfs dfs -rm -r HadoopDWM/job9_TCout-Mdata
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM060_LKIM.py,$(pwd)/HDWM060_LKIR.py \
-            -D stream.map.input.field.separator=, \
-            -D stream.map.output.field.separator=, \
-            -D stream.reduce.input.field.separator=, \
-            -D mapreduce.map.output.key.field.separator=. \
-            -D stream.num.map.output.key.fields=2 \
-            -D mapreduce.reduce.output.key.field.separator=. \
-            -D stream.num.reduce.output.key.fields=2 \
             -D mapreduce.job.reduces=1 \
-            -input HadoopDWM/job9_temp_in \
-            -input HadoopDWM/job4_out \
-            -output HadoopDWM/job10_out  \
+            -input HadoopDWM/job8_tmpIn \
+            -input HadoopDWM/job3_RecreateRefs \
+            -output HadoopDWM/job9_TCout-Mdata  \
             -mapper HDWM060_LKIM.py \
             -reducer HDWM060_LKIR.py
-    
-        hdfs dfs -rm -r HadoopDWM/job11_tmp
-        # JOB 11a: Calculate Entropy and Differentiate Good and Bad Clusters
+
+        hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
+        # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM070_CECR.py \
+            -files $(pwd)/HDWM070_CECR.py,$(pwd)/parmStage.txt \
             -D mapreduce.job.reduces=1 \
-            -input HadoopDWM/job10_out \
-            -output HadoopDWM/job11_tmp \
+            -input HadoopDWM/job9_TCout-Mdata \
+            -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
             -reducer HDWM070_CECR.py
 
-        hdfs dfs -rm -r HadoopDWM/job11_tmpLinkIndex
-        # JOB 11b: Check if a ref is already processed, add another tag as used
+        hdfs dfs -rm -r HadoopDWM/job10_tmpLinkIndex
+        # JOB 10b: Check if a ref is already processed, add another tag as used
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM075_TCRM.py,$(pwd)/HDWM075_TCRR.py \
             -D mapreduce.job.reduces=1 \
-            -input HadoopDWM/job11_tmp \
-            -output HadoopDWM/job11_tmpLinkIndex \
+            -input HadoopDWM/job10_ClusterEval \
+            -output HadoopDWM/job10_tmpLinkIndex \
             -mapper HDWM075_TCRM.py \
             -reducer HDWM075_TCRR.py
 
+        # Increase the program loop counter after each successful loop
+        programCounter=$((programCounter+1))
         # Coping and Deleting
         hdfs dfs -rm -r HadoopDWM/progLoop_in  
-        hdfs dfs -cp HadoopDWM/job11_tmpLinkIndex HadoopDWM/progLoop_in
+        hdfs dfs -cp HadoopDWM/job10_tmpLinkIndex HadoopDWM/progLoop_in
 
         # Increase the values of Mu and Epsilon at the end of each iteration
         mu="$(awk 'BEGIN{ print '$mu'+'$muIter' }')"
+        epsilon="$(awk 'BEGIN{ print '$epsilon'+'$epsilonIter' }')" 
 
     done    
 ####################################################
 ########## END OF PROGRAM LOOP #########
 ####################################################
 
-    # JOB 12: Create a Linked Index File
+    # JOB 11a: Create a Linked Index File
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py \
         -D mapreduce.job.reduces=1 \
         -input HadoopDWM/job_LinkIndexDirty \
-        -input HadoopDWM/job4_out \
+        -input HadoopDWM/job3_RecreateRefs \
         -output HadoopDWM/LinkedIndex_$inputFile \
         -mapper HDWM077_LKINM.py \
         -reducer HDWM077_LKINR.py
-    
-    # Copy LinkedIndex file from HDFS to local directory
-    #hdfs dfs -get HadoopDWM/LinkedIndex_$inputFile $(pwd)
 
-# job12_finalLinkedIndex
+    # JOB 11b: Get Clusters and Sizes
+    hadoop jar $STREAMJAR \
+        -files $(pwd)/HDWM080_CPM.py,$(pwd)/HDWM080_CPR.py \
+        -D mapreduce.job.reduces=1 \
+        -input HadoopDWM/LinkedIndex_$inputFile \
+        -output HadoopDWM/job_PreClusterProfile \
+        -mapper HDWM080_CPM.py \
+        -reducer HDWM080_CPR.py
+
+    # JOB 11c: Generate Cluster Profile
+    hadoop jar $STREAMJAR \
+        -files $(pwd)/HDWM080_CPRR.py \
+        -D mapreduce.job.reduces=1 \
+        -input HadoopDWM/job_PreClusterProfile \
+        -output HadoopDWM/job11_ClusterProfile\
+        -mapper $Identity_Mapper \
+        -reducer HDWM080_CPRR.py
+
 #--------->  PHASE 8: ER MATRIX PROCESS <---------
 #    # Calculate Matrix of the ER Process
 #    # Make sure to use 1 mapper, 1 reducer and should be executed on only the master node
 
-    # JOB 13: Merge Truth Dataset and the outputs of Job 11
+    # JOB 12: Merge Truth Dataset and the outputs of Job 11
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM095_PERMM.py,$(pwd)/HDWM095_PERMR.py \
         -D mapreduce.job.reduces=1 \
         -input HadoopDWM/$truthFile \
         -input HadoopDWM/LinkedIndex_$inputFile \
-        -output HadoopDWM/job13_out \
+        -output HadoopDWM/job12_PreMatrix \
         -mapper HDWM095_PERMM.py \
         -reducer HDWM095_PERMR.py
 
-    # JOB 14: Calculate E-pairs, L-pairs, TP-pairs, Precision, Recall, F-score
+    # JOB 13: Calculate E-pairs, L-pairs, TP-pairs, Precision, Recall, F-score
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM099_ERMR.py \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
@@ -443,16 +446,41 @@ then
         -D mapreduce.map.output.key.field.separator=, \
         -D mapreduce.partition.keycomparator.options="-k1,1 -k2,2n" \
         -D mapreduce.job.reduces=1 \
-        -input HadoopDWM/job13_out \
-        -output HadoopDWM/job14_out \
+        -input HadoopDWM/job12_PreMatrix \
+        -output HadoopDWM/job13_ERmatrix \
         -mapper $Identity_Mapper \
         -reducer HDWM099_ERMR.py \
+    
+    echo "          " >> $Log_File
+    echo "End of File $parmFile" >> $Log_File
+    echo "End of Program" >> $Log_File 
 
-    # The Created directory is automatically deleted at the end of the job
-    # Uncomment this line if you want to see all the processes that went on 
-    #hdfs dfs -rm -r HadoopDWM    
+    # Remove the tmpReporter file that was created at the start of the program
+    rm -r "$(pwd)/tmpReport.txt"
 
     # Exiting program if the parameter file specified does not exists
     exit 0
 fi
 echo "The file, '$parmFile', is not a valid parameter file. Try again!" 
+############################################################################################
+################################### END OF DRIVER SCRIPT ###################################
+############################################################################################
+
+#### NOTES
+# When using Identity Reducer
+    #hadoop jar $STREAMJAR \
+    #    -files $(pwd)/HDWM010_TM.py,$(pwd)/$(pwd)/parmStage.txt \
+    #    -D mapreduce.job.reduces=1 \
+    #    -input HadoopDWM/$inputFile \
+    #    -output HadoopDWM/job1_out \
+    #    -mapper HDWM010_TM.py \
+    #    -reducer $Identity_Reducer
+
+    # Note: The following used to belong for Cluster Eval
+    #-D stream.map.input.field.separator=, \
+    #-D stream.map.output.field.separator=, \
+    #-D stream.reduce.input.field.separator=, \
+    #-D mapreduce.map.output.key.field.separator=. \
+    #-D stream.num.map.output.key.fields=2 \
+    #-D mapreduce.reduce.output.key.field.separator=. \
+    #-D stream.num.reduce.output.key.fields=2 \
