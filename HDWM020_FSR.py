@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -27,6 +27,7 @@ for items in sys.stdin:
     refID, mdata = line.split("|")
     #print(refID)
     #print(mdata)
+
 #---------------------------------------------   
     # Getting the refID description and value from embedded metadata
     split_mdata = str(mdata).replace("{",'').replace("}",'')
