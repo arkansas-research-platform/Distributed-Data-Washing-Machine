@@ -33,12 +33,10 @@ for line in sys.stdin:
 
     if mdata == "-1":  #Remove all previous frequency info line because they have been used to map
         continue
-    
     #print ('%s | %s | %s' % (key,mdata,currentFreq))
 
     update_mdata = mdata.replace("}", ", 'freq':") + currentFreq + "}"
     print ('%s|%s' % (key,update_mdata))
-
 ############################################################
 #               END OF REDUCER       
 ############################################################
