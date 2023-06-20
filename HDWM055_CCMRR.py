@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -24,6 +24,7 @@ recordToSkip = False
 runNextIteration=False
 count = 0
 proLoopCnt = 0
+clusterCount = 0
 ###### TRANSITIVE CLOSURE FUNCTION #####
 def trasitiveClosure(curr_KeySet, curr_valSet):
     # START OF TRANSITIVE CLOSURE CONDITIONS
@@ -141,11 +142,14 @@ if groupKey == key:
 #f1.write(str(count))
 #f1.close()
 #with open('HDWM/check.txt','w') as f:
+
 with open('reportTCiteration.txt','w') as f:
+#with open('tmpReport.txt','w') as f:
     f.write(str(count))
 
 # Report to reportBlkPairList.txt
-with open('reportClusterList.txt','w') as f:
+#with open('reportClusterList.txt','w') as f:
+with open('tmpReport.txt','w') as f:
     f.write(str(proLoopCnt))
 ############################################################
 #               END OF PROGRAM      
