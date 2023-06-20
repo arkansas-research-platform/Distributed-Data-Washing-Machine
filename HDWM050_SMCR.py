@@ -25,8 +25,10 @@ def convertToBoolean(value):
         return True
     if value=='False':
         return False
-    
-parameterFile = open('HDWM/parmStage.txt', 'r')
+
+####### READ PARAMETER FILE #######
+#parameterFile = open('S8P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
+parameterFile = open('HDWM/parmStage.txt', 'r') #Add back this line. Used by HDFS    
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -50,28 +52,43 @@ while True:
     if parmName == 'matrixInitialRule':
         matrixInitialRule = convertToBoolean(parmValue)
         continue 
-#import HDWM006_Parms
-#mu = HDWM006_Parms.mu
-#matrixNumTokenRule = HDWM006_Parms.matrixNumTokenRule
-#matrixInitialRule = HDWM006_Parms.matrixInitialRule
-#sigma = HDWM006_Parms.sigma
+    if parmName=='removeExcludedBlkTokens':
+        removeExcludedBlkTokens = convertToBoolean(parmValue)
+        continue 
+    if parmName=='minBlkTokenLen':
+        minBlkTokenLen = int(parmValue)
+        continue
+    if parmName=='excludeNumericBlocks':
+        excludeNumericBlocks = convertToBoolean(parmValue)
+        continue         
+    if parmName=='comparator':
+        comparator = parmValue
+        continue 
+
 ############################
 
 ########### Remove StopWords Function ###############
 def removestopwords(RefTokenList):
     newList = []
     for x in RefTokenList:
+        notStopWord = True
         tokenRef = x.split("^")[0].strip()
         #print(tokenRef)
         freqRef = x.split("^")[1].strip()
         #print(freqRef)
         if int(freqRef) >= sigma:
-            continue
-        else:
+            notStopWord = False
+        if removeExcludedBlkTokens:
+            if len(tokenRef) < minBlkTokenLen:
+                notStopWord = False
+                #print('tokenRef, len(tokenRef))
+            if tokenRef.isdigit() and excludeNumericBlocks:
+                notStopWord = False
+                #print('tokenRef)       
+        if notStopWord:
             newList.append(tokenRef)
     return newList
 ########### End of Remove StopWords Function ###############
-
 
 ##### ScoringMatrixStd Function #####
 def scoringMatrix_Std(refList1, refList2):
@@ -280,7 +297,14 @@ for pairList in sys.stdin:
     #print('Count of Tokens after Stopwords Removal: ', len(refList1), '**', len(refList2))
 
 ###### Get Similarity comparison Score using Scoring Matrix ###### 
-    similarity_comparison = scoringMatrix_Kris(refList1, refList2)
+    if comparator == 'MongeElkan':
+        similarity_comparison = MongeElkan(refList1, refList2)
+    if comparator == 'Cosine':
+        similarity_comparison = Cosine(refList1, refList2)
+    if comparator == 'ScoringMatrixStd':
+        similarity_comparison = scoringMatrix_Std(refList1, refList2)
+    if comparator == 'ScoringMatrixKris':
+        similarity_comparison = scoringMatrix_Kris(refList1, refList2)
     #print('Similarity Between:', refID1, '**', refID2, 'is', similarity_comparison)  
 
 ###### Compare Sim_Score with Mu to determnine Match/No match ###### 
@@ -288,10 +312,12 @@ for pairList in sys.stdin:
         #print('Linked Pair:', refID1, '**', refID2, 'has a similarity of:', similarity_comparison)
         # Outpout the original linked pairs and their inverse, which will be the input 
         # for the Transitive Closure algorithm in the next reducer
-        linkedPairs = '%s : %s' % (refID1,refID2) # Original Linked Pairs  
-        inversedLinkedPairs = '%s : %s' % (refID2, refID1) # Inverted Linked Pairs
+        linkedPairs = '%s.%s,%s' % (refID1.replace("'",""),refID2.replace("'",""),refID2.replace("'","")) # Original Linked Pairs  
+        inversedLinkedPairs = '%s.%s,%s' % (refID2.replace("'",""), refID1.replace("'",""), refID1.replace("'","")) # Inverted Linked Pairs
+        pairSelf = '%s.%s,%s' % (refID1.replace("'",""), refID1.replace("'",""), refID1.replace("'","")) # PairSelf
         print(linkedPairs)   
-        print(inversedLinkedPairs)  
+        print(inversedLinkedPairs) 
+        print(pairSelf) 
 ############################################################
 #               END OF REDUCER      
 ############################################################
