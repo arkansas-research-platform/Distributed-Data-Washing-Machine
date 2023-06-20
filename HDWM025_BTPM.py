@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Importing libraries
@@ -28,6 +28,8 @@ def convertToBoolean(value):
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S1G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
 parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS
+#parameterFile = open('parmStore') 
+
 while True:
     pline = (parameterFile.readline()).strip()
     if pline == '':
@@ -168,7 +170,7 @@ for record in sys.stdin:
 
 # Reporting to logfile
 print('\n>> Starting Blocking Process', file=logfile)
-print('   Total Numeric Tokens Found: ', numericCnt, file=logfile)
+#print('   Total Numeric Tokens Found: ', numericCnt, file=logfile)
 print('   Total References Selected for Reprocessing: ', selectedRefCnt, file=logfile)
 print('   Total Record Excluded: ', excludedRefCnt, file=logfile)
 print('   Total Record Left for Blocks Creation: ', remainRefs, file=logfile)
