@@ -6,12 +6,6 @@ import string
  # EEPR - takes output from ERMM & EEMR and and calculate
  # Total Equivalent Pairs
  #########################################################
-def countPairs(cnt):
-    #totalPairs = 0
-    pairs = cnt*(cnt-1)/2
-        #totalPairs +=pairs
-    return pairs
-
 # maps words to their counts
 totalEquivalentPairs = 0
 currTIDcount=0
@@ -29,7 +23,8 @@ for line in sys.stdin:
     else:
         if currTID:
             #print (currTID,currTIDcount)
-            pairCount = countPairs(int(currTIDcount))
+            cnt = int(currTIDcount)
+            pairCount = cnt*(cnt-1)/2 
             #print(currTID,pairCount)
             totalEquivalentPairs += pairCount
         currTIDcount = 1
@@ -38,7 +33,8 @@ for line in sys.stdin:
 # Output the last word
 if currTID == truthID:
     #print (currTID,currTIDcount)
-    pairCount = countPairs(int(currTIDcount))
+    cnt = int(currTIDcount)
+    pairCount = cnt*(cnt-1)/2 
     #print(currTID,pairCount)
     totalEquivalentPairs += pairCount
 

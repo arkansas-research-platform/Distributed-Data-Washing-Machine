@@ -13,20 +13,25 @@ import datetime
  #########################################################
 # First row of the truthset is the column header. Need to be removed
 next(sys.stdin) 
+lineToKeep = True
 for rec in sys.stdin:
     refID = -1    #default sorted as first
     truthID = -1  #default sorted as first
-    linkID = -1   #default sorted as first
-    
-    recPrep = rec.strip().replace("'", "").replace(':', ',x,')
-    recSplit = recPrep.split(',')
-    #print(recSplit)
+    clusterID = -1   #default sorted as first
 
-    if len(recSplit) == 3:
-        refID = recSplit[2].strip()
-        linkID = recSplit[0].strip()
-    else:
-        refID = recSplit[0]
-        truthID = recSplit[1]#+'@1'
+    line = rec.strip()
+    if 'ID' in line:
+        lineToKeep = False
+        continue
+    else: 
+        lineToKeep
+        #print(line)
+        recPrep = line.strip().split(',')
+        if len(recPrep) == 3:              #LinkedIndex file
+            refID = recPrep[0].strip()
+            clusterID = recPrep[1].strip()
+        else:
+            refID = recPrep[0]
+            truthID = recPrep[1]
 
-    print ('%s,%s,%s' % (refID, linkID, truthID))
+        print ('%s,%s,%s' % (refID, clusterID, truthID))

@@ -13,9 +13,7 @@ def countPairs(cnt):
         #totalPairs +=pairs
     return pairs
 
-# maps words to their counts
-equivalentPairs = next(sys.stdin).strip().split(',')[1]  #First count needed (E)
-#print(equivalentPairs)  #total Equivalent Pairs (E)
+totalEquivalentPairs = 0
 totalERlinkPairs = 0                                     # Secong count needed (L)
 totalTruePositives = 0                                   # Third count needed (TP)
 currLinkIDcount=0
@@ -31,10 +29,17 @@ truthID = None
 
 for line in sys.stdin:
     line = line.strip()
+    #print(line)
+    if 'equivalent' in line:
+        equivalentPairs = float(line.split(',')[1])
+        #print(equivalentPairs)
+    if 'ID' in line:
+        continue
+    #print(line)
     lineSplit = line.split(',')
     erLinkID = lineSplit[0].strip()
     truthID = lineSplit[1].strip()
-    #print(truthID)
+    #print(lineSplit)
 
     # Counting ER linked pairs
     if currlinkID == erLinkID:
