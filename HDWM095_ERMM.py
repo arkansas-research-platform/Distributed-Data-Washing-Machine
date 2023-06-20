@@ -19,7 +19,7 @@ for rec in sys.stdin:
     truthID = -1  #default sorted as first
     clusterID = -1   #default sorted as first
 
-    line = rec.strip()
+    line = rec.strip().upper().replace('-','')
     if 'ID' in line:
         lineToKeep = False
         continue
