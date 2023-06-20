@@ -7,10 +7,26 @@ if [[ -f "$(pwd)/$parmFile" ]]
 then
     # Creating logfile using current date and time
     startTime=$( date '+%F_%H:%M:%S' )
-    export Log_File="$(pwd)/HDWM_log_$startTime.txt"
+    #export Log_File="$(pwd)/HDWM_log_$startTime.txt"
+
+    # Create a tmpDir for the job logs
+    tmpDir="/usr/local/jobTmp"
+    sudo mkdir -m777 "$tmpDir" && echo "Temp Directory for Job is Successfully Created."
+
+    Log_File="$tmpDir/HDWM_log.txt"
+    finalLogFile="HDWM_Log_$startTime"
+
 
     # Create tmp file for local reporting
-    touch "$(pwd)/tmpReport.txt"
+    #touch "$(pwd)/tmpReport.txt"
+    touch "$tmpDir/tmpReport.txt"
+
+    # Create logfile for transitive closure loop
+    touch "$tmpDir/reportTCiteration.txt" && echo "9999" > $tmpDir/reportTCiteration.txt
+
+    # Create a file to log mu and epsilon value inside
+    touch "$tmpDir/muReport.txt"
+    touch "$tmpDir/epsilonReport.txt"
 
     while IFS='=' read -r line val
     do
@@ -121,6 +137,7 @@ then
     # Copy contents of the given parameter file to a staging area to be shipped to Distributed Cache
     cp $(pwd)/$parmFile $(pwd)/parmStage.txt
     hdfs dfs -put $(pwd)/parmStage.txt HadoopDWM
+    
     # Create some variables to be reused. These are just paths to important repetitive JAR Libraries
     Identity_Mapper=/bin/cat
     Identity_Reducer=org.apache.hadoop.mapred.lib.IdentityReducer
@@ -135,7 +152,7 @@ then
     # JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,$(pwd)/parmStage.txt \
+        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
         -input HadoopDWM/$inputFile \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
@@ -173,6 +190,10 @@ then
     programCounter=0
     while true
     do
+        # Update mu and Epsilon log files in tmpDir
+        echo $mu > "$tmpDir/muReport.txt"
+        echo $epsilon > "$tmpDir/epsilonReport.txt"
+
         # Update loop counter
         echo ">>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
         echo "        " >> $Log_File
@@ -197,7 +218,7 @@ then
         #        one Mapper & one Reducer....Outputs pairs of refIDs to be compared
         hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,$(pwd)/parmStage.txt \
+            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -213,8 +234,9 @@ then
             -reducer HDWM025_BTPR.py
         
         # Check if Block Pair List is empty
-        blkPairListCheck=$(cat $(pwd)/tmpReport.txt)
-        if (( "$blkPairListCheck" == 0 ))
+        #blkPairListCheck=$(cat $(pwd)/tmpReport.txt)
+        blkPairListCheck=$(cat $tmpDir/tmpReport.txt)
+        if [[ "$blkPairListCheck" == "0" ]]
         then
             echo "--- Ending because Block Pair List is empty"
             echo "--- Ending because Block Pair List is empty" >> $Log_File
@@ -262,15 +284,16 @@ then
         #        Identity Mapper & one Reducer....Outputs Linked Pairs
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM050_SMCR.py,$(pwd)/parmStage.txt \
+            -files $(pwd)/HDWM050_SMCR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM050_SMCR.py
 
         # Check if Linked Pair List is empty
-        linkPairListCheck=$(cat $(pwd)/tmpReport.txt)
-        if (( "$linkPairListCheck" == 0 ))
+        #linkPairListCheck=$(cat $(pwd)/tmpReport.txt)
+        linkPairListCheck=$(cat $tmpDir/tmpReport.txt)
+        if [[ "$linkPairListCheck" == "0" ]]
         then
             echo "--- Ending because Link Pair List is empty"
             echo "--- Ending because Link Pair List is empty" >> $Log_File
@@ -296,7 +319,8 @@ then
         while true
         do
             #bool=$(cat $(pwd)/$(pwd)/reportTCiteration.txt)
-            count=$(cat $(pwd)/reportTCiteration.txt)
+            #count=$(cat $(pwd)/reportTCiteration.txt)
+            count=$(cat $tmpDir/reportTCiteration.txt)
             #count=$(cat $(pwd)/tmpReport.txt)
             echo "Current RunNextIteration Counter is:---->>>> $count"
             #if [[ "$bool" == "True" ]]
@@ -316,7 +340,8 @@ then
             iterationCounter=$((iterationCounter+1))
             else
             #echo "True" > $(pwd)/reportTCiteration.txt
-            echo "9999" > $(pwd)/reportTCiteration.txt
+            #echo "9999" > $(pwd)/reportTCiteration.txt
+            echo "9999" > $tmpDir/reportTCiteration.txt
             break
             fi
         done
@@ -325,10 +350,11 @@ then
         echo "   Total Transitive Closure Iterations: " $iterationCounter >> $Log_File
     
         # Check if Cluster List is empty
-        clusterListCheck=$(cat $(pwd)/tmpReport.txt)
+        #clusterListCheck=$(cat $(pwd)/tmpReport.txt)
+        clusterListCheck=$(cat $tmpDir/tmpReport.txt)
         # Report clusterList to log file
         echo "   Size of Cluster List Formed from TC: " $clusterListCheck >> $Log_File
-        if (( "$clusterListCheck" == 0 ))
+        if (( "$clusterListCheck"==0 ))
         then
             echo "--- Ending because Cluster List is empty"
             echo "--- Ending because Cluster List is empty" >> $Log_File
@@ -355,7 +381,7 @@ then
         hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM070_CECR.py,$(pwd)/parmStage.txt \
+            -files $(pwd)/HDWM070_CECR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms\
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
@@ -443,8 +469,11 @@ then
     echo "End of File $parmFile" >> $Log_File
     echo "End of Program" >> $Log_File 
 
-    # Remove the tmpReporter file that was created at the start of the program
-    rm -r "$(pwd)/tmpReport.txt"
+    # Copy contents to a finalLogFile and Remove the tmpReporter file that was created at the start of the program
+    sudo cp $Log_File $(pwd)/$finalLogFile
+    #rm -r "$(pwd)/tmpReport.txt"
+    #rm -r "$tmpDir/tmpReport.txt"
+    sudo rm -r $tmpDir
 
     # Exiting program if the parameter file specified does not exists
     exit 0
@@ -474,3 +503,4 @@ echo "The file, '$parmFile', is not a valid parameter file. Try again!"
     #-D stream.num.reduce.output.key.fields=2 \
 
 #     #    -D mapreduce.job.reduces=1 \ This is removed
+
