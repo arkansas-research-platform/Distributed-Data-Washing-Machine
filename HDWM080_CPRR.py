@@ -51,12 +51,13 @@ if current_cSize == cSize:
     print ('      %s      %s        %s' % (current_cSize, current_count,refCnt))
     print ('      %s      %s        %s' % (current_cSize, current_count,refCnt), file=logfile)
 
-print('           ', '----', '    ----')
-print('           ', '----', '    ----',file=logfile)
+# Calculate average record per cluster
+avgRefPerCluster = totalRefs/totalClusters
+
 print('Total:      ', totalClusters, '      ', totalRefs)  
 print('Total:      ', totalClusters, '      ', totalRefs, file=logfile)
-print('           ', '----', '    ----')
-print('           ', '----', '    ----', file=logfile)
+print('\nAverage Record per Cluster: ', round(avgRefPerCluster, 4))  
+print('\nAverage Record per Cluster: ', round(avgRefPerCluster, 4), file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################
