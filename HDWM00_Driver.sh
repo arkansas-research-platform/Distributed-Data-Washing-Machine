@@ -2,12 +2,16 @@
 
 #### GETTING PARAMETER FILE FROM USER ####
 read -p "Enter parameter file: " parmFile
-#-files hdfs://snodemain:9000/user/nick/$(pwd)/$parameter_file 
+#-files hdfs://$host:9000/user/$username/$(pwd)/$parameter_file 
 if [[ -f "$(pwd)/$parmFile" ]]
 then
     # Creating logfile using current date and time
     startTime=$( date '+%F_%H:%M:%S' )
     #export Log_File="$(pwd)/HDWM_log_$startTime.txt"
+
+    # Get machine's hostname and Username
+    host=$(hostname)
+    username=$(whoami)
 
     # Create a Tmp Directory locally to report logs
     sudo mkdir -m777 "$(pwd)/JobLog" && echo "Job's Local Logging Directory Successfully Created."
@@ -153,7 +157,7 @@ then
     Identity_Reducer=org.apache.hadoop.mapred.lib.IdentityReducer
     STREAMJAR=/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar
 
-    #hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt
+    #hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt
     #################################################
     # START EXECUTION OF HDWM JOBS
     #################################################
@@ -161,7 +165,7 @@ then
     # JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
+        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
         -input HadoopDWM/inputStage.txt \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
@@ -227,7 +231,7 @@ then
         #        one Mapper & one Reducer....Outputs pairs of refIDs to be compared
         hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
+            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -293,7 +297,7 @@ then
         #        Identity Mapper & one Reducer....Outputs Linked Pairs
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM050_SMCR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
+            -files $(pwd)/HDWM050_SMCR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
@@ -386,7 +390,7 @@ then
         hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM070_CECR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
+            -files $(pwd)/HDWM070_CECR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
