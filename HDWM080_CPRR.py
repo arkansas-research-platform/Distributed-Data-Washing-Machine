@@ -4,6 +4,8 @@
 # Importing libraries
 import sys
 import os
+from operator import itemgetter
+from pathlib import Path
  #########################################################
  #        Cluster Profile Reducer
  # Takes the LinkedIndex file as input and compute the 
@@ -11,7 +13,10 @@ import os
  #########################################################
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 
 # Header for the final output
 print('\n>> Starting Cluster Profile Process', file=logfile)

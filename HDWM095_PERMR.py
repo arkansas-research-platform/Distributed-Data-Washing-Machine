@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import string
+from operator import itemgetter
  #########################################################
  #                  DEVELOPER's NOTES
  # ERMR - takes output from ERMM and 

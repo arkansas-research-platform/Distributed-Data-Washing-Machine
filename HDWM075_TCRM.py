@@ -10,9 +10,6 @@ import os
  # Tag refs that has been processed already in previous 
  # iterations. If not tagged, they will be processed again    
  #########################################################
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-# Read the data from STDIN (the output from mapper)
 for items in sys.stdin:
     line = items.strip().replace('<>','-')
     #print(line)

@@ -5,6 +5,8 @@
 import itertools
 import sys
 import os
+from pathlib import Path
+from operator import itemgetter
  #########################################################
  #        TOKENIZATION Reducer (Frequency Computation)
  # Takes input comes from the output of Tokenization mapper
@@ -12,7 +14,10 @@ import os
  #########################################################
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 
 # This is the current word key
 current_tok_key = None 

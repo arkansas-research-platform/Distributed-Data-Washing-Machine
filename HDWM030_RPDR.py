@@ -5,6 +5,7 @@
 import sys
 import re
 from itertools import groupby
+from operator import itemgetter
  #########################################################
  #           RECORD PAIRS DEDUPLICATION REDUCER 
  # Takes the pairs of refIDs and deduplicates it to obtain

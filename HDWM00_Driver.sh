@@ -9,116 +9,125 @@ then
     startTime=$( date '+%F_%H:%M:%S' )
     #export Log_File="$(pwd)/HDWM_log_$startTime.txt"
 
-    # Create a tmpDir for the job logs
-    tmpDir="/usr/local/jobTmp"
-    sudo mkdir -m777 "$tmpDir" && echo "Temp Directory for Job is Successfully Created."
+    # Create a Tmp Directory locally to report logs
+    sudo mkdir -m777 "$(pwd)/JobLog" && echo "Job's Local Logging Directory Successfully Created."
+    tmpDir="$(pwd)/JobLog" && echo $tmpDir > ./path2.txt
 
-    Log_File="$tmpDir/HDWM_log.txt"
-    finalLogFile="HDWM_Log_$startTime"
+    # Put pwd into a file which will be used by MR scripts to locate log file in pwd
+    touch "$(pwd)/path.txt" && touch "$tmpDir/HDWM_Log.txt"
+    tmpLog="$tmpDir/HDWM_Log.txt" && echo "$tmpLog" > ./path.txt
 
+    # Final Log file to give to user
+    Log_File="$(pwd)/HDWM_Log_$startTime.txt"
 
     # Create tmp file for local reporting
-    #touch "$(pwd)/tmpReport.txt"
     touch "$tmpDir/tmpReport.txt"
 
     # Create logfile for transitive closure loop
     touch "$tmpDir/reportTCiteration.txt" && echo "9999" > $tmpDir/reportTCiteration.txt
 
     # Create a file to log mu and epsilon value inside
-    touch "$tmpDir/muReport.txt"
-    touch "$tmpDir/epsilonReport.txt"
+    touch "$tmpDir/muReport.txt" && touch "$tmpDir/epsilonReport.txt"
 
+    # Reading Parameter File locally for local reporting
     while IFS='=' read -r line val
     do
         if [[ "$line" = inputFileName* ]]
         then
-            echo "HADOOP DATA WASHING MACHINE" >> $Log_File
-            echo "***********************************************" >> $Log_File
-            echo "         Summary of Parameter Settings         " >> $Log_File
-            echo "         -----------------------------         " >> $Log_File
+            echo "HADOOP DATA WASHING MACHINE" >> $tmpLog
+            echo "***********************************************" >> $tmpLog
+            echo "         Summary of Parameter Settings         " >> $tmpLog
+            echo "         -----------------------------         " >> $tmpLog
             inputFile="$val"
-            echo "Input File to process      -->  $inputFile" >> $Log_File       
+            # Copy Input file to a Stagging file
+            cp $(pwd)/$inputFile $(pwd)/inputStage.txt
+            echo "Input File to process      -->  $inputFile" >> $tmpLog       
             continue
         elif [[ "$line" = hasHeader* ]]
         then
             header="$val"
-            echo "File has Header            -->  $header" >> $Log_File         
+            # Eliminae Header from original data if it's present
+            if [[ $header = "True" ]]
+            then
+                sed -i '1d' $(pwd)/inputStage.txt
+            fi
+            echo "File has Header            -->  $header" >> $tmpLog         
             continue
         elif [[ "$line" = delimiter* ]]
         then
             delimiter="$val"
-            echo "Delimeter                  -->  '$delimiter' " >> $Log_File
+            echo "Delimeter                  -->  '$delimiter' " >> $tmpLog
             continue
         elif [[ "$line" = tokenizerType* ]]
         then
             tokenizer="$val"
-            echo "Tokenizer type             -->  $tokenizer" >> $Log_File     
+            echo "Tokenizer type             -->  $tokenizer" >> $tmpLog     
             continue
         elif [[ "$line" = truthFileName* ]]
         then
             truthFile="$val"
-            echo "TruthSet File              -->  $truthFile" >> $Log_File    
+            echo "TruthSet File              -->  $truthFile" >> $tmpLog    
             continue 
         elif [[ "$line" = beta* ]]
         then
             beta="$val"
-            echo "Beta                       -->  $beta" >> $Log_File        
+            echo "Beta                       -->  $beta" >> $tmpLog        
             continue 
         elif [[ "$line" = blockByPairs* ]]
         then
             blockByPairs="$val"
-            echo "Block by Pairs             -->  $blockByPairs" >> $Log_File 
+            echo "Block by Pairs             -->  $blockByPairs" >> $tmpLog 
             continue 
         elif [[ "$line" = minBlkTokenLen* ]]
         then
             minBlkTokenLen="$val"
-            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $Log_File  
+            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $tmpLog  
             continue 
         elif [[ "$line" = excludeNumericBlocks* ]]
         then
             excludeNumTok="$val"
-            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $Log_File  
+            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $tmpLog  
             continue 
         elif [[ "$line" = sigma* ]]
         then
             sigma="$val"
-            echo "Sigma                      -->  $sigma" >> $Log_File        
+            echo "Sigma                      -->  $sigma" >> $tmpLog        
             continue 
         elif [[ "$line" = removeDuplicateTokens* ]]
         then
             deDupTokens="$val"
-            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $Log_File  
+            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $tmpLog  
             continue
         elif [[ "$line" = removeExcludedBlkTokens* ]]
         then
             removeExcBlkTok="$val"
-            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $Log_File  
+            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $tmpLog  
             continue
         elif [[ "$line" = comparator* ]]
         then
             comparator="$val"
-            echo "Matrix Comparator          -->  $comparator" >> $Log_File   
+            echo "Matrix Comparator          -->  $comparator" >> $tmpLog   
             continue
         elif [[ "$line" = mu ]]
         then
             export mu="$val"
-            echo "Mu                         -->  $mu" >> $Log_File           
+            echo "Mu                         -->  $mu" >> $tmpLog           
             continue
         elif [[ "$line" = muIterate ]]
         then
             muIter="$val"
-            echo "Mu Iterate                 -->  $muIter" >> $Log_File           
+            echo "Mu Iterate                 -->  $muIter" >> $tmpLog           
             continue
         elif [[ "$line" = epsilon ]]
         then
             export epsilon="$val"
-            echo "Epsilon                    -->  $epsilon" >> $Log_File           
+            echo "Epsilon                    -->  $epsilon" >> $tmpLog           
             continue
         elif [[ "$line" = epsilonIterate ]]
         then
             epsilonIter="$val"
-            echo "Epsilon Iterate            -->  $epsilonIter" >> $Log_File 
-            echo "***********************************************" >> $Log_File           
+            echo "Epsilon Iterate            -->  $epsilonIter" >> $tmpLog 
+            echo "***********************************************" >> $tmpLog           
             continue
         fi
     done < "$(pwd)/$parmFile"
@@ -129,10 +138,7 @@ then
     # Once a job is started, a directory is automatically created in HDFS
     hdfs dfs -rm -r HadoopDWM   
     hdfs dfs -mkdir HadoopDWM
-
-    # Prep input data (copy to a tmpFile, remove data header)
-     cp $(pwd)/$inputFile $(pwd)/inputStage.txt
-     sed -i '1d' $(pwd)/inputStage.txt
+    hdfs dfs -put ./path.txt HadoopDWM
 
     # Copy input data and truthSet from local directory to HDFS
     hdfs dfs -put $(pwd)/inputStage.txt HadoopDWM
@@ -148,7 +154,6 @@ then
     STREAMJAR=/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar
 
     #hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt
-
     #################################################
     # START EXECUTION OF HDWM JOBS
     #################################################
@@ -156,7 +161,7 @@ then
     # JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
     #        one Mapper & one Reducer....Outputs keys and their frequencies
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
+        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
         -input HadoopDWM/inputStage.txt \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
@@ -188,8 +193,8 @@ then
 ########## STARTING PROGRAM ITERATIVE LOOP #########
 ####################################################
     echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++"
-    echo "        " >> $Log_File
-    echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++" >> $Log_File
+    echo "        " >> $tmpLog
+    echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++" >> $tmpLog
 
     programCounter=0
     while true
@@ -200,18 +205,18 @@ then
 
         # Update loop counter
         echo ">>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
-        echo "        " >> $Log_File
-        echo ">>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
-        echo "   New Mu --> " $mu >> $Log_File
-        echo "   New Epsilon --> " $epsilon >> $Log_File
+        echo "        " >> $tmpLog
+        echo ">>>>> STARTING NEXT ITERATION >>>>>" >> $tmpLog
+        echo "   New Mu --> " $mu >> $tmpLog
+        echo "   New Epsilon --> " $epsilon >> $tmpLog
 
         if [[ "$mu" > 1 ]]
         then
             echo "--- Ending because Mu > 1"
-            echo "--- Ending because Mu > 1" >> $Log_File
+            echo "--- Ending because Mu > 1" >> $tmpLog
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
+            echo "        " >> $tmpLog
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/progLoop_in HadoopDWM/job_LinkIndexDirty
         break
@@ -222,7 +227,7 @@ then
         #        one Mapper & one Reducer....Outputs pairs of refIDs to be compared
         hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
+            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -243,10 +248,10 @@ then
         if [[ "$blkPairListCheck" == "0" ]]
         then
             echo "--- Ending because Block Pair List is empty"
-            echo "--- Ending because Block Pair List is empty" >> $Log_File
+            echo "--- Ending because Block Pair List is empty" >> $tmpLog
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
+            echo "        " >> $tmpLog
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job4_BlockTokens HadoopDWM/job_LinkIndexDirty
         break
@@ -277,7 +282,7 @@ then
         # Job 6b: Final unduplicated Block Pairs
         hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM035_RIDRR.py \
+            -files $(pwd)/HDWM035_RIDRR.py,$(pwd)/path.txt \
             -input HadoopDWM/job6_tmp_out \
             -output HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
@@ -288,7 +293,7 @@ then
         #        Identity Mapper & one Reducer....Outputs Linked Pairs
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM050_SMCR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms \
+            -files $(pwd)/HDWM050_SMCR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
@@ -300,10 +305,10 @@ then
         if [[ "$linkPairListCheck" == "0" ]]
         then
             echo "--- Ending because Link Pair List is empty"
-            echo "--- Ending because Link Pair List is empty" >> $Log_File
+            echo "--- Ending because Link Pair List is empty" >> $tmpLog
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
+            echo "        " >> $tmpLog
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job_LinkIndexDirty
         break
@@ -318,8 +323,6 @@ then
         hdfs dfs -rm -r HadoopDWM/job8_tmpIn
         hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job8_tmpIn
         iterationCounter=0
-        # Write a '9999' value into tmpReport file to be used by 1st iteration
-        #echo "9999" > $(pwd)/tmpReport.txt
         while true
         do
             #bool=$(cat $(pwd)/$(pwd)/reportTCiteration.txt)
@@ -332,7 +335,7 @@ then
             then
             hdfs dfs -rm -r HadoopDWM/job8_tmpOut
             hadoop jar $STREAMJAR \
-                -files $(pwd)/HDWM055_CCMRR.py \
+                -files $(pwd)/HDWM055_CCMRR.py,$(pwd)/path2.txt \
                 -D stream.map.output.field.separator=, \
                 -D stream.num.map.output.key.fields=2 \
                 -input HadoopDWM/job8_tmpIn \
@@ -343,28 +346,26 @@ then
             hdfs dfs -mv HadoopDWM/job8_tmpOut HadoopDWM/job8_tmpIn
             iterationCounter=$((iterationCounter+1))
             else
-            #echo "True" > $(pwd)/reportTCiteration.txt
-            #echo "9999" > $(pwd)/reportTCiteration.txt
             echo "9999" > $tmpDir/reportTCiteration.txt
             break
             fi
         done
-        echo "          " >> $Log_File   
-        echo ">> Starting Transitive Closure Process" >> $Log_File   
-        echo "   Total Transitive Closure Iterations: " $iterationCounter >> $Log_File
+        echo "          " >> $tmpLog   
+        echo ">> Starting Transitive Closure Process" >> $tmpLog   
+        echo "   Total Transitive Closure Iterations: " $iterationCounter >> $tmpLog
     
         # Check if Cluster List is empty
         #clusterListCheck=$(cat $(pwd)/tmpReport.txt)
         clusterListCheck=$(cat $tmpDir/tmpReport.txt)
         # Report clusterList to log file
-        echo "   Size of Cluster List Formed from TC: " $clusterListCheck >> $Log_File
+        echo "   Size of Cluster List Formed from TC: " $clusterListCheck >> $tmpLog
         if (( "$clusterListCheck"==0 ))
         then
             echo "--- Ending because Cluster List is empty"
-            echo "--- Ending because Cluster List is empty" >> $Log_File
+            echo "--- Ending because Cluster List is empty" >> $tmpLog
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $Log_File
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
+            echo "        " >> $tmpLog
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job8_tmpIn HadoopDWM/job_LinkIndexDirty
         break
@@ -385,7 +386,7 @@ then
         hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM070_CECR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms\
+            -files $(pwd)/HDWM070_CECR.py,hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
@@ -417,7 +418,7 @@ then
 
     # JOB 11a: Create a Linked Index File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py \
+        -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py,$(pwd)/path.txt \
         -input HadoopDWM/job_LinkIndexDirty \
         -input HadoopDWM/job3_RecreateRefs \
         -output HadoopDWM/LinkedIndex_$inputFile \
@@ -434,7 +435,7 @@ then
 
     # JOB 11c: Generate Cluster Profile
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM080_CPRR.py \
+        -files $(pwd)/HDWM080_CPRR.py,$(pwd)/path.txt \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
@@ -459,7 +460,7 @@ then
 
     # JOB 13: Calculate E-pairs, L-pairs, TP-pairs, Precision, Recall, F-score
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM099_ERMR.py \
+        -files $(pwd)/HDWM099_ERMR.py,$(pwd)/path.txt \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
@@ -469,16 +470,16 @@ then
         -mapper $Identity_Mapper \
         -reducer HDWM099_ERMR.py \
     
-    echo "          " >> $Log_File
-    echo "End of File $parmFile" >> $Log_File
-    echo "End of Program" >> $Log_File 
+    echo "          " >> $tmpLog
+    echo "End of File $parmFile" >> $tmpLog
+    echo "End of Program" >> $tmpLog 
 
     # Copy contents to a finalLogFile and Remove the tmpReporter file that was created at the start of the program
-    sudo cp $Log_File $(pwd)/$finalLogFile
-    #rm -r "$(pwd)/tmpReport.txt"
-    #rm -r "$tmpDir/tmpReport.txt"
+    sudo cp $tmpLog $Log_File
     sudo rm -r $tmpDir
-
+    sudo rm -r $(pwd)/path.txt
+    sudo rm -r $(pwd)/path2.txt
+    
     # Exiting program if the parameter file specified does not exists
     exit 0
 fi
@@ -486,25 +487,3 @@ echo "The file, '$parmFile', is not a valid parameter file. Try again!"
 ############################################################################################
 ################################### END OF DRIVER SCRIPT ###################################
 ############################################################################################
-
-#### NOTES
-# When using Identity Reducer
-    #hadoop jar $STREAMJAR \
-    #    -files $(pwd)/HDWM010_TM.py,$(pwd)/$(pwd)/parmStage.txt \
-    #    -D mapreduce.job.reduces=1 \
-    #    -input HadoopDWM/$inputFile \
-    #    -output HadoopDWM/job1_out \
-    #    -mapper HDWM010_TM.py \
-    #    -reducer $Identity_Reducer
-
-    # Note: The following used to belong for Cluster Eval
-    #-D stream.map.input.field.separator=, \
-    #-D stream.map.output.field.separator=, \
-    #-D stream.reduce.input.field.separator=, \
-    #-D mapreduce.map.output.key.field.separator=. \
-    #-D stream.num.map.output.key.fields=2 \
-    #-D mapreduce.reduce.output.key.field.separator=. \
-    #-D stream.num.reduce.output.key.fields=2 \
-
-#     #    -D mapreduce.job.reduces=1 \ This is removed
-

@@ -5,6 +5,7 @@
 import sys 
 import subprocess
 import os
+from operator import itemgetter
 # sortedcontainers, source: https://grantjenks.com/docs/sortedcontainers/
 
  ##############################################################
@@ -128,29 +129,18 @@ if groupKey == key:
     curr_KeySet.sort()
 
     trasitiveClosure(curr_KeySet,curr_valSet)
-    
 
-# Check how many times we had mergeState cases. This number is used by the driver file
-# to determine whether or not to run the next iteration. The iterations stops when 
-# this value is less than (<) 1
-#print(bashCheckCounter)
+# Report to reportTCiteration.txt
+with open('path2.txt', 'r') as p2:
+    tmp = str(p2.readline()).strip()+'/reportTCiteration.txt'
+tmpDir = open(tmp, "w")
+tmpDir.write(str(count))
 
-#print(runNextIteration)
-#print(count)
-#f1 = open("./HDWM/check.txt", "w")
-#f1.write(str(runNextIteration))
-#f1.write(str(count))
-#f1.close()
-#with open('HDWM/check.txt','w') as f:
-
-with open('/usr/local/jobTmp/reportTCiteration.txt','w') as f:
-#with open('tmpReport.txt','w') as f:
-    f.write(str(count))
-
-# Report to reportBlkPairList.txt
-#with open('reportClusterList.txt','w') as f:
-with open('/usr/local/jobTmp/tmpReport.txt','w') as f:
-    f.write(str(proLoopCnt))
+# Report to tmpReport.txt
+with open('path2.txt', 'r') as p2:
+    tmp = str(p2.readline()).strip()+'/tmpReport.txt'
+tmpDir = open(tmp, "w")
+tmpDir.write(str(proLoopCnt))
 ############################################################
 #               END OF PROGRAM      
 ############################################################

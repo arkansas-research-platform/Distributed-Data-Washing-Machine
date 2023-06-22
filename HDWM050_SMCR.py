@@ -5,7 +5,8 @@
 import sys 
 import re
 import os
-#pip install textdistance  
+from operator import itemgetter
+from pathlib import Path
 
 #Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
 #       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
@@ -34,10 +35,18 @@ def convertToBoolean(value):
 
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-#mu = os.environ["mu"]
-with open('/usr/local/jobTmp/muReport.txt', 'r') as m:
-    mu = m.readline()
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
+
+with open('path2.txt', 'r') as p2:
+    tmp = str(p2.readline()).strip()+'/muReport.txt'
+tmp = open(tmp, "r")
+mu = tmp.readline()
+
+#with open('/usr/local/jobTmp/muReport.txt', 'r') as m:
+#    mu = m.readline()
 mu = float(mu)
 print('\n>> Starting Linking Process', file=logfile)
 
@@ -361,9 +370,11 @@ for pairList in sys.stdin:
         print(pairSelf) 
 
 # Report to reportBlkPairList.txt
-#with open('reportLinkPairList.txt','w') as f:
-with open('/usr/local/jobTmp/tmpReport.txt','w') as f:
-    f.write(str(links))
+with open('path2.txt', 'r') as p2:
+    tmp = str(p2.readline()).strip()+'/tmpReport.txt'
+tmpDir = open(tmp, "w")
+tmpDir.write(str(links))
+
 # Reporting to logfile
 print('   Number of Pairs Linked: ', links, file=logfile)
 ############################################################

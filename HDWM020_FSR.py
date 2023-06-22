@@ -72,5 +72,5 @@ if current_refID == refID:
     #sort_Dict = sorted(finalDict.items())
     print('%s - %s - %s' % (current_refID, sort_Dict, "one"))
 ############################################################
-#               END OF MAPPER       
+#               END OF REDUCER       
 ############################################################

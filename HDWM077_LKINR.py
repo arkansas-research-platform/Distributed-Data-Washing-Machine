@@ -5,6 +5,7 @@
 import itertools
 import sys
 import os
+from operator import itemgetter
  #########################################################
  #        TAGGING CLUSTERED REFERENCES Reducer
  # Tag refs that has been processed already in previous 
@@ -12,7 +13,10 @@ import os
  #########################################################
 #Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 
 # Give Header to Linked Index File
 print('RefID * ClusterID')

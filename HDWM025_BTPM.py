@@ -5,6 +5,7 @@
 import sys
 import re
 import os
+from pathlib import Path
  #########################################################
  #                     DEVELOPER's NOTES
  #                 BLOCKING TOKENS PAIRS Mapper 
@@ -55,7 +56,10 @@ while True:
 
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 ############################
 ####### MAIN PROGRAM #######
 ############################
@@ -170,17 +174,10 @@ for record in sys.stdin:
 
 # Reporting to logfile
 print('\n>> Starting Blocking Process', file=logfile)
-#print('   Total Numeric Tokens Found: ', numericCnt, file=logfile)
 print('   Total References Selected for Reprocessing: ', selectedRefCnt, file=logfile)
 print('   Total Record Excluded: ', excludedRefCnt, file=logfile)
 print('   Total Record Left for Blocks Creation: ', remainRefs, file=logfile)
 print('   Total Blocking Records Created: ', blkRefsCnt, file=logfile)
-
-# Debugging Lines
-#print('   Total References Selected for Reprocessing: ', selectedRefCnt)
-#print('   Total Record Excluded: ', excludedRefCnt)
-#print('   Total Record Left for Blocks Creation: ', remainRefs)
-#print('   Total Blocking Records Created: ', blkRefsCnt)
 ############################################################
 #               END OF MAPPER       
 ############################################################

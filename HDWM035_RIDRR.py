@@ -6,6 +6,7 @@ import sys
 import re
 from operator import itemgetter
 import os
+from pathlib import Path
  ##############################################################
  #                     DEVELOPER's NOTES
  #  Re-Grouping to get pairs back
@@ -21,7 +22,10 @@ isLinkedIndex = False
 
  # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:

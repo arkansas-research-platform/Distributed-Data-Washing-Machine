@@ -8,6 +8,7 @@ import json
 from collections import Counter
 from itertools import count
 import os
+from pathlib import Path
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--
@@ -46,8 +47,10 @@ def tokenizerSplitter(line):
 
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-#print(file)
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
+
 print('\n>> Starting Tokenization Process', file=logfile)
 
 ####### READ PARAMETER FILE #######
@@ -87,8 +90,10 @@ while True:
                 # START OF MAPPER PROGRAM #
 ########################################################
 # Remove(skip) the header from the record if hasHeader is True
-if hasHeader:
-    next(sys.stdin)
+
+# -- Note: This parameter is discontinued in Distributed Environment
+#if hasHeader:
+#    next(sys.stdin)
 
 refCnt = 0
 tokCnt = 0

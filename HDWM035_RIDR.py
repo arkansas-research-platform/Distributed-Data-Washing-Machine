@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+from operator import itemgetter
  #########################################################
  #                  DEVELOPER's NOTES
  #   --JOIN Reducer (Update metadata with Frequency)--               

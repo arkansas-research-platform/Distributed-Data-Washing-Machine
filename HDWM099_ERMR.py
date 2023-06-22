@@ -2,6 +2,7 @@
 import sys
 import string
 import os
+from operator import itemgetter
  #########################################################
  #                  DEVELOPER's NOTES
  # EEPR - takes output from ERMM & EEMR and and calculate
@@ -13,7 +14,10 @@ def countPairs(cnt):
 
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
 #print(file)
 print('\n>> Starting ER Matrix Process', file=logfile)
 

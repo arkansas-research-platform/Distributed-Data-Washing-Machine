@@ -5,14 +5,12 @@
 import itertools
 import sys
 import os
+from operator import itemgetter
  #########################################################
  #        TAGGING CLUSTERED REFERENCES Reducer
  # Tag refs that has been processed already in previous 
  # iterations. If not tagged, they will be processed again    
  #########################################################
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-
 # This is the current word key
 currentRefID = None 
 # Current word value (refID)                        
@@ -86,9 +84,6 @@ if currentRefID == refID:
             print(ref,tag)
         else:
             print(ref)
-        
-## Reporting to logfile
-#print('   Unique Tokens Found: ', uniqueTokCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

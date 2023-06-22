@@ -6,6 +6,7 @@ import sys
 import re
 import os
 import math
+from operator import itemgetter
  ##############################################################
  #                     DEVELOPER's NOTES
  #  Cluster Entropy Evaluation Calculator (CECR) reducer. 
@@ -36,7 +37,11 @@ while True:
 
 # Loading the Log_File from the bash driver
 #logfile = open(os.environ["Log_File"],'a')
-logfile = open('/usr/local/jobTmp/HDWM_Log.txt', 'a')
+#logfile = open('/usr/local/jobTmp/HDWM_Log.txt', 'a')
+with open('path.txt', 'r') as p:
+    localLogLocation = str(p.readline()).strip()
+logfile = open(localLogLocation, "a")
+
 print('\n>> Starting Cluster Evaluation Process', file=logfile)
 
 ########### Entropy Calculator Function ###############

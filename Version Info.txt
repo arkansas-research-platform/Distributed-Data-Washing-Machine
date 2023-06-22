@@ -48,17 +48,21 @@ v1.06
     - Merged Tokenization and Frequency generation processes as one job instead of two seperate jobs 
 
 v1.07    
-- Introduced Cluster Profile Process (HDWM080_CPM, HDWM080_CPR, HDWM080_CPRR)
+    - Introduced Cluster Profile Process (HDWM080_CPM, HDWM080_CPR, HDWM080_CPRR)
 
 v1.08 (Beginning of Parallelism)
-- Fixed mapred.framework.name error in mapred-site.xml file. Changed it to mapreduce.framework.name. 
-    - This fixed the problem of MR running locally and now runs multiple mappers in Parallelism
-- Fixed inability to locate 'textdistance' library by Hadoop compute nodes
-    - Appended location of textdistance to SMCR scrip < sys.path.append(textdistance download Dir) >
-- Created a tmpDir in /usr/local/jobTmp to store job statistics locally
+    - Fixed mapred.framework.name error in mapred-site.xml file. Changed it to mapreduce.framework.name. 
+        - This fixed the problem of MR running locally and now runs multiple mappers in Parallelism
+    - Fixed inability to locate 'textdistance' library by Hadoop compute nodes
+        - Appended location of textdistance to SMCR scrip < sys.path.append(textdistance download Dir) >
+    - Created a tmpDir in /usr/local/jobTmp to store job statistics locally
 
 v1.09
-- Added "Average Records per Cluster" statistic to HDWM080_CPRR
-- Discontinued "hasHeader" parameter due to removal of 1st row if set to True. Deletes more than header row 
-- Added sed command to HDWM00_Driver file to remove header from input data before sending to HDFS
-- Fixed skipping header in HDWM080_CPM in distributed environment
+    - Added "Average Records per Cluster" statistic to HDWM080_CPRR
+    - Discontinued "hasHeader" parameter due to removal of 1st row if set to True. Deletes more than header row 
+    - Added sed command to HDWM00_Driver file to remove header from input data before sending to HDFS
+    - Fixed skipping header in HDWM080_CPM in distributed environment
+
+v1.10
+    - Change header skip to when reading the parms file in from the driver
+    - Local logging improved by creating a temporary directory in pwd
