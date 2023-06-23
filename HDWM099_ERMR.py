@@ -35,6 +35,7 @@ currLinkIDcount=0
 currlinkID = None
 tIDgroup = None
 truthID = None
+totalRefCnt=0
 
 for line in sys.stdin:
     line = line.strip().split(',')
@@ -58,6 +59,7 @@ for line in sys.stdin:
 
     # ---- Phase 2: Calculate L-pairs, TP-pairs ----
     else: # This is the line containing both ClusterID and TruthID
+        totalRefCnt +=1
         truthIDandClusterID
         erLinkID = line[0].strip()
         truthID = line[1].strip()
@@ -108,13 +110,28 @@ if currlinkID == erLinkID:
     for i in list(countTidGroup.values()):
         TPpairs = countPairs(i) 
         totalTruePositives += TPpairs
-        
-print('Linked Pairs =',totalERlinkPairs)  #total Linked Pairs (L)
-print('   Linked Pairs =',totalERlinkPairs, file=logfile)
-print('True Positive Pairs = ', totalTruePositives)  #total True Positive Pairs (TP)
-print('   True Positive Pairs = ', totalTruePositives,file=logfile)
-print('Equivalent Pairs = ', totalEquivalentPairs)  #total Equivalent Pairs (TP)
-print('   Equivalent Pairs = ', totalEquivalentPairs,file=logfile)
+
+# Calculate Total Pairs of all References
+totalRefPairs = countPairs(totalRefCnt)
+
+FP = float(totalERlinkPairs) - float(totalTruePositives)
+FN = float(totalEquivalentPairs) - float(totalTruePositives)
+TN = float(totalRefPairs) - float(totalTruePositives) - float(FP) - float(FN)
+
+print('Total Ref Pairs (D) =',totalRefPairs)  #total Linked Pairs (L)
+print('   Total Ref Pairs (D) =',totalRefPairs, file=logfile)
+print('Linked Pairs (L) =',totalERlinkPairs)  #total Linked Pairs (L)
+print('   Linked Pairs (L) =',totalERlinkPairs, file=logfile)
+print('Equivalent Pairs (E) = ', totalEquivalentPairs)  #total Equivalent Pairs (TP)
+print('   Equivalent Pairs (E) = ', totalEquivalentPairs,file=logfile)
+print('True Positive Pairs (TP) = ', totalTruePositives)  #total True Positive Pairs (TP)
+print('   True Positive Pairs (TP) = ', totalTruePositives,file=logfile)
+print('False Positive Pairs (FP) = ', FP) #False positives
+print('   False Positive Pairs (FP) = ', FP, file=logfile) #False positives
+print('False Negative Pairs (FN) = ', FN) #False Negative
+print('   False Negative Pairs (FN) = ', FN, file=logfile) #False Negative
+print('True Negative Pairs (TN) = ', TN) #True Negative
+print('   True Negative Pairs (TN) = ', TN, file=logfile) #True Negative
 
 # ---- Phase 3: Calculate Precision, Recall, F-score ----
 precision = round(float(totalTruePositives)/float(totalERlinkPairs),4)
