@@ -16,33 +16,10 @@ from operator import itemgetter
  #  if bad cluster, they are sent back to blocking for reprocessing
  ##############################################################
 ####### READ PARAMETER FILE #######
-#parameterFile = open('S2G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-#parameterFile = open('parmStage.txt') #Add back this line. Used by HDFS    
-parameterFile = open('parms', 'r') 
-
-while True:
-    pline = (parameterFile.readline()).strip()
-    if pline == '':
-        break
-    if pline.startswith('#'):
-        continue
-    if pline.find('=')<0:
-        continue
-    part = pline.split('=')
-    parmName = part[0].strip()
-    parmValue = part[1].strip()
-    if parmName=='epsilon':
-        epsilon = float(parmValue)
-        continue 
-
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_Log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
-print('\n>> Starting Cluster Evaluation Process', file=logfile)
+# Getting Epsilon value
+with open('epsilonReport.txt', 'r') as openMuFile:
+    epsilonVal = str(openMuFile.readline()).strip()
+epsilon = float(epsilonVal)
 
 ########### Entropy Calculator Function ###############
 # Note: The function takes (cluster group list, cluster size, total tokens in each group)
@@ -164,6 +141,8 @@ for line in sys.stdin:
         clusterSize +=1
     else:
         if curClusterID:
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total Clusters Processed,1\n")
             totalClustersProcessed +=1
             # Process each cluster group
             newClusterGroup = []    #Count total tokens in each cluster group
@@ -172,6 +151,8 @@ for line in sys.stdin:
             refIDgroup = currRefIDList.split('@')
             #print('---Debug', 'CID',curClusterID,'RefID List ',currRefIDList)
             for refs in clusterGroup:
+                # Reporting to MapReduce Counter
+                sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total References in Clusters,1\n")
                 totalRefsInClusters +=1
                 #print(refs)
                 ###refs =  refs.replace('[','').replace(']','').replace("'","").replace(' ','').split('.')
@@ -189,6 +170,8 @@ for line in sys.stdin:
             sizeOfClusterGrp = len(ClusterGroupList)
             totalTokensInClusterGrp = len(newClusterGroup)
             if sizeOfClusterGrp > 1:
+                # Reporting to MapReduce Counter
+                sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Cluster Size Greater than 1,1\n")
                 cluSizeGreaterThanOne +=1
                 #print('-- calculate entropy of cluster',clusterID, 'Size-', sizeOfClusterGrp)
                 qualityScore = entropyCalculator(ClusterGroupList)
@@ -200,8 +183,12 @@ for line in sys.stdin:
             # Get Good vs Bad Cluster (Output both - when all clusters are good, the iteration will exit)
                 # Good Clusters
             if qualityScore >= epsilon:
+                # Reporting to MapReduce Counter
+                sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total Good Clusters,1\n")
                 goodClusterProcessed +=1
                 for rID in refIDgroup:
+                    # Reporting to MapReduce Counter
+                    sys.stderr.write("reporter:counter:Cluster Evaluation Counters,References in Good Clusters,1\n")
                     totalRefsInGoodClusters +=1
                     rID = rID.strip()
                     #print('-- CID-', curClusterID, '-- RefID-',rID, 'Good Cluster')
@@ -218,6 +205,8 @@ for line in sys.stdin:
         clusterSize = 1
 # Process last record in file
 if curClusterID:
+    # Reporting to MapReduce Counter
+    sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total Clusters Processed,1\n")
     totalClustersProcessed +=1
     newClusterGroup = []    #Count total tokens in each cluster group
     ClusterGroupList = []   #Create list of refs in each cluster group
@@ -225,6 +214,8 @@ if curClusterID:
     refIDgroup = currRefIDList.split('@')
     #print('---Debug', 'CID',curClusterID,'RefID List ',currRefIDList)
     for refs in clusterGroup:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total References in Clusters,1\n")
         totalRefsInClusters +=1
         ###refs =  refs.replace('[','').replace(']','').replace(' ','').split('.')
         tokInRef = [str(x.split(':')[1]).split('^')[0] for x in refs.split('.')]
@@ -242,6 +233,8 @@ if curClusterID:
     totalTokensInClusterGrp = len(newClusterGroup)
 
     if sizeOfClusterGrp > 1:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Cluster Size Greater than 1,1\n")
         cluSizeGreaterThanOne +=1
         #print('-- calculate entropy of cluster',curClusterID, 'Size-', sizeOfClusterGrp)
         qualityScore = entropyCalculator(ClusterGroupList)
@@ -253,8 +246,12 @@ if curClusterID:
     # Get Good vs Bad Cluster (Output both - when all clusters are good, the iteration will exit)
        # Good Clusters
     if qualityScore >= epsilon:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Cluster Evaluation Counters,Total Good Clusters,1\n")
         goodClusterProcessed +=1
         for rID in refIDgroup:
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Cluster Evaluation Counters,References in Good Clusters,1\n")
             totalRefsInGoodClusters +=1
             rID = rID.strip()
             #print('-- CID-', curClusterID, '-- RefID-',rID, 'Good Cluster') 
@@ -265,13 +262,6 @@ if curClusterID:
             tkns = tkns.replace('.', ',')
             #print('-- Bad Cluster ', '-- RefID-',rID, '-- Tokens', tkns) 
             print('%s-%s-%s'% (rID, tkns, tag2))
-
-# Reporting to logfile
-print('   Total Cluster Processed: ', totalClustersProcessed, file=logfile)
-print('   Total References in Cluster: ', totalRefsInClusters, file=logfile)
-print('   Number of Cluster > 1: ', cluSizeGreaterThanOne, file=logfile)
-print('   Total Good Cluster: ', goodClusterProcessed, ' at', epsilon, ' epsilon',  file=logfile)
-print('   Total References in Good Cluster: ', totalRefsInGoodClusters, file=logfile)
 #############################################################
 ##               END OF REDUCER      
 ############################################################

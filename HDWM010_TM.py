@@ -6,9 +6,7 @@ import sys
 import re
 import json
 from collections import Counter
-from itertools import count
 import os
-from pathlib import Path
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--
@@ -45,17 +43,7 @@ def tokenizerSplitter(line):
             newList.append(token)
     return newList
 
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
-print('\n>> Starting Tokenization Process', file=logfile)
-
 ####### READ PARAMETER FILE #######
-#parameterFile = open('S1G-parms-copy.txt', 'r') 
-#parameterFile = open('parmStage.txt') 
 parameterFile = open('parms') 
 #parameterFile = "hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt"
 while True:
@@ -101,7 +89,6 @@ tokensLeft = 0
 numericTokCnt = 0
 # Read and tokenize each line
 for line in sys.stdin:
-    cnt = 0
     # Convert dataset into uppercase
     uc_file = line.upper()
     refCnt += 1
@@ -115,17 +102,27 @@ for line in sys.stdin:
     cleanLine = tokenizerFunction(keyTokens)
     #print(value)
 
-    # Counting total tokens
-    for tok in cleanLine:
-        tok = tok.strip().replace('"','').replace("'","")
-        if tok.isdigit():
-            numericTokCnt +=1
-        cnt += 1
-    tokCnt += cnt
+    # Counting tokens
+    tokCnt = tokCnt + len(cleanLine)
+    for t in cleanLine:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Tokenization Counters,Tokens Found,1\n")
+
     # Remove Duplicate tokens or not
     if removeDuplicateTokens:
         cleanLine = list(dict.fromkeys(cleanLine))
     tokensLeft = tokensLeft + len(cleanLine)
+    # Reporting to MapReduce Counter
+    for x in cleanLine:
+        sys.stderr.write("reporter:counter:Tokenization Counters,Remaining Tokens,1\n")
+
+    # Counting numeric tokens
+    for tok in cleanLine:
+        tok = tok.strip().replace('"','').replace("'","")
+        if tok.isdigit():
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Tokenization Counters,Numeric Tokens,1\n")
+            numericTokCnt +=1
     
     for n,key in enumerate(cleanLine,1): #n is a num/position using enumerate and starts from 1
         # Generate json-like output with metadata information
@@ -134,14 +131,6 @@ for line in sys.stdin:
                 'tok': key}
         mypair = str(mypair).replace('(', '').replace(')', '')
         print('%s | %s | %s'% (key, mypair, 'one')) 
-
-removedTokens = tokCnt - tokensLeft
-# Reporting to logfile
-print('   Total References Read: ', refCnt, file=logfile)
-print('   Total Tokens Found: ', tokCnt, file=logfile)
-print('   Duplicate Tokens Found: ', removedTokens, file=logfile)
-print('   Tokens Left after Duplicates Removal: ', tokensLeft, file=logfile)
-print('   Total Numeric Tokens Found: ', numericTokCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

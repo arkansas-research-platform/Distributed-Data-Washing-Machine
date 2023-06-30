@@ -12,14 +12,20 @@ then
     # Get machine's hostname and Username
     host=$(hostname)
     username=$(whoami)
+    user_home=$(eval echo ~$USER)
 
-    # Create a Tmp Directory locally to report logs
-    sudo mkdir -m777 "$(pwd)/JobLog" && echo "Job's Local Logging Directory Successfully Created."
-    tmpDir="$(pwd)/JobLog" && echo $tmpDir > ./path2.txt
+    # Create a Tmp Directory locally to report logs, only if the directory doesn't exist
+    if [ ! -d "$user_home/JobLog" ]
+        then
+            sudo mkdir -m777 "$user_home/JobLog"
+            echo "Local Logging Directory Successfully Created in '$user_home'."
+    else
+        sudo rm -r $user_home/JobLog/*
+        echo "Local Logging Directory Found in '$user_home'."
+    fi
 
-    # Put pwd into a file which will be used by MR scripts to locate log file in pwd
-    touch "$(pwd)/path.txt" && touch "$tmpDir/HDWM_Log.txt"
-    tmpLog="$tmpDir/HDWM_Log.txt" && echo "$tmpLog" > ./path.txt
+    # Create a tmp logging directory 
+    tmpDir="$user_home/JobLog" 
 
     # Final Log file to give to user
     Log_File="$(pwd)/HDWM_Log_$startTime.txt"
@@ -38,14 +44,14 @@ then
     do
         if [[ "$line" = inputFileName* ]]
         then
-            echo "HADOOP DATA WASHING MACHINE" >> $tmpLog
-            echo "***********************************************" >> $tmpLog
-            echo "         Summary of Parameter Settings         " >> $tmpLog
-            echo "         -----------------------------         " >> $tmpLog
+            echo "HADOOP DATA WASHING MACHINE" >> $Log_File
+            echo "***********************************************" >> $Log_File
+            echo "         Summary of Parameter Settings         " >> $Log_File
+            echo "         -----------------------------         " >> $Log_File
             inputFile="$val"
             # Copy Input file to a Stagging file
             cp $(pwd)/$inputFile $(pwd)/inputStage.txt
-            echo "Input File to process      -->  $inputFile" >> $tmpLog       
+            echo "Input File to process      -->  $inputFile" >> $Log_File       
             continue
         elif [[ "$line" = hasHeader* ]]
         then
@@ -55,83 +61,83 @@ then
             then
                 sed -i '1d' $(pwd)/inputStage.txt
             fi
-            echo "File has Header            -->  $header" >> $tmpLog         
+            echo "File has Header            -->  $header" >> $Log_File         
             continue
         elif [[ "$line" = delimiter* ]]
         then
             delimiter="$val"
-            echo "Delimeter                  -->  '$delimiter' " >> $tmpLog
+            echo "Delimeter                  -->  '$delimiter' " >> $Log_File
             continue
         elif [[ "$line" = tokenizerType* ]]
         then
             tokenizer="$val"
-            echo "Tokenizer type             -->  $tokenizer" >> $tmpLog     
+            echo "Tokenizer type             -->  $tokenizer" >> $Log_File     
             continue
         elif [[ "$line" = truthFileName* ]]
         then
             truthFile="$val"
-            echo "TruthSet File              -->  $truthFile" >> $tmpLog    
+            echo "TruthSet File              -->  $truthFile" >> $Log_File    
             continue 
         elif [[ "$line" = beta* ]]
         then
             beta="$val"
-            echo "Beta                       -->  $beta" >> $tmpLog        
+            echo "Beta                       -->  $beta" >> $Log_File        
             continue 
         elif [[ "$line" = blockByPairs* ]]
         then
             blockByPairs="$val"
-            echo "Block by Pairs             -->  $blockByPairs" >> $tmpLog 
+            echo "Block by Pairs             -->  $blockByPairs" >> $Log_File 
             continue 
         elif [[ "$line" = minBlkTokenLen* ]]
         then
             minBlkTokenLen="$val"
-            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $tmpLog  
+            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $Log_File  
             continue 
         elif [[ "$line" = excludeNumericBlocks* ]]
         then
             excludeNumTok="$val"
-            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $tmpLog  
+            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $Log_File  
             continue 
         elif [[ "$line" = sigma* ]]
         then
             sigma="$val"
-            echo "Sigma                      -->  $sigma" >> $tmpLog        
+            echo "Sigma                      -->  $sigma" >> $Log_File        
             continue 
         elif [[ "$line" = removeDuplicateTokens* ]]
         then
             deDupTokens="$val"
-            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $tmpLog  
+            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $Log_File  
             continue
         elif [[ "$line" = removeExcludedBlkTokens* ]]
         then
             removeExcBlkTok="$val"
-            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $tmpLog  
+            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $Log_File  
             continue
         elif [[ "$line" = comparator* ]]
         then
             comparator="$val"
-            echo "Matrix Comparator          -->  $comparator" >> $tmpLog   
+            echo "Matrix Comparator          -->  $comparator" >> $Log_File   
             continue
         elif [[ "$line" = mu ]]
         then
             export mu="$val"
-            echo "Mu                         -->  $mu" >> $tmpLog           
+            echo "Mu                         -->  $mu" >> $Log_File           
             continue
         elif [[ "$line" = muIterate ]]
         then
             muIter="$val"
-            echo "Mu Iterate                 -->  $muIter" >> $tmpLog           
+            echo "Mu Iterate                 -->  $muIter" >> $Log_File           
             continue
         elif [[ "$line" = epsilon ]]
         then
             export epsilon="$val"
-            echo "Epsilon                    -->  $epsilon" >> $tmpLog           
+            echo "Epsilon                    -->  $epsilon" >> $Log_File           
             continue
         elif [[ "$line" = epsilonIterate ]]
         then
             epsilonIter="$val"
-            echo "Epsilon Iterate            -->  $epsilonIter" >> $tmpLog 
-            echo "***********************************************" >> $tmpLog           
+            echo "Epsilon Iterate            -->  $epsilonIter" >> $Log_File 
+            echo "***********************************************" >> $Log_File           
             continue
         fi
     done < "$(pwd)/$parmFile"
@@ -142,7 +148,6 @@ then
     # Once a job is started, a directory is automatically created in HDFS
     hdfs dfs -rm -r HadoopDWM   
     hdfs dfs -mkdir HadoopDWM
-    hdfs dfs -put ./path.txt HadoopDWM
 
     # Copy input data and truthSet from local directory to HDFS
     hdfs dfs -put $(pwd)/inputStage.txt HadoopDWM
@@ -164,15 +169,42 @@ then
 #--------->  PHASE 1: TOKENIZATION & FREQUENCY CALCULATION PROCESS <---------
     # JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
     #        one Mapper & one Reducer....Outputs keys and their frequencies
+    echo "        "
+    echo ">> Starting Tokenization Process"
+    echo "        " >> $Log_File
+    echo ">> Starting Tokenization Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
+        -files $(pwd)/HDWM010_TM.py,$(pwd)/HDWM010_TR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms \
         -input HadoopDWM/inputStage.txt \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TM.py \
         -reducer HDWM010_TR.py
 
+        echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+        # Analyzing JOB 1 Counters for useful Statistics
+        # Phase 1: Getting the Job Counter Logs
+        mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+        tokJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+        mapred job -history $tokJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+        refsRead=$( grep 'Map input records' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        toksFound=$( grep 'Tokens Found' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        numToks=$( grep 'Numeric Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        remainToks=$( grep 'Remaining Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        dupToks=$(( toksFound-remainToks ))
+        uniqueToks=$( grep 'Unique Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+        # Phase 2: Logging to logfile
+        echo "   Total References Read: $refsRead" >> $Log_File
+        echo "   Total Tokens Found: $toksFound" >> $Log_File
+        echo "   Total Numeric Tokens: $numToks" >> $Log_File 
+        echo "   Duplicate Tokens: $dupToks" >> $Log_File 
+        echo "   Remaining Tokens: $remainToks" >> $Log_File 
+        echo "   Unique Tokens: $uniqueToks" >> $Log_File 
+
     # JOB 2: Update the Metadata information with Calculated Freq (Joining outputs of Job 1 & Job 2)
     #        one Mapper & one Reducer....Outputs keys and their frequency
+    echo "        "
+    echo ">> Starting Merge & Join Process"
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM015_JM.py,$(pwd)/HDWM015_JR.py \
         -input HadoopDWM/job1_Tokens-Freq \
@@ -183,6 +215,8 @@ then
 #--------->  PHASE 2: REFERENCE RECREATION PROCESS <---------
     # JOB 3: Pre-Blocking Full References 
     #        one Mapper & one Reducer....Outputs rebuilt references for each refID
+    echo "        "
+    echo ">> Starting Reference Reformation Process"
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM020_PBM.py,$(pwd)/HDWM020_FSR.py \
         -input HadoopDWM/job2_Updated-Mdata\
@@ -196,9 +230,10 @@ then
 ####################################################
 ########## STARTING PROGRAM ITERATIVE LOOP #########
 ####################################################
+    echo "        "
     echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++"
-    echo "        " >> $tmpLog
-    echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++" >> $tmpLog
+    echo "        " >> $Log_File
+    echo "+++++++++ STARTING PROGRAM ITERATIVE LOOP +++++++++" >> $Log_File
 
     programCounter=0
     while true
@@ -208,19 +243,20 @@ then
         echo $epsilon > "$tmpDir/epsilonReport.txt"
 
         # Update loop counter
+        echo "        "
         echo ">>>>> STARTING NEXT ITERATION at" $mu " Mu >>>>>"
-        echo "        " >> $tmpLog
-        echo ">>>>> STARTING NEXT ITERATION >>>>>" >> $tmpLog
-        echo "   New Mu --> " $mu >> $tmpLog
-        echo "   New Epsilon --> " $epsilon >> $tmpLog
+        echo "        " >> $Log_File
+        echo ">>>>> STARTING NEXT ITERATION >>>>>" >> $Log_File
+        echo "   New Mu --> " $mu >> $Log_File
+        echo "   New Epsilon --> " $epsilon >> $Log_File
 
         if [[ "$mu" > 1 ]]
         then
             echo "--- Ending because Mu > 1"
-            echo "--- Ending because Mu > 1" >> $tmpLog
+            echo "--- Ending because Mu > 1" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $tmpLog
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
+            echo "        " >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/progLoop_in HadoopDWM/job_LinkIndexDirty
         break
@@ -229,9 +265,13 @@ then
     #--------->  PHASE 4: BLOCKING PROCESS <---------
         # JOB 4: Extract all Blocking Tokens, and Create of Blocking refID Pairs
         #        one Mapper & one Reducer....Outputs pairs of refIDs to be compared
+        echo "        "
+        echo ">> Starting Blocking Process"
+        echo "        " >> $Log_File
+        echo ">> Starting Blocking Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
+            -files $(pwd)/HDWM025_BTPM.py,$(pwd)/HDWM025_BTPR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -246,16 +286,34 @@ then
             -mapper HDWM025_BTPM.py \
             -reducer HDWM025_BTPR.py
         
-        # Check if Block Pair List is empty
-        #blkPairListCheck=$(cat $(pwd)/tmpReport.txt)
-        blkPairListCheck=$(cat $tmpDir/tmpReport.txt)
-        if [[ "$blkPairListCheck" == "0" ]]
+        # Analyzing JOB 4 (Blocking) Counters for useful Statistics
+            # Phase 1: Getting the Job Counter Logs
+        echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+        mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+        blkJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+        mapred job -history $blkJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+        selectRefs=$( grep 'Refs for Reprocessing' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        excludeRefs=$( grep 'Excluded References' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 ) 
+        remainRefs=$( grep 'Remaining References' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        blckRefCreate=$( grep 'Blocking References Created' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        pairsGen=$( grep 'Pairs Created-by-Blocks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+        # Phase 2: Logging to logfile
+        echo "   Total References Selected for Reprocessing: $selectRefs" >> $Log_File 
+        echo "   Total Record Excluded: : $excludeRefs" >> $Log_File
+        echo "   Total Record Left for Blocks Creation: $remainRefs" >> $Log_File 
+        echo "   Total Blocking Records Created: $blckRefCreate" >> $Log_File 
+        echo "   Total Pairs Generated by Blocks: $pairsGen" >> $Log_File 
+
+        # Phase 3: Check if Block Pair List is empty
+        #blkPairListCheck=$(cat $tmpDir/tmpReport.txt)
+        if [ "$pairsGen" -eq "0" ]
         then
             echo "--- Ending because Block Pair List is empty"
-            echo "--- Ending because Block Pair List is empty" >> $tmpLog
+            echo "--- Ending because Block Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $tmpLog
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
+            echo "        " >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job4_BlockTokens HadoopDWM/job_LinkIndexDirty
         break
@@ -263,6 +321,8 @@ then
         
         # JOB 5: Block Deduplication 
         #        Identity Mapper & one Reducer....Outputs pairs of refIDs to be compared
+        echo "        "
+        echo ">> Starting Blocking Key Deduplication Process"
         hdfs dfs -rm -r HadoopDWM/job5_BlockDedup
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM030_RPDR.py \
@@ -270,9 +330,11 @@ then
             -output HadoopDWM/job5_BlockDedup \
             -mapper $Identity_Mapper \
             -reducer HDWM030_RPDR.py
-    
+
         # JOB 6a: Merge and Join BlockPairs with Original References to update BlockPairsRefID with full Metadata Information
         #        One Mapper, One Reducer |sort| Another Reducer . Takes and merge two inputs (job4 output, job7 output)
+        echo "        "
+        echo ">> Starting Block & Reformed Refs Join Process"
         hdfs dfs -rm -r HadoopDWM/job6_tmp_out
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM035_RIDM.py,$(pwd)/HDWM035_RIDR.py \
@@ -284,35 +346,62 @@ then
             -reducer HDWM035_RIDR.py
     
         # Job 6b: Final unduplicated Block Pairs
+        echo "        "
+        echo ">> Starting Unduplicated Blocking Ref Pairs  Process"
         hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM035_RIDRR.py,$(pwd)/path.txt \
+            -files $(pwd)/HDWM035_RIDRR.py \
             -input HadoopDWM/job6_tmp_out \
             -output HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM035_RIDRR.py
+
+        # Analyzing JOB 6b (Unduplicated Block Pairs) Counters for useful Statistics
+            # Phase 1: Getting the Job Counter Logs
+        echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+        mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+        undupJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+        mapred job -history $undupJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+        undupBlck=$( grep 'Unduplicated Block Pairs' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+        # Phase 2: Logging to logfile
+        echo "   Total Unduplicated Blocks: $undupBlck" >> $Log_File 
     
     #--------->  PHASE 5: SIMILARITY COMPARISON & LINKING PROCESS <---------
         # JOB 7: Linked Pairs
         #        Identity Mapper & one Reducer....Outputs Linked Pairs
+        echo "        "
+        echo ">> Starting Similarity Comparison Process"
+        echo "        " >> $Log_File
+        echo ">> Starting Similarity Comparison Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM050_SMCR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt,$(pwd)/path2.txt \
+            -files $(pwd)/HDWM050_SMCR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$tmpDir/muReport.txt \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM050_SMCR.py
 
-        # Check if Linked Pair List is empty
-        #linkPairListCheck=$(cat $(pwd)/tmpReport.txt)
-        linkPairListCheck=$(cat $tmpDir/tmpReport.txt)
-        if [[ "$linkPairListCheck" == "0" ]]
+        # Analyzing JOB 7 Counters for useful Statistics
+            # Phase 1: Getting the Job Counter Logs
+        echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+        mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+        lnkJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+        mapred job -history $lnkJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+        linkPairs=$( grep 'Linked Pairs' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+        # Phase 2: Logging to logfile
+        echo "   Number of Pairs Linked: $linkPairs" >> $Log_File
+
+        # Phase 3: Check if Linked Pair List is empty
+        #linkPairListCheck=$(cat $tmpDir/tmpReport.txt)
+        if [ "$linkPairs" -eq "0" ]
         then
             echo "--- Ending because Link Pair List is empty"
-            echo "--- Ending because Link Pair List is empty" >> $tmpLog
+            echo "--- Ending because Link Pair List is empty" >> $Log_File
             echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $tmpLog
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
+            echo "        " >> $Log_File
+            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
             hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job_LinkIndexDirty
         break
@@ -321,63 +410,81 @@ then
     #--------->  PHASE 6: TRANSITIVE CLOSURE PROCESS <---------
         # JOB 8: Transitive Closure Iteration
         # It finds all the connected components until no more merge state
-        #        Identity Mapper & one Reducer
-        
+        echo "        "
+        echo ">> Starting Transitive Closure Process"
+        echo "        " >> $Log_File
+        echo ">> Starting Transitive Closure Process" >> $Log_File       
         # Move job 7 output into a temp_in directory which will serve as input for TC 
         hdfs dfs -rm -r HadoopDWM/job8_tmpIn
         hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job8_tmpIn
         iterationCounter=0
         while true
         do
-            #bool=$(cat $(pwd)/$(pwd)/reportTCiteration.txt)
-            #count=$(cat $(pwd)/reportTCiteration.txt)
             count=$(cat $tmpDir/reportTCiteration.txt)
-            #count=$(cat $(pwd)/tmpReport.txt)
-            echo "Current RunNextIteration Counter is:---->>>> $count"
-            #if [[ "$bool" == "True" ]]
+            echo "**** Current RunNextIteration Counter is:---->>>> $count"
             if (( "$count" > 0 ))
             then
-            hdfs dfs -rm -r HadoopDWM/job8_tmpOut
-            hadoop jar $STREAMJAR \
-                -files $(pwd)/HDWM055_CCMRR.py,$(pwd)/path2.txt \
-                -D stream.map.output.field.separator=, \
-                -D stream.num.map.output.key.fields=2 \
-                -input HadoopDWM/job8_tmpIn \
-                -output HadoopDWM/job8_tmpOut \
-                -mapper $Identity_Mapper \
-                -reducer HDWM055_CCMRR.py
-            hdfs dfs -rm -r HadoopDWM/job8_tmpIn    
-            hdfs dfs -mv HadoopDWM/job8_tmpOut HadoopDWM/job8_tmpIn
-            iterationCounter=$((iterationCounter+1))
+                hdfs dfs -rm -r HadoopDWM/job8_tmpOut
+                hadoop jar $STREAMJAR \
+                    -files $(pwd)/HDWM055_CCMRR.py \
+                    -D stream.map.output.field.separator=, \
+                    -D stream.num.map.output.key.fields=2 \
+                    -input HadoopDWM/job8_tmpIn \
+                    -output HadoopDWM/job8_tmpOut \
+                    -mapper $Identity_Mapper \
+                    -reducer HDWM055_CCMRR.py
+                hdfs dfs -rm -r HadoopDWM/job8_tmpIn    
+                hdfs dfs -mv HadoopDWM/job8_tmpOut HadoopDWM/job8_tmpIn
+
+                # Analyzing JOB 8 Counters for useful Statistics (Merge-State Statistics)
+                    # Phase 1: Getting the Job Counter Logs
+                echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+                mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+                mStateJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+                mapred job -history $mStateJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+                mergeState=$( grep 'Merge State' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+                # Update count to be used in next iteration
+                echo $mergeState > $tmpDir/reportTCiteration.txt
+
+                # Update Transitive Closure Loop Counter
+                iterationCounter=$((iterationCounter+1))
+            # Stop TC Loop if count of last job is 0 and rest count for next Program iteration
             else
-            echo "9999" > $tmpDir/reportTCiteration.txt
+                # Analyzing JOB 8 Counters for useful Statistics
+                    # Phase 1: Getting the Job Counter Logs
+                echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+                mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+                locMaxStateJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+                mapred job -history $locMaxStateJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+                clusterListCheck=$( grep 'Cluster List' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+                    # Phase 2: Logging to logfile
+                echo "   Total Transitive Closure Iterations: $iterationCounter" >> $Log_File
+                echo "   Size of Cluster List Formed from TC: $clusterListCheck" >> $Log_File
+                # Update reportTCiteration file for future job
+                echo "9999" > $tmpDir/reportTCiteration.txt
+
+                # Phase 3: Check if Cluster List is empty
+                if [[ "$clusterListCheck" == "0" ]]
+                then
+                    echo "--- Ending because Cluster List is empty"
+                    echo "--- Ending because Cluster List is empty" >> $Log_File
+                    echo "--- END OF PROGRAM LOOP"
+                    echo "        " >> $Log_File
+                    echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
+                    # Copy this job's output to a file ready to be processed for final LinkedIndex
+                    hdfs dfs -cp HadoopDWM/job8_tmpIn HadoopDWM/job_LinkIndexDirty
+                break
+                fi
             break
             fi
-        done
-        echo "          " >> $tmpLog   
-        echo ">> Starting Transitive Closure Process" >> $tmpLog   
-        echo "   Total Transitive Closure Iterations: " $iterationCounter >> $tmpLog
-    
-        # Check if Cluster List is empty
-        #clusterListCheck=$(cat $(pwd)/tmpReport.txt)
-        clusterListCheck=$(cat $tmpDir/tmpReport.txt)
-        # Report clusterList to log file
-        echo "   Size of Cluster List Formed from TC: " $clusterListCheck >> $tmpLog
-        if (( "$clusterListCheck"==0 ))
-        then
-            echo "--- Ending because Cluster List is empty"
-            echo "--- Ending because Cluster List is empty" >> $tmpLog
-            echo "--- END OF PROGRAM LOOP"
-            echo "        " >> $tmpLog
-            echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $tmpLog
-            # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job8_tmpIn HadoopDWM/job_LinkIndexDirty
-        break
-        fi
+        done  
 
     #--------->  PHASE 7: CLUSTER EVALUATION PROCESS <---------
         # JOB 9: Update RefIDs in Clusters with their token metadata
         #         by using output from Transitive Closure and original dataset
+        echo "        "
+        echo ">> Starting Update RefID with Metadata Process"
         hdfs dfs -rm -r HadoopDWM/job9_TCout-Mdata
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM060_LKIM.py,$(pwd)/HDWM060_LKIR.py \
@@ -387,17 +494,42 @@ then
             -mapper HDWM060_LKIM.py \
             -reducer HDWM060_LKIR.py
 
-        hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         # JOB 10a: Calculate Entropy and Differentiate Good and Bad Clusters
+        echo "        "
+        echo ">> Starting Cluster Evaluation Process"
+        echo "        " >> $Log_File
+        echo ">> Starting Cluster Evaluation Process" >> $Log_File  
+        hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM070_CECR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/path.txt \
+            -files $(pwd)/HDWM070_CECR.py,$tmpDir/epsilonReport.txt \
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
             -reducer HDWM070_CECR.py
 
-        hdfs dfs -rm -r HadoopDWM/job10_tmpLinkIndex
+        # Analyzing JOB 10a (Cluster Evaluation) Counters for useful Statistics
+            # Phase 1: Getting the Job Counter Logs
+        echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+        mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+        clusEvalJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+        mapred job -history $clusEvalJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+        clusProcessed=$( grep 'Total Clusters Processed' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        refsInClus=$( grep 'Total References in Clusters' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 ) 
+        cluSizeThanOne=$( grep 'Cluster Size Greater than 1' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        goodClus=$( grep 'Total Good Clusters' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        refsInGood=$( grep 'References in Good Clusters' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+
+        # Phase 2: Logging to logfile
+        echo "   Total Clusters Processed: $clusProcessed" >> $Log_File 
+        echo "   Total References in Clusters: : $refsInClus" >> $Log_File
+        echo "   Number of Cluster > 1: $cluSizeThanOne" >> $Log_File 
+        echo "   Total Good Cluster: $goodClus at epsilon, $epsilon" >> $Log_File 
+        echo "   Total References in Good Cluster: $refsInGood" >> $Log_File 
+
         # JOB 10b: Check if a ref is already processed, add another tag as used
+        echo "        "
+        echo ">> Starting Reference Tagging Process"
+        hdfs dfs -rm -r HadoopDWM/job10_tmpLinkIndex
         hadoop jar $STREAMJAR \
             -files $(pwd)/HDWM075_TCRM.py,$(pwd)/HDWM075_TCRR.py \
             -input HadoopDWM/job10_ClusterEval \
@@ -421,15 +553,32 @@ then
 ####################################################
 
     # JOB 11a: Create a Linked Index File
+    echo "        "
+    echo ">> Starting Write-To-LinkIndex Process"
+    echo "        " >> $Log_File
+    echo ">> Starting Write-To-LinkIndex Process" >> $Log_File  
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py,$(pwd)/path.txt \
+        -files $(pwd)/HDWM077_LKINM.py,$(pwd)/HDWM077_LKINR.py \
         -input HadoopDWM/job_LinkIndexDirty \
         -input HadoopDWM/job3_RecreateRefs \
         -output HadoopDWM/LinkedIndex_$inputFile \
         -mapper HDWM077_LKINM.py \
         -reducer HDWM077_LKINR.py
 
+    # Analyzing JOB 11a (Link Index Process) Counters for useful Statistics
+        # Phase 1: Getting the Job Counter Logs
+    echo ">> HANG ON, CALCULATING JOB STATISTICS FOR LOGFILE ..."
+    mapred job -list all > $user_home/JobLog/yarn-appIDs.txt # Get a list of all Yarn Application IDs up till now   
+    lnkIndJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
+    mapred job -history $lnkIndJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
+    indRefs=$( grep 'Reduce output records' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+    lnkIndRefs=$(( indRefs-1 ))
+    # Phase 2: Logging to logfile
+    echo "   Total Records Written to Linked Index File: $lnkIndRefs" >> $Log_File 
+
     # JOB 11b: Get Clusters and Sizes
+    echo "        "
+    echo ">> Starting Pre-Cluster Profile Process"
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM080_CPM.py,$(pwd)/HDWM080_CPR.py \
         -input HadoopDWM/LinkedIndex_$inputFile \
@@ -438,22 +587,32 @@ then
         -reducer HDWM080_CPR.py
 
     # JOB 11c: Generate Cluster Profile
+    echo "        "
+    echo ">> Starting Cluster Profile Process"
+    echo "        " >> $Log_File 
+    echo ">> Starting Cluster Profile Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM080_CPRR.py,$(pwd)/path.txt \
+        -files $(pwd)/HDWM080_CPRR.py \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
         -D mapreduce.partition.keycomparator.options="-k1,1n -k2,2" \
         -input HadoopDWM/job_PreClusterProfile \
-        -output HadoopDWM/job11_ClusterProfile\
+        -output HadoopDWM/job11_ClusterProfile \
         -mapper $Identity_Mapper \
         -reducer HDWM080_CPRR.py
+    
+    # Log Cluster Profile to LogFile
+    profile=$(hdfs dfs -cat HadoopDWM/job11_ClusterProfile/part-*)
+    echo "$profile" >> $Log_File
 
 #--------->  PHASE 8: ER MATRIX PROCESS <---------
 #    # Calculate Matrix of the ER Process
 #    # Make sure to use 1 mapper, 1 reducer and should be executed on only the master node
 
     # JOB 12: Merge Truth Dataset and the outputs of Job 11
+    echo "        "
+    echo ">> Starting Pre-ER Matrix Process"
     hadoop jar $STREAMJAR \
         -files $(pwd)/HDWM095_PERMM.py,$(pwd)/HDWM095_PERMR.py \
         -input HadoopDWM/$truthFile \
@@ -463,8 +622,12 @@ then
         -reducer HDWM095_PERMR.py
 
     # JOB 13: Calculate E-pairs, L-pairs, TP-pairs, Precision, Recall, F-score
+    echo "        "
+    echo ">> Starting ER Matrix Process"
+    echo "        " >> $Log_File
+    echo ">> Starting ER Matrix Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM099_ERMR.py,$(pwd)/path.txt \
+        -files $(pwd)/HDWM099_ERMR.py \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
@@ -474,15 +637,17 @@ then
         -mapper $Identity_Mapper \
         -reducer HDWM099_ERMR.py \
     
-    echo "          " >> $tmpLog
-    echo "End of File $parmFile" >> $tmpLog
-    echo "End of Program" >> $tmpLog 
+    # Log Cluster Profile to LogFile
+    matrix=$(hdfs dfs -cat HadoopDWM/job13_ERmatrix/part-*)
+    echo "$matrix" >> $Log_File
+
+    echo "          " >> $Log_File
+    echo "End of File $parmFile" >> $Log_File
+    echo "End of Program" >> $Log_File 
 
     # Copy contents to a finalLogFile and Remove the tmpReporter file that was created at the start of the program
-    sudo cp $tmpLog $Log_File
-    sudo rm -r $tmpDir
-    sudo rm -r $(pwd)/path.txt
-    sudo rm -r $(pwd)/path2.txt
+    #sudo cp $tmpLog $Log_File
+    #sudo rm -r $tmpDir
     
     # Exiting program if the parameter file specified does not exists
     exit 0

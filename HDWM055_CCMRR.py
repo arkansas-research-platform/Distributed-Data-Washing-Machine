@@ -47,8 +47,14 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
             global runNextIteration
             global count
             global proLoopCnt
+            # Create an additional Counter to be used for next iteration using stderr (this will be reported as 
+            # part of MapReduce counters in the console)
             runNextIteration=True
             count+=1
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Transitive Closure Counters,Merge State,1\n")
+            sys.stderr.write("reporter:counter:Transitive Closure Counters,Local Max State,0\n")
+
             # << Condition 2a: Generate chains from the values for that key group >>
             #print('****** Checking Group:', curr_KeySet, '***', curr_valSet, '******')  #Debug
             
@@ -61,21 +67,29 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
                 proLoopCnt +=1
                 print('%s.%s,%s'%(y, x, x))     # New pair inverse 
                 proLoopCnt +=1  
-        
+            
             # << CONDITION 3: Check if first key of this group is less than last value of the group >>
             if groupKey < lastValue:
                 #print('     --Condition 3a fired FIRST PAIR in group CARRIED OVER **', '%s,%s'%(firstCompKey, firstValue))
                 print('%s,%s'%(firstCompKey, firstValue))
                 proLoopCnt +=1
     else:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Transitive Closure Counters,Merge State,0\n")
+        sys.stderr.write("reporter:counter:Transitive Closure Counters,Local Max State,1\n")
         # << CONDITION 1: check if key of key-group < firstValue of that group >>
         # << Condition 1a: Copy over key group(dont change anything) >>
         #print('****** Checking Group:', curr_KeySet, '***', curr_valSet, '******') #Debug
         for i in range(len(curr_KeySet)):
             #print('     --Condition 1a fired for this group with output **', curr_KeySet[i], curr_valSet[i])
             print('%s,%s'%(curr_KeySet[i], curr_valSet[i]))
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Transitive Closure Counters,Cluster List,1\n")
+            sys.stderr.write("reporter:counter:Transitive Closure Counters,Cluster List,0\n")
             proLoopCnt +=1
     return
+################ END OF FUNCTIONS ################
+
 
 ###### Input Prepping ######
 isLinkedIndex = False
@@ -129,18 +143,6 @@ if groupKey == key:
     curr_KeySet.sort()
 
     trasitiveClosure(curr_KeySet,curr_valSet)
-
-# Report to reportTCiteration.txt
-with open('path2.txt', 'r') as p2:
-    tmp = str(p2.readline()).strip()+'/reportTCiteration.txt'
-tmpDir = open(tmp, "w")
-tmpDir.write(str(count))
-
-# Report to tmpReport.txt
-with open('path2.txt', 'r') as p2:
-    tmp = str(p2.readline()).strip()+'/tmpReport.txt'
-tmpDir = open(tmp, "w")
-tmpDir.write(str(proLoopCnt))
 ############################################################
 #               END OF PROGRAM      
 ############################################################

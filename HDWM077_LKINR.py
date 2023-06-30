@@ -7,17 +7,10 @@ import sys
 import os
 from operator import itemgetter
  #########################################################
- #        TAGGING CLUSTERED REFERENCES Reducer
+ #        CREATING LINKED INDEX FILE Reducer
  # Tag refs that has been processed already in previous 
  # iterations. If not tagged, they will be processed again    
  #########################################################
-#Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
 # Give Header to Linked Index File
 print('RefID * ClusterID')
 # This is the current word key
@@ -120,10 +113,6 @@ if currentRefID == refID:
             countLinkIndexRefs +=1
             print('%s * %s'%(cleanRID,cleanCID))
             #print(ref)
-        
-# Reporting to logfile
-print('\n>> Starting Write-To-LinkIndex Process', file=logfile)
-print('   Total Records Written to Linked Index File: ', countLinkIndexRefs, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

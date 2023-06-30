@@ -33,22 +33,11 @@ def convertToBoolean(value):
     if value=='False':
         return False
 
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
 
-with open('path2.txt', 'r') as p2:
-    tmp = str(p2.readline()).strip()+'/muReport.txt'
-tmp = open(tmp, "r")
-mu = tmp.readline()
-
-#with open('/usr/local/jobTmp/muReport.txt', 'r') as m:
-#    mu = m.readline()
-mu = float(mu)
-print('\n>> Starting Linking Process', file=logfile)
+# Loading muReport file from Distributed Cache
+with open('muReport.txt', 'r') as openMuFile:
+    muVal = str(openMuFile.readline()).strip()
+mu = float(muVal)
 
 ####### READ PARAMETER FILE #######
 #parameterFile = open('S9P-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
@@ -362,21 +351,17 @@ for pairList in sys.stdin:
         # Outpout the original linked pairs and their inverse, which will be the input 
         # for the Transitive Closure algorithm in the next reducer
         linkedPairs = '%s.%s,%s' % (refID1,refID2,refID2) # Original Linked Pairs 
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Linking Counters,Linked Pairs,1\n")
         links += 1 
         inversedLinkedPairs = '%s.%s,%s' % (refID2, refID1,refID1) # Inverted Linked Pairs
         pairSelf = '%s.%s,%s' % (refID1,refID1,refID1) # PairSelf
         print(linkedPairs)   
         print(inversedLinkedPairs) 
         print(pairSelf) 
-
-# Report to reportBlkPairList.txt
-with open('path2.txt', 'r') as p2:
-    tmp = str(p2.readline()).strip()+'/tmpReport.txt'
-tmpDir = open(tmp, "w")
-tmpDir.write(str(links))
-
-# Reporting to logfile
-print('   Number of Pairs Linked: ', links, file=logfile)
+    else:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Linking Counters,Linked Pairs,0\n")
 ############################################################
 #               END OF REDUCER      
 ############################################################

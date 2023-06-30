@@ -66,3 +66,13 @@ v1.09
 v1.10
     - Change header skip to when reading the parms file in from the driver
     - Local logging improved by creating a temporary directory in pwd
+    - Added D,FP,FN,and TN statistics to HDWM099_ERMR (ER Matrix)
+
+v1.11
+    - Made the JobLog directory a central dir to store all paths & logs for Hadoop jobs
+    - Added bash commands to Driver to extract useful statistics from yarn counters after each job (New way of reporting)
+    - Created Custom TC Counters using sys.stderr in script to report total merge-state back to driver file
+    - Created custom counters in Blocking, Linking, Cluster Eval, etc. for logging and decision making
+    - Fixed local worker node logging to their local directory rather than to master directory when using multiple nodes
+    - Eliminated logfile,path, and path2, found in all scripts
+        - This solution solves error occuring when running (opening files) in multiple nodes 

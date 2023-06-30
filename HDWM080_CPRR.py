@@ -11,19 +11,9 @@ from pathlib import Path
  # Takes the LinkedIndex file as input and compute the 
  # profile of all the clusters that were formed   
  #########################################################
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
 # Header for the final output
-print('\n>> Starting Cluster Profile Process', file=logfile)
 print('Cluster Profile')
-print('\nCluster Profile', file=logfile)
 print('ClusOfSize ', 'Count ', 'RefCnt')
-print('ClusOfSize ', 'Count ', 'RefCnt', file=logfile)
 current_cSize = None 
 current_count = 0 
 clusterCnt = 0
@@ -44,7 +34,6 @@ for items in sys.stdin:
             totalRefs += refCnt
             totalClusters += current_count
             print ('      %s      %s        %s' % (current_cSize, current_count,refCnt))
-            print ('      %s      %s        %s' % (current_cSize, current_count,refCnt), file=logfile)
         current_count = 1
         current_cSize = cSize
         
@@ -54,15 +43,12 @@ if current_cSize == cSize:
     totalRefs += refCnt
     totalClusters += current_count
     print ('      %s      %s        %s' % (current_cSize, current_count,refCnt))
-    print ('      %s      %s        %s' % (current_cSize, current_count,refCnt), file=logfile)
 
 # Calculate average record per cluster
 avgRefPerCluster = totalRefs/totalClusters
 
 print('Total:      ', totalClusters, '      ', totalRefs)  
-print('Total:      ', totalClusters, '      ', totalRefs, file=logfile)
 print('\nAverage Record per Cluster: ', round(avgRefPerCluster, 4))  
-print('\nAverage Record per Cluster: ', round(avgRefPerCluster, 4), file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

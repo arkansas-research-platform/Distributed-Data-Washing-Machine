@@ -20,13 +20,6 @@ tokenCnt = 0
 isUsedRef = False
 isLinkedIndex = False
 
- # Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
 # Read the data from STDIN (the output from mapper)
 for items in sys.stdin:
     line = items.strip()
@@ -50,6 +43,8 @@ for items in sys.stdin:
         currentFullRef = currentFullRef + "<>" + FullRef        
     else:
         if currentIdentifier:
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Block Dedup Counters,Unduplicated Block Pairs,1\n")
             tokenCnt += 1
             print (currentFullRef)
         currentIdentifier = identifier
@@ -57,11 +52,10 @@ for items in sys.stdin:
 
 # Output the last word
 if currentIdentifier == identifier:
+    # Reporting to MapReduce Counter
+    sys.stderr.write("reporter:counter:Block Dedup Counters,Unduplicated Block Pairs,1\n")
     tokenCnt += 1
     print (currentFullRef)
-
-# Reporting to logfile
-print('   Total Unduplicated Blocks: ', tokenCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

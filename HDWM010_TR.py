@@ -12,13 +12,6 @@ from operator import itemgetter
  # Takes input comes from the output of Tokenization mapper
  # Computes the frequencies of each of the tokens keys.     
  #########################################################
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-
 # This is the current word key
 current_tok_key = None 
 # Current word value (refID)                        
@@ -45,6 +38,8 @@ for items in sys.stdin:
         current_count += 1
     else:
         if current_tok_key:
+    # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Tokenization Counters,Unique Tokens,1\n")
 	  # Write result to STDOUT
             print ('%s | %s' % (current_tok_key, current_count))
             uniqueTokCnt +=1
@@ -54,11 +49,11 @@ for items in sys.stdin:
       
 # Output the last word
 if current_tok_key == tok_key:
+    # Reporting to MapReduce Counter
+    sys.stderr.write("reporter:counter:Tokenization Counters,Unique Tokens,1\n")  
+    # Write result to STDOUT  
     print ('%s | %s' % (current_tok_key, current_count)) 
     uniqueTokCnt +=1
-
-# Reporting to logfile
-print('   Unique Tokens Found: ', uniqueTokCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################

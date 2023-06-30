@@ -12,15 +12,6 @@ def countPairs(cnt):
     pairs = cnt*(cnt-1)/2
     return pairs
 
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
-#print(file)
-print('\n>> Starting ER Matrix Process', file=logfile)
-
 # maps words to their counts
 onlyTruthIDs = True
 truthIDandClusterID = True
@@ -118,31 +109,21 @@ FP = float(totalERlinkPairs) - float(totalTruePositives)
 FN = float(totalEquivalentPairs) - float(totalTruePositives)
 TN = float(totalRefPairs) - float(totalTruePositives) - float(FP) - float(FN)
 
-print('Total Ref Pairs (D) =',totalRefPairs)  #total Linked Pairs (L)
-print('   Total Ref Pairs (D) =',totalRefPairs, file=logfile)
-print('Linked Pairs (L) =',totalERlinkPairs)  #total Linked Pairs (L)
-print('   Linked Pairs (L) =',totalERlinkPairs, file=logfile)
-print('Equivalent Pairs (E) = ', totalEquivalentPairs)  #total Equivalent Pairs (TP)
-print('   Equivalent Pairs (E) = ', totalEquivalentPairs,file=logfile)
-print('True Positive Pairs (TP) = ', totalTruePositives)  #total True Positive Pairs (TP)
-print('   True Positive Pairs (TP) = ', totalTruePositives,file=logfile)
-print('False Positive Pairs (FP) = ', FP) #False positives
-print('   False Positive Pairs (FP) = ', FP, file=logfile) #False positives
-print('False Negative Pairs (FN) = ', FN) #False Negative
-print('   False Negative Pairs (FN) = ', FN, file=logfile) #False Negative
-print('True Negative Pairs (TN) = ', TN) #True Negative
-print('   True Negative Pairs (TN) = ', TN, file=logfile) #True Negative
+print('   Total Ref Pairs (D) =',totalRefPairs)  #total Linked Pairs (L)
+print('   Linked Pairs (L) =',totalERlinkPairs)  #total Linked Pairs (L)
+print('   Equivalent Pairs (E) = ', totalEquivalentPairs)  #total Equivalent Pairs (TP)
+print('   True Positive Pairs (TP) = ', totalTruePositives)  #total True Positive Pairs (TP)
+print('   False Positive Pairs (FP) = ', FP) #False positives
+print('   False Negative Pairs (FN) = ', FN) #False Negative
+print('   True Negative Pairs (TN) = ', TN) #True Negative
 
 # ---- Phase 3: Calculate Precision, Recall, F-score ----
 precision = round(float(totalTruePositives)/float(totalERlinkPairs),4)
 recall = recall = round(float(totalTruePositives)/float(totalEquivalentPairs),4)
 fmeas = round((2*precision*recall)/(precision+recall),4)
-print('Precision =', precision)
-print('   Precision =', precision,file=logfile)
-print('Recall =', recall)
-print('   Recall =', recall,file=logfile)
-print('F-score =', fmeas)
-print('   F-score =', fmeas,file=logfile)
+print('\n   Precision =', precision)
+print('   Recall =', recall)
+print('   F-score =', fmeas)
 ############################################################
 #               END OF REDUCER       
 ############################################################

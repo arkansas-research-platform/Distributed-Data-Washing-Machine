@@ -17,9 +17,6 @@ from pathlib import Path
  #########################################################
 #--------------------------------------------------------------------
 ############################
-# PARAMETER FOR DISCTRIBUTED CACHE
-# Blocking parameter
-
 def convertToBoolean(value):
     if value=='True':
         return True
@@ -54,12 +51,6 @@ while True:
     if parmName=='blockByPairs':
         blockByPairs = convertToBoolean(parmValue)
 
-# Loading the Log_File from the bash driver
-#logfile = open(os.environ["Log_File"],'a')
-#logfile = open('/usr/local/jobTmp/HDWM_log.txt', 'a')
-with open('path.txt', 'r') as p:
-    localLogLocation = str(p.readline()).strip()
-logfile = open(localLogLocation, "a")
 ############################
 ####### MAIN PROGRAM #######
 ############################
@@ -86,6 +77,8 @@ for record in sys.stdin:
         isLinkedIndex = True
         print(file.replace('-',':')) 
         continue
+    # Reporting to MapReduce Counter
+    sys.stderr.write("reporter:counter:Blocking Counters,Refs for Reprocessing,1\n")
     selectedRefCnt +=1
     # Get refID
     refID = file_split[0].strip()
@@ -135,8 +128,12 @@ for record in sys.stdin:
 # ---- PHASE 2: BTPM - Forming Blocking Keys using the tokens in BlknTokenList ------
     # If there are no tokens in a list, nothing to do, so delete such list
     if len(blkTokenList) < 1:
+        # Reporting to MapReduce Counter
+        sys.stderr.write("reporter:counter:Blocking Counters,Excluded References,1\n")
         excludedRefCnt +=1
         continue
+    # Reporting to MapReduce Counter
+    sys.stderr.write("reporter:counter:Blocking Counters,Remaining References,1\n")
     remainRefs += 1
     #print(refID, blkTokenList)
 ##---------------------------------------------
@@ -158,11 +155,15 @@ for record in sys.stdin:
                     #pair = (Xtoken + "," + Ytoken)
                     pair = (Xtoken+Ytoken)
                     print ('%s:%s' % (pair, refID))
+                    # Reporting to MapReduce Counter
+                    sys.stderr.write("reporter:counter:Blocking Counters,Blocking References Created,1\n")
                     blkRefsCnt += 1
                 else:
                     #pair = (Ytoken + "," + Xtoken)
                     pair = (Ytoken+Xtoken)
                     print ('%s:%s' % (pair, refID))
+                    # Reporting to MapReduce Counter
+                    sys.stderr.write("reporter:counter:Blocking Counters,Blocking References Created,1\n")
                     blkRefsCnt += 1
 ##---------------------------------------------
     # If BlockByPairs was set to False, that means blockBySingles
@@ -170,14 +171,9 @@ for record in sys.stdin:
         for x in range(0, len(blkTokenList)):
             Xtoken = blkTokenList[x]
             print ('%s:%s' % (Xtoken, refID))
+            # Reporting to MapReduce Counter
+            sys.stderr.write("reporter:counter:Blocking Counters,Blocking References Created,1\n")
             blkRefsCnt += 1
-
-# Reporting to logfile
-print('\n>> Starting Blocking Process', file=logfile)
-print('   Total References Selected for Reprocessing: ', selectedRefCnt, file=logfile)
-print('   Total Record Excluded: ', excludedRefCnt, file=logfile)
-print('   Total Record Left for Blocks Creation: ', remainRefs, file=logfile)
-print('   Total Blocking Records Created: ', blkRefsCnt, file=logfile)
 ############################################################
 #               END OF MAPPER       
 ############################################################
