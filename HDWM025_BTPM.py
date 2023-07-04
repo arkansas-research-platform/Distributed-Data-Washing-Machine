@@ -6,7 +6,15 @@ import sys
 import re
 import os
 from pathlib import Path
+
+# Making DWM modules available for MapReduce
+sys.path.append('DWM-Modules.zip')
+import DWM10_Parms 
+
+# Read PArms file
+DWM10_Parms.getParms('parms')
  #########################################################
+
  #                     DEVELOPER's NOTES
  #                 BLOCKING TOKENS PAIRS Mapper 
  #  Takes the tokens that satisfied the Beta threshold and 
@@ -15,43 +23,13 @@ from pathlib import Path
  #  refID as value. This process considers whether 
  #  numeric tokens should be included or excluded
  #########################################################
-#--------------------------------------------------------------------
-############################
-def convertToBoolean(value):
-    if value=='True':
-        return True
-    if value=='False':
-        return False
 
-####### READ PARAMETER FILE #######
-#parameterFile = open('S1G-parms-copy.txt', 'r')  #Delete this line. Only used in Terminal
-#parameterFile = open('parmStage.txt', 'r') #Add back this line. Used by HDFS
-parameterFile = open('parms', 'r') 
-
-while True:
-    pline = (parameterFile.readline()).strip()
-    if pline == '':
-        break
-    if pline.startswith('#'):
-        continue
-    if pline.find('=')<0:
-        continue
-    part = pline.split('=')
-    parmName = part[0].strip()
-    parmValue = part[1].strip()
-    if parmName == 'beta':
-        beta = int(parmValue)
-        continue
-    if parmName=='excludeNumericBlocks':
-        excludeNumericBlocks = convertToBoolean(parmValue)
-        continue 
-    if parmName=='minBlkTokenLen':
-        minBlkTokenLen = int(parmValue)
-        continue 
-    if parmName=='blockByPairs':
-        blockByPairs = convertToBoolean(parmValue)
-
-############################
+ # Get Parameter values
+beta = DWM10_Parms.beta
+excludeNumericBlocks = DWM10_Parms.excludeNumericBlocks
+minBlkTokenLen = DWM10_Parms.minBlkTokenLen
+blockByPairs = DWM10_Parms.blockByPairs
+#############################
 ####### MAIN PROGRAM #######
 ############################
 isLinkedIndex  = False 
@@ -117,7 +95,7 @@ for record in sys.stdin:
         if excludeNumericBlocks and token.isdigit():
             #print('-- Num Token Rule: ', refID,token)
             isBlkToken = False
-        if len(token)<minBlkTokenLen:
+        if len(token) < minBlkTokenLen:
             #print('-- Min Blocking Token Length Rule: ', refID,token, 'len', len(token))
             isBlkToken = False
         # Remainder Blocking Tokens

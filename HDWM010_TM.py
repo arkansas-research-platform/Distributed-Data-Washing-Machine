@@ -7,6 +7,13 @@ import re
 import json
 from collections import Counter
 import os
+
+# Making DWM modules available for MapReduce
+sys.path.append('DWM-Modules.zip')
+import DWM10_Parms 
+
+# Read Parms file
+DWM10_Parms.getParms('parms')
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--
@@ -16,12 +23,14 @@ import os
  #  tokens as the key and the refID, token position, and 
  #  the token itself as values in a json structure. 
  #########################################################
-def convertToBoolean(value):
-    if value=='True':
-        return True
-    if value=='False':
-        return False
 
+# Get Parameter values
+hasHeader = DWM10_Parms.hasHeader
+delimiter = DWM10_Parms.delimiter
+tokenizerType = DWM10_Parms.tokenizerType
+removeDuplicateTokens = DWM10_Parms.removeDuplicateTokens
+
+#***********Inner Function*******************************
 #Replace delimiter with blanks, then compress token by replacing non-word characters with null
 def tokenizerCompress(line):
     string = line.replace(delimiter,' ')
@@ -32,7 +41,7 @@ def tokenizerCompress(line):
         if len(newToken)>0:
             newList.append(newToken)
     return newList
-
+#***********Inner Function*******************************
 #Replace all non-words characters with blanks, then split on blanks
 def tokenizerSplitter(line):
     string = re.sub('[\W]+',' ',line)
@@ -43,39 +52,19 @@ def tokenizerSplitter(line):
             newList.append(token)
     return newList
 
-####### READ PARAMETER FILE #######
-parameterFile = open('parms') 
-#parameterFile = "hdfs://snodemain:9000/user/nick/HadoopDWM/parmStage.txt"
-while True:
-    pline = (parameterFile.readline()).strip()
-    if pline == '':
-        break
-    if pline.startswith('#'):
-        continue
-    if pline.find('=')<0:
-        continue
-    part = pline.split('=')
-    parmName = part[0].strip()
-    parmValue = part[1].strip()
-    if parmName == 'hasHeader':
-        hasHeader = convertToBoolean(parmValue)
-        continue
-    if parmName=='delimiter':
-        if ',;:|\t'.find(parmValue)>=0:
-            delimiter = parmValue
-            continue
-    if parmName=='tokenizerType':
-        tokenizerType = parmValue
-        if tokenizerType=='Splitter':
-            tokenizerFunction = tokenizerSplitter
-        if tokenizerType=='Compress':
-            tokenizerFunction = tokenizerCompress
-        continue
-    if parmName=='removeDuplicateTokens':
-        removeDuplicateTokens = convertToBoolean(parmValue)
-        continue
-########################################################
-                # START OF MAPPER PROGRAM #
+goodType = False
+if tokenizerType=='Splitter':
+    tokenizerFunction = tokenizerSplitter
+    goodType = True
+if tokenizerType=='Compress':
+    tokenizerFunction = tokenizerCompress
+    goodType = True
+if goodType == False:
+    print('**Error: Invalid Parameter value for tokenizerType ',tokenizerType)
+    sys.exit()
+
+##########################################################
+##                # START OF MAPPER PROGRAM #
 ########################################################
 # Remove(skip) the header from the record if hasHeader is True
 
