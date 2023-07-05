@@ -9,11 +9,13 @@ from operator import itemgetter
 from pathlib import Path
 
 # Making DWM modules available for MapReduce
+sys.path.append('textdistance.zip')
 sys.path.append('DWM-Modules.zip')
 import DWM10_Parms 
 import StopWord
 import DWM65_ScoringMatrixStd
 import DWM66_ScoringMatrixKris
+import textdistance
 
 # Read Parms file
 DWM10_Parms.getParms('parms')
@@ -21,8 +23,8 @@ DWM10_Parms.getParms('parms')
 #Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
 #       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
 #'/home/nick/.local/lib/python3.10/site-packages'
-textdistanceDir = '/usr/local/lib/python*/dist-packages'
-sys.path.append(textdistanceDir)
+#textdistanceDir = '/usr/local/lib/python*/dist-packages'
+#sys.path.append(textdistanceDir)
 
 from textdistance import DamerauLevenshtein
 from textdistance import Cosine

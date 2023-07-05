@@ -492,7 +492,7 @@ then
         echo ">> Starting Similarity Comparison Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM050_SMCR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip \
+            -files $(pwd)/HDWM050_SMCR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip,$(pwd)/textdistance.zip \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
