@@ -80,3 +80,6 @@ v1.11
 v1.12
     - More efficient way of reading the Parms file
     - Ability to import DWM modules stored in a zip file
+
+v1.13
+    - Condition in DriverFile to only run ER Matrix if truthFile is available
