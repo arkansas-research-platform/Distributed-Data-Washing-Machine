@@ -15,25 +15,27 @@ import re
  #  info and those with the frequency info to have uniform
  #  info (key, mdata, freq) for the reducer to do the updates.                      
  #########################################################
+def Merger():
+    for line in sys.stdin:
+        # Setting some defaults
+        key = -1    #default sorted as first
+        mdata = -1  #default sorted as first
+        freq = -1   #default sorted as first
 
-for line in sys.stdin:
-    # Setting some defaults
-    key = -1    #default sorted as first
-    mdata = -1  #default sorted as first
-    freq = -1   #default sorted as first
+        line = line.strip()
+        splits = line.split("|")
 
-    line = line.strip()
-    splits = line.split("|")
+        if len(splits) == 3: # tokens with metadata info
+            key = splits[0]      #token key
+            mdata = splits[1]    #metadata
+        else:                # tokens with Frequency info
+            key = splits[0]      #token key
+            freq = splits[1]     #counts info   
 
-    if len(splits) == 3: # tokens with metadata info
-        key = splits[0]      #token key
-        mdata = splits[1]    #metadata
-    else:                # tokens with Frequency info
-        key = splits[0]      #token key
-        freq = splits[1]     #counts info   
+        print ('%s|%s|%s' % (key, mdata, freq))
 
-    print ('%s|%s|%s' % (key, mdata, freq))
-        
+if __name__ == '__main__':
+    Merger()        
 ############################################################
 #               END OF MAPPER       
 ############################################################

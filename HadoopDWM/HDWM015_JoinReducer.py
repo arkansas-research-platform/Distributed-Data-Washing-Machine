@@ -10,33 +10,36 @@ from operator import itemgetter
  # A one-to-many join operation happens to add frequency 
  # information 
  #########################################################
+def JoinTokenFreq():
+    # maps words to their counts
+    currentFreq = "-1"
+    currentKey = "-1"
+    isFrequencyMappingLine = False
 
-# maps words to their counts
-currentFreq = "-1"
-currentKey = "-1"
-isFrequencyMappingLine = False
+    for line in sys.stdin:
+        line = line.strip()
+        key,mdata,freq = line.split("|")
+        #print(freq)
 
-for line in sys.stdin:
-    line = line.strip()
-    key,mdata,freq = line.split("|")
-    #print(freq)
+        # First line should be a mapping line that contains 
+        # the frequency information for that key group
+        if mdata == "-1":  #That is a line with frequency info that will be used to map
+            currentFreq = freq
+            currentKey = key
+            isFrequencyMappingLine = True
+        else:
+            isFrequencyMappingLine = False
+        #print ('%s|%s|%s' % (key,mdata,currentFreq))
 
-    # First line should be a mapping line that contains 
-    # the frequency information for that key group
-    if mdata == "-1":  #That is a line with frequency info that will be used to map
-        currentFreq = freq
-        currentKey = key
-        isFrequencyMappingLine = True
-    else:
-        isFrequencyMappingLine = False
-    #print ('%s|%s|%s' % (key,mdata,currentFreq))
+        if mdata == "-1":  #Remove all previous frequency info line because they have been used to map
+            continue
+        #print ('%s | %s | %s' % (key,mdata,currentFreq))
 
-    if mdata == "-1":  #Remove all previous frequency info line because they have been used to map
-        continue
-    #print ('%s | %s | %s' % (key,mdata,currentFreq))
+        update_mdata = mdata.replace("}", ", 'freq':") + currentFreq + "}"
+        print ('%s|%s' % (key,update_mdata))
 
-    update_mdata = mdata.replace("}", ", 'freq':") + currentFreq + "}"
-    print ('%s|%s' % (key,update_mdata))
+if __name__ == '__main__':
+    JoinTokenFreq()     
 ############################################################
 #               END OF REDUCER       
 ############################################################

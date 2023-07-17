@@ -19,15 +19,12 @@ groupKey = None
 key = None 
 groupValue = None
 groupKeyList = None
-locMaxState = False
-mergeState = False
-recordToSkip = False
 runNextIteration=False
 count = 0
 proLoopCnt = 0
-clusterCount = 0
+
 ###### TRANSITIVE CLOSURE FUNCTION #####
-def trasitiveClosure(curr_KeySet, curr_valSet):
+def ConnectedComponentsMR(curr_KeySet, curr_valSet):
     # START OF TRANSITIVE CLOSURE CONDITIONS
     firstCompKey = curr_KeySet[0]
     firstValue = curr_valSet[0].strip()
@@ -90,59 +87,67 @@ def trasitiveClosure(curr_KeySet, curr_valSet):
     return
 ################ END OF FUNCTIONS ################
 
+def TransitiveClosure():
+    global groupKey
+    global key
+    global groupValue
+    global groupKeyList
 
-###### Input Prepping ######
-isLinkedIndex = False
-isUsedRef = False
-for file in sys.stdin:
-    # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
-    file1 = file.strip().replace(',','.').replace('\t','.')
-    # Check if the ref has already been used
-    if '*used*' in file1:
-        isUsedRef = True
-        print(file1.strip()) 
-        continue
-    if 'GoodCluster' in file1:
-        isLinkedIndex = True
-        print(file1.strip())
-        continue
-    kv = file.strip().split(',')
-    compKey = kv[0]
-    key = compKey.split('.')[0]
-    value = kv[1]
-    #print(compositeKey,value)
+    ###### Input Prepping ######
+    isLinkedIndex = False
+    isUsedRef = False
+    for file in sys.stdin:
+        # Decide which references to reprocess (NB: LinkedIndex are skipped - this is for program iteration)
+        file1 = file.strip().replace(',','.').replace('\t','.')
+        # Check if the ref has already been used
+        if '*used*' in file1:
+            isUsedRef = True
+            print(file1.strip()) 
+            continue
+        if 'GoodCluster' in file1:
+            isLinkedIndex = True
+            print(file1.strip())
+            continue
+        kv = file.strip().split(',')
+        compKey = kv[0]
+        key = compKey.split('.')[0]
+        value = kv[1]
+        #print(compositeKey,value)
 
-    # Creating a data structure in the form, "key {val1, val2, val3,...valn}",
-    # for each key group. This data structure is what will be used for the 
-    # start of the iteration to form connected components
+        # Creating a data structure in the form, "key {val1, val2, val3,...valn}",
+        # for each key group. This data structure is what will be used for the 
+        # start of the iteration to form connected components
+        if groupKey == key:
+            groupKeyList = groupKeyList + ',' + compKey
+            groupValue = groupValue + ',' + value
+        else:
+            if groupKey:
+                #print(groupKey,groupValue)
+                # Forming Group k-v pairs which will be fed into the iterator
+                # 'set' function ensures there are no duplicate values
+                curr_valSet = list(set([v.strip() for v in groupValue.split(',')]))
+                curr_KeySet = list(set([k.strip() for k in groupKeyList.split(',')]))
+                curr_valSet.sort()  
+                curr_KeySet.sort()
+
+                # Calling the TC function for current key group before moving to next group
+                ConnectedComponentsMR(curr_KeySet,curr_valSet)
+
+            groupKeyList = compKey
+            groupKey = key    
+            groupValue = value
+
+    # Calling TC function for last key group
     if groupKey == key:
-        groupKeyList = groupKeyList + ',' + compKey
-        groupValue = groupValue + ',' + value
-    else:
-        if groupKey:
-            #print(groupKey,groupValue)
-            # Forming Group k-v pairs which will be fed into the iterator
-            # 'set' function ensures there are no duplicate values
-            curr_valSet = list(set([v.strip() for v in groupValue.split(',')]))
-            curr_KeySet = list(set([k.strip() for k in groupKeyList.split(',')]))
-            curr_valSet.sort()  
-            curr_KeySet.sort()
-          
-            # Calling the TC function for current key group before moving to next group
-            trasitiveClosure(curr_KeySet,curr_valSet)
+        curr_valSet = list(set([v.strip() for v in groupValue.split(',')]))
+        curr_KeySet = list(set([k.strip() for k in groupKeyList.split(',')]))
+        curr_valSet.sort()  
+        curr_KeySet.sort()
 
-        groupKeyList = compKey
-        groupKey = key    
-        groupValue = value
-                   
-# Calling TC function for last key group
-if groupKey == key:
-    curr_valSet = list(set([v.strip() for v in groupValue.split(',')]))
-    curr_KeySet = list(set([k.strip() for k in groupKeyList.split(',')]))
-    curr_valSet.sort()  
-    curr_KeySet.sort()
+        ConnectedComponentsMR(curr_KeySet,curr_valSet)
 
-    trasitiveClosure(curr_KeySet,curr_valSet)
+if __name__ == '__main__':
+    TransitiveClosure()  
 ############################################################
 #               END OF PROGRAM      
 ############################################################
