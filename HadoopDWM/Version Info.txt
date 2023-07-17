@@ -83,3 +83,6 @@ v1.12
 
 v1.13
     - Condition in DriverFile to only run ER Matrix if truthFile is available
+
+v1.14
+    - Remaned Modules and Converted Scripts as Modules whose Functions can be imported 
