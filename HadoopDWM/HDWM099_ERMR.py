@@ -121,7 +121,7 @@ print('   True Negative Pairs (TN) = ', TN) #True Negative
 precision = round(float(totalTruePositives)/float(totalERlinkPairs),4)
 recall = recall = round(float(totalTruePositives)/float(totalEquivalentPairs),4)
 fmeas = round((2*precision*recall)/(precision+recall),4)
-print('   Precision =', precision)
+print('\n   Precision =', precision)
 print('   Recall =', recall)
 print('   F-score =', fmeas)
 ############################################################
