@@ -1,0 +1,24 @@
+>>> Starting PDP Statistics Collection for S1G-parms-copy.txt
+References Read: 50        
+Tokens Found: 626       
+Numeric Tokens: 226       
+Unique Tokens: 252       
+>>>>> STARTING NEXT ITERATION >>>>>
+   New Mu -->  0.6
+   New Epsilon -->  0.23
+TotalMuCnts(Unduplicated Blocks): 34        
+Number of Pairs Linked(greaterThanMu): 27        
+GreaterThanEpsilon(RefsInGoodCluster): 34        
+>>>>> STARTING NEXT ITERATION >>>>>
+   New Mu -->  0.65
+   New Epsilon -->  0.23
+   Total Ref Pairs (D) = 1225.0	
+   Linked Pairs (L) = 27.0	
+   Equivalent Pairs (E) =  27.0	
+   True Positive Pairs (TP) =  27.0	
+   False Positive Pairs (FP) =  0.0	
+   False Negative Pairs (FN) =  0.0	
+   True Negative Pairs (TN) =  1198.0	
+   Precision = 1.0	
+   Recall = 1.0	
+   F-score = 1.0	

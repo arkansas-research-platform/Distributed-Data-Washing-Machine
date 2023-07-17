@@ -1,0 +1,878 @@
+10 | {'refID': 'A793513', 'pos': 12, 'tok': '10'} | one	
+10 | {'refID': 'A938666', 'pos': 12, 'tok': '10'} | one	
+1010 | {'refID': 'A905248', 'pos': 4, 'tok': '1010'} | one	
+10  | 2	
+11 | {'refID': 'A814320', 'pos': 11, 'tok': '11'} | one	
+1010  | 1	
+11 | {'refID': 'A824044', 'pos': 11, 'tok': '11'} | one	
+11 | {'refID': 'A935026', 'pos': 11, 'tok': '11'} | one	
+1106 | {'refID': 'A812219', 'pos': 3, 'tok': '1106'} | one	
+11  | 3	
+1117 | {'refID': 'A914099', 'pos': 3, 'tok': '1117'} | one	
+1106  | 1	
+117 | {'refID': 'A755471', 'pos': 11, 'tok': '117'} | one	
+1117  | 1	
+117158521 | {'refID': 'A912696', 'pos': 11, 'tok': '117158521'} | one	
+117  | 1	
+1224 | {'refID': 'A755471', 'pos': 4, 'tok': '1224'} | one	
+117158521  | 1	
+1224 | {'refID': 'A912696', 'pos': 4, 'tok': '1224'} | one	
+123 | {'refID': 'A750205', 'pos': 13, 'tok': '123'} | one	
+1224  | 2	
+123 | {'refID': 'A942770', 'pos': 13, 'tok': '123'} | one	
+131 | {'refID': 'A816319', 'pos': 11, 'tok': '131'} | one	
+123  | 2	
+131 | {'refID': 'A882820', 'pos': 11, 'tok': '131'} | one	
+131532482 | {'refID': 'A770538', 'pos': 11, 'tok': '131532482'} | one	
+131  | 2	
+1329 | {'refID': 'A986935', 'pos': 4, 'tok': '1329'} | one	
+131532482  | 1	
+15 | {'refID': 'A755471', 'pos': 12, 'tok': '15'} | one	
+1329  | 1	
+16 | {'refID': 'A926684', 'pos': 12, 'tok': '16'} | one	
+15  | 1	
+176 | {'refID': 'A934513', 'pos': 4, 'tok': '176'} | one	
+16  | 1	
+176 | {'refID': 'A950657', 'pos': 4, 'tok': '176'} | one	
+1792 | {'refID': 'A915661', 'pos': 12, 'tok': '1792'} | one	
+176  | 2	
+1792 | {'refID': 'A922259', 'pos': 12, 'tok': '1792'} | one	
+1792 | {'refID': 'A992523', 'pos': 12, 'tok': '1792'} | one	
+18 | {'refID': 'A956296', 'pos': 12, 'tok': '18'} | one	
+1792  | 3	
+18 | {'refID': 'A956423', 'pos': 12, 'tok': '18'} | one	
+19 | {'refID': 'A950657', 'pos': 11, 'tok': '19'} | one	
+18  | 2	
+19 | {'refID': 'A975276', 'pos': 12, 'tok': '19'} | one	
+2013 | {'refID': 'A963930', 'pos': 3, 'tok': '2013'} | one	
+19  | 2	
+2048 | {'refID': 'A944634', 'pos': 14, 'tok': '2048'} | one	
+2013  | 1	
+2098 | {'refID': 'A956296', 'pos': 13, 'tok': '2098'} | one	
+2048  | 1	
+2098 | {'refID': 'A956423', 'pos': 13, 'tok': '2098'} | one	
+2100 | {'refID': 'A793513', 'pos': 13, 'tok': '2100'} | one	
+2098  | 2	
+2100 | {'refID': 'A938666', 'pos': 13, 'tok': '2100'} | one	
+214 | {'refID': 'A780828', 'pos': 11, 'tok': '214'} | one	
+2100  | 2	
+214 | {'refID': 'A970774', 'pos': 11, 'tok': '214'} | one	
+214839125 | {'refID': 'A887611', 'pos': 11, 'tok': '214839125'} | one	
+214  | 2	
+22 | {'refID': 'A921659', 'pos': 13, 'tok': '22'} | one	
+214839125  | 1	
+223 | {'refID': 'A974515', 'pos': 11, 'tok': '223'} | one	
+22  | 1	
+2262 | {'refID': 'A869762', 'pos': 12, 'tok': '2262'} | one	
+223  | 1	
+2334 | {'refID': 'A974515', 'pos': 4, 'tok': '2334'} | one	
+2262  | 1	
+2475 | {'refID': 'A824917', 'pos': 4, 'tok': '2475'} | one	
+2334  | 1	
+2475 | {'refID': 'A830349', 'pos': 4, 'tok': '2475'} | one	
+2475 | {'refID': 'A875214', 'pos': 4, 'tok': '2475'} | one	
+2475 | {'refID': 'A956296', 'pos': 4, 'tok': '2475'} | one	
+2475 | {'refID': 'A956423', 'pos': 4, 'tok': '2475'} | one	
+2475 | {'refID': 'A985464', 'pos': 4, 'tok': '2475'} | one	
+2482 | {'refID': 'A816319', 'pos': 13, 'tok': '2482'} | one	
+2475  | 6	
+2482 | {'refID': 'A882820', 'pos': 13, 'tok': '2482'} | one	
+2558 | {'refID': 'A799281', 'pos': 4, 'tok': '2558'} | one	
+2482  | 2	
+2558 | {'refID': 'A926684', 'pos': 4, 'tok': '2558'} | one	
+2599 | {'refID': 'A960838', 'pos': 4, 'tok': '2599'} | one	
+2558  | 2	
+2609 | {'refID': 'A793513', 'pos': 4, 'tok': '2609'} | one	
+2599  | 1	
+2609 | {'refID': 'A938666', 'pos': 4, 'tok': '2609'} | one	
+27012 | {'refID': 'A934513', 'pos': 9, 'tok': '27012'} | one	
+2609  | 2	
+27012 | {'refID': 'A950657', 'pos': 9, 'tok': '27012'} | one	
+27023 | {'refID': 'A869762', 'pos': 9, 'tok': '27023'} | one	
+27012  | 2	
+27040 | {'refID': 'A814320', 'pos': 9, 'tok': '27040'} | one	
+27023  | 1	
+27040 | {'refID': 'A824044', 'pos': 9, 'tok': '27040'} | one	
+27040 | {'refID': 'A935026', 'pos': 9, 'tok': '27040'} | one	
+27040 | {'refID': 'A948701', 'pos': 9, 'tok': '27040'} | one	
+27045 | {'refID': 'A864729', 'pos': 10, 'tok': '27045'} | one	
+27040  | 4	
+27052 | {'refID': 'A770538', 'pos': 10, 'tok': '27052'} | one	
+27045  | 1	
+27052 | {'refID': 'A816319', 'pos': 10, 'tok': '27052'} | one	
+27052 | {'refID': 'A882820', 'pos': 10, 'tok': '27052'} | one	
+27101 | {'refID': 'A986935', 'pos': 12, 'tok': '27101'} | one	
+27052  | 3	
+27103 | {'refID': 'A750205', 'pos': 12, 'tok': '27103'} | one	
+27101  | 1	
+27103 | {'refID': 'A755471', 'pos': 10, 'tok': '27103'} | one	
+27103 | {'refID': 'A912696', 'pos': 10, 'tok': '27103'} | one	
+27103 | {'refID': 'A942770', 'pos': 12, 'tok': '27103'} | one	
+27103 | {'refID': 'A963930', 'pos': 10, 'tok': '27103'} | one	
+27103 | {'refID': 'A974515', 'pos': 10, 'tok': '27103'} | one	
+27104 | {'refID': 'A776838', 'pos': 10, 'tok': '27104'} | one	
+27103  | 6	
+27104 | {'refID': 'A813025', 'pos': 12, 'tok': '27104'} | one	
+27104 | {'refID': 'A819955', 'pos': 10, 'tok': '27104'} | one	
+27104 | {'refID': 'A844925', 'pos': 10, 'tok': '27104'} | one	
+27104 | {'refID': 'A867783', 'pos': 11, 'tok': '27104'} | one	
+27104 | {'refID': 'A920554', 'pos': 12, 'tok': '27104'} | one	
+27104 | {'refID': 'A921659', 'pos': 11, 'tok': '27104'} | one	
+27104 | {'refID': 'A926782', 'pos': 11, 'tok': '27104'} | one	
+27104 | {'refID': 'A934767', 'pos': 12, 'tok': '27104'} | one	
+27104 | {'refID': 'A975276', 'pos': 10, 'tok': '27104'} | one	
+27105 | {'refID': 'A914099', 'pos': 10, 'tok': '27105'} | one	
+27104  | 10	
+27106 | {'refID': 'A767794', 'pos': 9, 'tok': '27106'} | one	
+27105  | 1	
+27106 | {'refID': 'A824917', 'pos': 10, 'tok': '27106'} | one	
+27106 | {'refID': 'A830349', 'pos': 10, 'tok': '27106'} | one	
+27106 | {'refID': 'A875214', 'pos': 10, 'tok': '27106'} | one	
+27106 | {'refID': 'A956296', 'pos': 10, 'tok': '27106'} | one	
+27106 | {'refID': 'A956423', 'pos': 10, 'tok': '27106'} | one	
+27106 | {'refID': 'A985464', 'pos': 10, 'tok': '27106'} | one	
+27107 | {'refID': 'A960838', 'pos': 10, 'tok': '27107'} | one	
+27106  | 7	
+27127 | {'refID': 'A780828', 'pos': 10, 'tok': '27127'} | one	
+27107  | 1	
+27127 | {'refID': 'A799281', 'pos': 10, 'tok': '27127'} | one	
+27127 | {'refID': 'A887611', 'pos': 10, 'tok': '27127'} | one	
+27127 | {'refID': 'A926684', 'pos': 10, 'tok': '27127'} | one	
+27127 | {'refID': 'A970774', 'pos': 10, 'tok': '27127'} | one	
+27284 | {'refID': 'A793513', 'pos': 10, 'tok': '27284'} | one	
+27127  | 5	
+27284 | {'refID': 'A915661', 'pos': 9, 'tok': '27284'} | one	
+27284 | {'refID': 'A922259', 'pos': 9, 'tok': '27284'} | one	
+27284 | {'refID': 'A938666', 'pos': 10, 'tok': '27284'} | one	
+27284 | {'refID': 'A992523', 'pos': 9, 'tok': '27284'} | one	
+2822 | {'refID': 'A767794', 'pos': 12, 'tok': '2822'} | one	
+27284  | 5	
+29021 | {'refID': 'A944634', 'pos': 4, 'tok': '29021'} | one	
+2822  | 1	
+30 | {'refID': 'A767794', 'pos': 11, 'tok': '30'} | one	
+29021  | 1	
+302 | {'refID': 'A750205', 'pos': 8, 'tok': '302'} | one	
+30  | 1	
+302 | {'refID': 'A942770', 'pos': 8, 'tok': '302'} | one	
+308 | {'refID': 'A915661', 'pos': 4, 'tok': '308'} | one	
+302  | 2	
+308 | {'refID': 'A922259', 'pos': 4, 'tok': '308'} | one	
+308 | {'refID': 'A992523', 'pos': 4, 'tok': '308'} | one	
+31 | {'refID': 'A750205', 'pos': 14, 'tok': '31'} | one	
+308  | 3	
+31 | {'refID': 'A942770', 'pos': 14, 'tok': '31'} | one	
+32 | {'refID': 'A914099', 'pos': 12, 'tok': '32'} | one	
+31  | 2	
+3200 | {'refID': 'A974515', 'pos': 13, 'tok': '3200'} | one	
+32  | 1	
+3211 | {'refID': 'A776838', 'pos': 4, 'tok': '3211'} | one	
+3200  | 1	
+3211 | {'refID': 'A819955', 'pos': 4, 'tok': '3211'} | one	
+3211 | {'refID': 'A844925', 'pos': 4, 'tok': '3211'} | one	
+3211 | {'refID': 'A975276', 'pos': 4, 'tok': '3211'} | one	
+335 | {'refID': 'A948701', 'pos': 10, 'tok': '335'} | one	
+3211  | 4	
+3401 | {'refID': 'A948701', 'pos': 4, 'tok': '3401'} | one	
+335  | 1	
+344 | {'refID': 'A812219', 'pos': 9, 'tok': '344'} | one	
+3401  | 1	
+3555 | {'refID': 'A750205', 'pos': 4, 'tok': '3555'} | one	
+344  | 1	
+3555 | {'refID': 'A942770', 'pos': 4, 'tok': '3555'} | one	
+363 | {'refID': 'A975276', 'pos': 11, 'tok': '363'} | one	
+3555  | 2	
+363197202 | {'refID': 'A819955', 'pos': 11, 'tok': '363197202'} | one	
+363  | 1	
+37 | {'refID': 'A812219', 'pos': 10, 'tok': '37'} | one	
+363197202  | 1	
+378 | {'refID': 'A926782', 'pos': 12, 'tok': '378'} | one	
+37  | 1	
+3812 | {'refID': 'A920554', 'pos': 4, 'tok': '3812'} | one	
+378  | 1	
+3812 | {'refID': 'A934767', 'pos': 4, 'tok': '3812'} | one	
+3830 | {'refID': 'A813025', 'pos': 4, 'tok': '3830'} | one	
+3812  | 2	
+39 | {'refID': 'A948701', 'pos': 11, 'tok': '39'} | one	
+3830  | 1	
+404 | {'refID': 'A986935', 'pos': 13, 'tok': '404'} | one	
+39  | 1	
+4215 | {'refID': 'A960838', 'pos': 13, 'tok': '4215'} | one	
+404  | 1	
+4232 | {'refID': 'A812219', 'pos': 11, 'tok': '4232'} | one	
+4215  | 1	
+43 | {'refID': 'A926782', 'pos': 13, 'tok': '43'} | one	
+4232  | 1	
+4477 | {'refID': 'A814320', 'pos': 4, 'tok': '4477'} | one	
+43  | 1	
+4477 | {'refID': 'A824044', 'pos': 4, 'tok': '4477'} | one	
+4477 | {'refID': 'A935026', 'pos': 4, 'tok': '4477'} | one	
+456 | {'refID': 'A956296', 'pos': 11, 'tok': '456'} | one	
+4477  | 3	
+456 | {'refID': 'A956423', 'pos': 11, 'tok': '456'} | one	
+456182098 | {'refID': 'A830349', 'pos': 11, 'tok': '456182098'} | one	
+456  | 2	
+4562 | {'refID': 'A920554', 'pos': 15, 'tok': '4562'} | one	
+456182098  | 1	
+4562 | {'refID': 'A934767', 'pos': 15, 'tok': '4562'} | one	
+4591 | {'refID': 'A950657', 'pos': 12, 'tok': '4591'} | one	
+4562  | 2	
+46 | {'refID': 'A944634', 'pos': 13, 'tok': '46'} | one	
+4591  | 1	
+4753 | {'refID': 'A986935', 'pos': 15, 'tok': '4753'} | one	
+46  | 1	
+4837 | {'refID': 'A948701', 'pos': 12, 'tok': '4837'} | one	
+4753  | 1	
+490 | {'refID': 'A944634', 'pos': 12, 'tok': '490'} | one	
+4837  | 1	
+5010 | {'refID': 'A780828', 'pos': 4, 'tok': '5010'} | one	
+490  | 1	
+5010 | {'refID': 'A887611', 'pos': 4, 'tok': '5010'} | one	
+5010 | {'refID': 'A970774', 'pos': 4, 'tok': '5010'} | one	
+5122 | {'refID': 'A767794', 'pos': 3, 'tok': '5122'} | one	
+5010  | 3	
+516 | {'refID': 'A864729', 'pos': 4, 'tok': '516'} | one	
+5122  | 1	
+52 | {'refID': 'A869762', 'pos': 11, 'tok': '52'} | one	
+516  | 1	
+53 | {'refID': 'A816319', 'pos': 12, 'tok': '53'} | one	
+52  | 1	
+53 | {'refID': 'A882820', 'pos': 12, 'tok': '53'} | one	
+53 | {'refID': 'A974515', 'pos': 12, 'tok': '53'} | one	
+5321 | {'refID': 'A750205', 'pos': 15, 'tok': '5321'} | one	
+53  | 3	
+5321 | {'refID': 'A942770', 'pos': 15, 'tok': '5321'} | one	
+559 | {'refID': 'A960838', 'pos': 11, 'tok': '559'} | one	
+5321  | 2	
+59 | {'refID': 'A776838', 'pos': 12, 'tok': '59'} | one	
+559  | 1	
+59 | {'refID': 'A844925', 'pos': 12, 'tok': '59'} | one	
+601 | {'refID': 'A824917', 'pos': 11, 'tok': '601'} | one	
+59  | 2	
+601 | {'refID': 'A875214', 'pos': 11, 'tok': '601'} | one	
+601 | {'refID': 'A915661', 'pos': 10, 'tok': '601'} | one	
+601 | {'refID': 'A922259', 'pos': 10, 'tok': '601'} | one	
+601 | {'refID': 'A992523', 'pos': 10, 'tok': '601'} | one	
+6106 | {'refID': 'A824917', 'pos': 13, 'tok': '6106'} | one	
+601  | 5	
+6106 | {'refID': 'A875214', 'pos': 13, 'tok': '6106'} | one	
+613 | {'refID': 'A920554', 'pos': 13, 'tok': '613'} | one	
+6106  | 2	
+613 | {'refID': 'A934767', 'pos': 13, 'tok': '613'} | one	
+6144 | {'refID': 'A776838', 'pos': 13, 'tok': '6144'} | one	
+613  | 2	
+6144 | {'refID': 'A844925', 'pos': 13, 'tok': '6144'} | one	
+624 | {'refID': 'A867783', 'pos': 4, 'tok': '624'} | one	
+6144  | 2	
+624 | {'refID': 'A921659', 'pos': 4, 'tok': '624'} | one	
+624 | {'refID': 'A926782', 'pos': 4, 'tok': '624'} | one	
+636 | {'refID': 'A914099', 'pos': 11, 'tok': '636'} | one	
+624  | 3	
+64 | {'refID': 'A960838', 'pos': 12, 'tok': '64'} | one	
+636  | 1	
+642 | {'refID': 'A950657', 'pos': 10, 'tok': '642'} | one	
+64  | 1	
+642194591 | {'refID': 'A905248', 'pos': 10, 'tok': '642194591'} | one	
+642  | 1	
+6597 | {'refID': 'A921659', 'pos': 14, 'tok': '6597'} | one	
+642194591  | 1	
+672 | {'refID': 'A869762', 'pos': 10, 'tok': '672'} | one	
+6597  | 1	
+6965 | {'refID': 'A770538', 'pos': 4, 'tok': '6965'} | one	
+672  | 1	
+6965 | {'refID': 'A816319', 'pos': 4, 'tok': '6965'} | one	
+6965 | {'refID': 'A882820', 'pos': 4, 'tok': '6965'} | one	
+70 | {'refID': 'A824917', 'pos': 12, 'tok': '70'} | one	
+6965  | 3	
+70 | {'refID': 'A875214', 'pos': 12, 'tok': '70'} | one	
+7202 | {'refID': 'A975276', 'pos': 13, 'tok': '7202'} | one	
+70  | 2	
+7354 | {'refID': 'A963930', 'pos': 13, 'tok': '7354'} | one	
+7202  | 1	
+7367 | {'refID': 'A926782', 'pos': 14, 'tok': '7367'} | one	
+7354  | 1	
+741 | {'refID': 'A963930', 'pos': 11, 'tok': '741'} | one	
+7367  | 1	
+7481 | {'refID': 'A799281', 'pos': 13, 'tok': '7481'} | one	
+741  | 1	
+75 | {'refID': 'A963930', 'pos': 12, 'tok': '75'} | one	
+7481  | 1	
+7514 | {'refID': 'A869762', 'pos': 4, 'tok': '7514'} | one	
+75  | 1	
+780 | {'refID': 'A814320', 'pos': 10, 'tok': '780'} | one	
+7514  | 1	
+780 | {'refID': 'A824044', 'pos': 10, 'tok': '780'} | one	
+780 | {'refID': 'A935026', 'pos': 10, 'tok': '780'} | one	
+811 | {'refID': 'A926684', 'pos': 11, 'tok': '811'} | one	
+780  | 3	
+83 | {'refID': 'A780828', 'pos': 12, 'tok': '83'} | one	
+811  | 1	
+83 | {'refID': 'A970774', 'pos': 12, 'tok': '83'} | one	
+834 | {'refID': 'A776838', 'pos': 11, 'tok': '834'} | one	
+83  | 2	
+834 | {'refID': 'A844925', 'pos': 11, 'tok': '834'} | one	
+85 | {'refID': 'A915661', 'pos': 11, 'tok': '85'} | one	
+834  | 2	
+85 | {'refID': 'A922259', 'pos': 11, 'tok': '85'} | one	
+85 | {'refID': 'A992523', 'pos': 11, 'tok': '85'} | one	
+8521 | {'refID': 'A755471', 'pos': 13, 'tok': '8521'} | one	
+85  | 3	
+8579 | {'refID': 'A814320', 'pos': 12, 'tok': '8579'} | one	
+8521  | 1	
+8579 | {'refID': 'A824044', 'pos': 12, 'tok': '8579'} | one	
+8579 | {'refID': 'A935026', 'pos': 12, 'tok': '8579'} | one	
+87 | {'refID': 'A920554', 'pos': 14, 'tok': '87'} | one	
+8579  | 3	
+87 | {'refID': 'A934767', 'pos': 14, 'tok': '87'} | one	
+8781 | {'refID': 'A914099', 'pos': 13, 'tok': '8781'} | one	
+87  | 2	
+88 | {'refID': 'A799281', 'pos': 12, 'tok': '88'} | one	
+8781  | 1	
+889 | {'refID': 'A921659', 'pos': 12, 'tok': '889'} | one	
+88  | 1	
+9125 | {'refID': 'A780828', 'pos': 13, 'tok': '9125'} | one	
+889  | 1	
+9125 | {'refID': 'A970774', 'pos': 13, 'tok': '9125'} | one	
+91390 | {'refID': 'A944634', 'pos': 11, 'tok': '91390'} | one	
+9125  | 2	
+917 | {'refID': 'A793513', 'pos': 11, 'tok': '917'} | one	
+91390  | 1	
+917 | {'refID': 'A938666', 'pos': 11, 'tok': '917'} | one	
+9183 | {'refID': 'A926684', 'pos': 13, 'tok': '9183'} | one	
+917  | 2	
+925 | {'refID': 'A799281', 'pos': 11, 'tok': '925'} | one	
+9183  | 1	
+93230 | {'refID': 'A812219', 'pos': 8, 'tok': '93230'} | one	
+925  | 1	
+937 | {'refID': 'A767794', 'pos': 10, 'tok': '937'} | one	
+93230  | 1	
+94553 | {'refID': 'A905248', 'pos': 9, 'tok': '94553'} | one	
+937  | 1	
+954451341 | {'refID': 'A934513', 'pos': 10, 'tok': '954451341'} | one	
+94553  | 1	
+97 | {'refID': 'A986935', 'pos': 14, 'tok': '97'} | one	
+954451341  | 1	
+A | {'refID': 'A869762', 'pos': 3, 'tok': 'A'} | one	
+97  | 1	
+A | {'refID': 'A920554', 'pos': 8, 'tok': 'A'} | one	
+A | {'refID': 'A934767', 'pos': 8, 'tok': 'A'} | one	
+AAARGAARD | {'refID': 'A912696', 'pos': 2, 'tok': 'AAARGAARD'} | one	
+A  | 3	
+AAARON | {'refID': 'A776838', 'pos': 2, 'tok': 'AAARON'} | one	
+AAARGAARD  | 1	
+AAARON | {'refID': 'A956423', 'pos': 2, 'tok': 'AAARON'} | one	
+AAARON | {'refID': 'A975276', 'pos': 2, 'tok': 'AAARON'} | one	
+AADLAND | {'refID': 'A944634', 'pos': 2, 'tok': 'AADLAND'} | one	
+AAARON  | 3	
+AARGAARD | {'refID': 'A755471', 'pos': 2, 'tok': 'AARGAARD'} | one	
+AADLAND  | 1	
+AARON | {'refID': 'A767794', 'pos': 2, 'tok': 'AARON'} | one	
+AARGAARD  | 1	
+AARON | {'refID': 'A770538', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A780828', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A799281', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A812219', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A813025', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A816319', 'pos': 1, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A819955', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A824917', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A830349', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A844925', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A864729', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A867783', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A869762', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A875214', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A882820', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A887611', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A905248', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A914099', 'pos': 1, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A920554', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A921659', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A926684', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A926782', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A934513', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A934767', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A948701', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A950657', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A956296', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A960838', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A963930', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A970774', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A985464', 'pos': 2, 'tok': 'AARON'} | one	
+AARON | {'refID': 'A986935', 'pos': 2, 'tok': 'AARON'} | one	
+ABADIE | {'refID': 'A915661', 'pos': 2, 'tok': 'ABADIE'} | one	
+AARON  | 33	
+ABADIE | {'refID': 'A922259', 'pos': 2, 'tok': 'ABADIE'} | one	
+ABADIE | {'refID': 'A974515', 'pos': 2, 'tok': 'ABADIE'} | one	
+ABADIE | {'refID': 'A992523', 'pos': 2, 'tok': 'ABADIE'} | one	
+ABADIR | {'refID': 'A750205', 'pos': 2, 'tok': 'ABADIR'} | one	
+ABADIE  | 4	
+ABADIR | {'refID': 'A942770', 'pos': 2, 'tok': 'ABADIR'} | one	
+ABAI | {'refID': 'A814320', 'pos': 2, 'tok': 'ABAI'} | one	
+ABADIR  | 2	
+ABAI | {'refID': 'A824044', 'pos': 2, 'tok': 'ABAI'} | one	
+ABAI | {'refID': 'A935026', 'pos': 2, 'tok': 'ABAI'} | one	
+ABARCA | {'refID': 'A793513', 'pos': 2, 'tok': 'ABARCA'} | one	
+ABAI  | 3	
+ABARCA | {'refID': 'A938666', 'pos': 2, 'tok': 'ABARCA'} | one	
+ALLEN | {'refID': 'A813025', 'pos': 1, 'tok': 'ALLEN'} | one	
+ABARCA  | 2	
+ANDREEW | {'refID': 'A875214', 'pos': 1, 'tok': 'ANDREEW'} | one	
+ALLEN  | 1	
+ANDREW | {'refID': 'A824917', 'pos': 1, 'tok': 'ANDREW'} | one	
+ANDREEW  | 1	
+AUDREY | {'refID': 'A867783', 'pos': 3, 'tok': 'AUDREY'} | one	
+ANDREW  | 1	
+AUDREY | {'refID': 'A921659', 'pos': 3, 'tok': 'AUDREY'} | one	
+AVE | {'refID': 'A974515', 'pos': 6, 'tok': 'AVE'} | one	
+AUDREY  | 2	
+BLVD | {'refID': 'A915661', 'pos': 6, 'tok': 'BLVD'} | one	
+AVE  | 1	
+BLVD | {'refID': 'A922259', 'pos': 6, 'tok': 'BLVD'} | one	
+BLVD | {'refID': 'A992523', 'pos': 6, 'tok': 'BLVD'} | one	
+BRIAN | {'refID': 'A750205', 'pos': 1, 'tok': 'BRIAN'} | one	
+BLVD  | 3	
+BRIAN | {'refID': 'A942770', 'pos': 1, 'tok': 'BRIAN'} | one	
+BRYAN | {'refID': 'A974515', 'pos': 1, 'tok': 'BRYAN'} | one	
+BRIAN  | 2	
+BURROAK | {'refID': 'A767794', 'pos': 4, 'tok': 'BURROAK'} | one	
+BRYAN  | 1	
+C | {'refID': 'A986935', 'pos': 5, 'tok': 'C'} | one	
+BURROAK  | 1	
+CA | {'refID': 'A812219', 'pos': 7, 'tok': 'CA'} | one	
+C  | 1	
+CA | {'refID': 'A905248', 'pos': 8, 'tok': 'CA'} | one	
+CA | {'refID': 'A944634', 'pos': 10, 'tok': 'CA'} | one	
+CAROL | {'refID': 'A799281', 'pos': 3, 'tok': 'CAROL'} | one	
+CA  | 3	
+CELIA | {'refID': 'A812219', 'pos': 1, 'tok': 'CELIA'} | one	
+CAROL  | 1	
+CENTURY | {'refID': 'A915661', 'pos': 5, 'tok': 'CENTURY'} | one	
+CELIA  | 1	
+CENTURY | {'refID': 'A922259', 'pos': 5, 'tok': 'CENTURY'} | one	
+CENTURY | {'refID': 'A992523', 'pos': 5, 'tok': 'CENTURY'} | one	
+CHRISTOPHER | {'refID': 'A963930', 'pos': 1, 'tok': 'CHRISTOPHER'} | one	
+CENTURY  | 3	
+CLARITA | {'refID': 'A944634', 'pos': 9, 'tok': 'CLARITA'} | one	
+CHRISTOPHER  | 1	
+CLEMMONS | {'refID': 'A934513', 'pos': 7, 'tok': 'CLEMMONS'} | one	
+CLARITA  | 1	
+CLEMMONS | {'refID': 'A950657', 'pos': 7, 'tok': 'CLEMMONS'} | one	
+CLUB | {'refID': 'A813025', 'pos': 6, 'tok': 'CLUB'} | one	
+CLEMMONS  | 2	
+CLUB | {'refID': 'A920554', 'pos': 6, 'tok': 'CLUB'} | one	
+CLUB | {'refID': 'A934767', 'pos': 6, 'tok': 'CLUB'} | one	
+COUNTRY | {'refID': 'A813025', 'pos': 5, 'tok': 'COUNTRY'} | one	
+CLUB  | 3	
+COUNTRY | {'refID': 'A920554', 'pos': 5, 'tok': 'COUNTRY'} | one	
+COUNTRY | {'refID': 'A934767', 'pos': 5, 'tok': 'COUNTRY'} | one	
+COVE | {'refID': 'A770538', 'pos': 8, 'tok': 'COVE'} | one	
+COUNTRY  | 3	
+COVE | {'refID': 'A816319', 'pos': 8, 'tok': 'COVE'} | one	
+COVE | {'refID': 'A882820', 'pos': 8, 'tok': 'COVE'} | one	
+CT | {'refID': 'A767794', 'pos': 5, 'tok': 'CT'} | one	
+COVE  | 3	
+CT | {'refID': 'A905248', 'pos': 6, 'tok': 'CT'} | one	
+CT | {'refID': 'A934513', 'pos': 6, 'tok': 'CT'} | one	
+CT | {'refID': 'A948701', 'pos': 6, 'tok': 'CT'} | one	
+CT | {'refID': 'A950657', 'pos': 6, 'tok': 'CT'} | one	
+CT | {'refID': 'A963930', 'pos': 6, 'tok': 'CT'} | one	
+D | {'refID': 'A914099', 'pos': 2, 'tok': 'D'} | one	
+CT  | 6	
+D | {'refID': 'A956296', 'pos': 3, 'tok': 'D'} | one	
+DAVIS | {'refID': 'A776838', 'pos': 1, 'tok': 'DAVIS'} | one	
+D  | 2	
+DAVIS | {'refID': 'A844925', 'pos': 1, 'tok': 'DAVIS'} | one	
+DEAN | {'refID': 'A830349', 'pos': 3, 'tok': 'DEAN'} | one	
+DAVIS  | 2	
+DEAN | {'refID': 'A956423', 'pos': 3, 'tok': 'DEAN'} | one	
+DEAN | {'refID': 'A985464', 'pos': 3, 'tok': 'DEAN'} | one	
+DIVALDI | {'refID': 'A869762', 'pos': 5, 'tok': 'DIVALDI'} | one	
+DEAN  | 3	
+DONALD | {'refID': 'A770538', 'pos': 1, 'tok': 'DONALD'} | one	
+DIVALDI  | 1	
+DONALD | {'refID': 'A816319', 'pos': 2, 'tok': 'DONALD'} | one	
+DONALD | {'refID': 'A882820', 'pos': 1, 'tok': 'DONALD'} | one	
+DR | {'refID': 'A812219', 'pos': 5, 'tok': 'DR'} | one	
+DONALD  | 3	
+DR | {'refID': 'A814320', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A824044', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A824917', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A830349', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A875214', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A935026', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A956296', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A956423', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A960838', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A985464', 'pos': 6, 'tok': 'DR'} | one	
+DR | {'refID': 'A986935', 'pos': 8, 'tok': 'DR'} | one	
+DWIGHT | {'refID': 'A770538', 'pos': 3, 'tok': 'DWIGHT'} | one	
+DR  | 12	
+DWIGHT | {'refID': 'A816319', 'pos': 3, 'tok': 'DWIGHT'} | one	
+DWIGHT | {'refID': 'A882820', 'pos': 3, 'tok': 'DWIGHT'} | one	
+E | {'refID': 'A914099', 'pos': 4, 'tok': 'E'} | one	
+DWIGHT  | 3	
+E | {'refID': 'A986935', 'pos': 6, 'tok': 'E'} | one	
+EARL | {'refID': 'A926684', 'pos': 3, 'tok': 'EARL'} | one	
+E  | 2	
+ESPERSEN | {'refID': 'A755471', 'pos': 3, 'tok': 'ESPERSEN'} | one	
+EARL  | 1	
+ESPERSEN | {'refID': 'A912696', 'pos': 3, 'tok': 'ESPERSEN'} | one	
+FAROUK | {'refID': 'A750205', 'pos': 3, 'tok': 'FAROUK'} | one	
+ESPERSEN  | 2	
+FAROUK | {'refID': 'A942770', 'pos': 3, 'tok': 'FAROUK'} | one	
+FRANKLIN | {'refID': 'A780828', 'pos': 3, 'tok': 'FRANKLIN'} | one	
+FAROUK  | 2	
+FRANKLIN | {'refID': 'A887611', 'pos': 3, 'tok': 'FRANKLIN'} | one	
+FRANKLIN | {'refID': 'A970774', 'pos': 3, 'tok': 'FRANKLIN'} | one	
+GRAY | {'refID': 'A986935', 'pos': 7, 'tok': 'GRAY'} | one	
+FRANKLIN  | 3	
+GREGORY | {'refID': 'A869762', 'pos': 1, 'tok': 'GREGORY'} | one	
+GRAY  | 1	
+HALL | {'refID': 'A864729', 'pos': 8, 'tok': 'HALL'} | one	
+GREGORY  | 1	
+HANFORD | {'refID': 'A812219', 'pos': 6, 'tok': 'HANFORD'} | one	
+HALL  | 1	
+HARRY | {'refID': 'A915661', 'pos': 3, 'tok': 'HARRY'} | one	
+HANFORD  | 1	
+HARRY | {'refID': 'A922259', 'pos': 3, 'tok': 'HARRY'} | one	
+HARRY | {'refID': 'A992523', 'pos': 3, 'tok': 'HARRY'} | one	
+HEATHERTON | {'refID': 'A864729', 'pos': 5, 'tok': 'HEATHERTON'} | one	
+HARRY  | 3	
+HIGH | {'refID': 'A944634', 'pos': 5, 'tok': 'HIGH'} | one	
+HEATHERTON  | 1	
+IAN | {'refID': 'A944634', 'pos': 1, 'tok': 'IAN'} | one	
+HIGH  | 1	
+IKAIKA | {'refID': 'A813025', 'pos': 3, 'tok': 'IKAIKA'} | one	
+IAN  | 1	
+IKWECHEGH | {'refID': 'A814320', 'pos': 3, 'tok': 'IKWECHEGH'} | one	
+IKAIKA  | 1	
+IKWECHEGH | {'refID': 'A824044', 'pos': 3, 'tok': 'IKWECHEGH'} | one	
+IKWECHEGH | {'refID': 'A935026', 'pos': 3, 'tok': 'IKWECHEGH'} | one	
+J | {'refID': 'A813025', 'pos': 8, 'tok': 'J'} | one	
+IKWECHEGH  | 3	
+JACKSON | {'refID': 'A960838', 'pos': 3, 'tok': 'JACKSON'} | one	
+J  | 1	
+JEREMY | {'refID': 'A819955', 'pos': 1, 'tok': 'JEREMY'} | one	
+JACKSON  | 1	
+JEREMY | {'refID': 'A975276', 'pos': 1, 'tok': 'JEREMY'} | one	
+KERNERSVILLE | {'refID': 'A793513', 'pos': 8, 'tok': 'KERNERSVILLE'} | one	
+JEREMY  | 2	
+KERNERSVILLE | {'refID': 'A915661', 'pos': 7, 'tok': 'KERNERSVILLE'} | one	
+KERNERSVILLE | {'refID': 'A922259', 'pos': 7, 'tok': 'KERNERSVILLE'} | one	
+KERNERSVILLE | {'refID': 'A938666', 'pos': 8, 'tok': 'KERNERSVILLE'} | one	
+KERNERSVILLE | {'refID': 'A992523', 'pos': 7, 'tok': 'KERNERSVILLE'} | one	
+KINNAMON | {'refID': 'A776838', 'pos': 5, 'tok': 'KINNAMON'} | one	
+KERNERSVILLE  | 5	
+KINNAMON | {'refID': 'A819955', 'pos': 5, 'tok': 'KINNAMON'} | one	
+KINNAMON | {'refID': 'A844925', 'pos': 5, 'tok': 'KINNAMON'} | one	
+KINNAMON | {'refID': 'A975276', 'pos': 5, 'tok': 'KINNAMON'} | one	
+LARS | {'refID': 'A944634', 'pos': 3, 'tok': 'LARS'} | one	
+KINNAMON  | 4	
+LASONDO | {'refID': 'A986935', 'pos': 3, 'tok': 'LASONDO'} | one	
+LARS  | 1	
+LASSEN | {'refID': 'A812219', 'pos': 4, 'tok': 'LASSEN'} | one	
+LASONDO  | 1	
+LEIGH | {'refID': 'A934513', 'pos': 3, 'tok': 'LEIGH'} | one	
+LASSEN  | 1	
+LEWISVILLE | {'refID': 'A869762', 'pos': 7, 'tok': 'LEWISVILLE'} | one	
+LEIGH  | 1	
+LLOYD | {'refID': 'A830349', 'pos': 1, 'tok': 'LLOYD'} | one	
+LEWISVILLE  | 1	
+LLOYD | {'refID': 'A956296', 'pos': 1, 'tok': 'LLOYD'} | one	
+LLOYD | {'refID': 'A956423', 'pos': 1, 'tok': 'LLOYD'} | one	
+LLOYD | {'refID': 'A985464', 'pos': 1, 'tok': 'LLOYD'} | one	
+LN | {'refID': 'A750205', 'pos': 7, 'tok': 'LN'} | one	
+LLOYD  | 4	
+LN | {'refID': 'A864729', 'pos': 6, 'tok': 'LN'} | one	
+LN | {'refID': 'A942770', 'pos': 7, 'tok': 'LN'} | one	
+LOCHURST | {'refID': 'A814320', 'pos': 5, 'tok': 'LOCHURST'} | one	
+LN  | 3	
+LOCHURST | {'refID': 'A824044', 'pos': 5, 'tok': 'LOCHURST'} | one	
+LOCHURST | {'refID': 'A935026', 'pos': 5, 'tok': 'LOCHURST'} | one	
+LOCHURST | {'refID': 'A948701', 'pos': 5, 'tok': 'LOCHURST'} | one	
+LORI | {'refID': 'A780828', 'pos': 1, 'tok': 'LORI'} | one	
+LOCHURST  | 4	
+LORI | {'refID': 'A887611', 'pos': 1, 'tok': 'LORI'} | one	
+LORI | {'refID': 'A970774', 'pos': 1, 'tok': 'LORI'} | one	
+MAGNOLIA | {'refID': 'A755471', 'pos': 5, 'tok': 'MAGNOLIA'} | one	
+LORI  | 3	
+MAGNOLIA | {'refID': 'A912696', 'pos': 5, 'tok': 'MAGNOLIA'} | one	
+MANOR | {'refID': 'A963930', 'pos': 5, 'tok': 'MANOR'} | one	
+MAGNOLIA  | 2	
+MARTINEZ | {'refID': 'A905248', 'pos': 7, 'tok': 'MARTINEZ'} | one	
+MANOR  | 1	
+MICHAEL | {'refID': 'A905248', 'pos': 1, 'tok': 'MICHAEL'} | one	
+MARTINEZ  | 1	
+MICHAEL | {'refID': 'A950657', 'pos': 1, 'tok': 'MICHAEL'} | one	
+MONICA | {'refID': 'A926782', 'pos': 1, 'tok': 'MONICA'} | one	
+MICHAEL  | 2	
+MOUNTAIN | {'refID': 'A793513', 'pos': 6, 'tok': 'MOUNTAIN'} | one	
+MONICA  | 1	
+MOUNTAIN | {'refID': 'A938666', 'pos': 6, 'tok': 'MOUNTAIN'} | one	
+MYRA | {'refID': 'A755471', 'pos': 1, 'tok': 'MYRA'} | one	
+MOUNTAIN  | 2	
+MYRA | {'refID': 'A912696', 'pos': 1, 'tok': 'MYRA'} | one	
+N | {'refID': 'A867783', 'pos': 5, 'tok': 'N'} | one	
+MYRA  | 2	
+N | {'refID': 'A921659', 'pos': 5, 'tok': 'N'} | one	
+N | {'refID': 'A926782', 'pos': 5, 'tok': 'N'} | one	
+NAOMI | {'refID': 'A867783', 'pos': 1, 'tok': 'NAOMI'} | one	
+N  | 3	
+NAOMI | {'refID': 'A921659', 'pos': 1, 'tok': 'NAOMI'} | one	
+NATHEN | {'refID': 'A915661', 'pos': 1, 'tok': 'NATHEN'} | one	
+NAOMI  | 2	
+NATHEN | {'refID': 'A922259', 'pos': 1, 'tok': 'NATHEN'} | one	
+NATHEN | {'refID': 'A992523', 'pos': 1, 'tok': 'NATHEN'} | one	
+NC | {'refID': 'A750205', 'pos': 11, 'tok': 'NC'} | one	
+NATHEN  | 3	
+NC | {'refID': 'A755471', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A767794', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A770538', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A776838', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A780828', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A793513', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A799281', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A813025', 'pos': 11, 'tok': 'NC'} | one	
+NC | {'refID': 'A814320', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A816319', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A819955', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A824044', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A824917', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A830349', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A844925', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A864729', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A867783', 'pos': 10, 'tok': 'NC'} | one	
+NC | {'refID': 'A869762', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A875214', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A882820', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A887611', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A912696', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A914099', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A915661', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A920554', 'pos': 11, 'tok': 'NC'} | one	
+NC | {'refID': 'A921659', 'pos': 10, 'tok': 'NC'} | one	
+NC | {'refID': 'A922259', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A926684', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A926782', 'pos': 10, 'tok': 'NC'} | one	
+NC | {'refID': 'A934513', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A934767', 'pos': 11, 'tok': 'NC'} | one	
+NC | {'refID': 'A935026', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A938666', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A942770', 'pos': 11, 'tok': 'NC'} | one	
+NC | {'refID': 'A948701', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A950657', 'pos': 8, 'tok': 'NC'} | one	
+NC | {'refID': 'A956296', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A956423', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A960838', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A963930', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A970774', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A974515', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A975276', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A985464', 'pos': 9, 'tok': 'NC'} | one	
+NC | {'refID': 'A986935', 'pos': 11, 'tok': 'NC'} | one	
+NC | {'refID': 'A992523', 'pos': 8, 'tok': 'NC'} | one	
+NENA | {'refID': 'A814320', 'pos': 1, 'tok': 'NENA'} | one	
+NC  | 47	
+NENA | {'refID': 'A824044', 'pos': 1, 'tok': 'NENA'} | one	
+NENA | {'refID': 'A935026', 'pos': 1, 'tok': 'NENA'} | one	
+NOTTIDGE | {'refID': 'A934513', 'pos': 5, 'tok': 'NOTTIDGE'} | one	
+NENA  | 3	
+NOTTIDGE | {'refID': 'A950657', 'pos': 5, 'tok': 'NOTTIDGE'} | one	
+OLIVIA | {'refID': 'A948701', 'pos': 3, 'tok': 'OLIVIA'} | one	
+NOTTIDGE  | 2	
+PALISADE | {'refID': 'A905248', 'pos': 5, 'tok': 'PALISADE'} | one	
+OLIVIA  | 1	
+PEDDLE | {'refID': 'A864729', 'pos': 3, 'tok': 'PEDDLE'} | one	
+PALISADE  | 1	
+PFAFFTOWN | {'refID': 'A814320', 'pos': 7, 'tok': 'PFAFFTOWN'} | one	
+PEDDLE  | 1	
+PFAFFTOWN | {'refID': 'A824044', 'pos': 7, 'tok': 'PFAFFTOWN'} | one	
+PFAFFTOWN | {'refID': 'A935026', 'pos': 7, 'tok': 'PFAFFTOWN'} | one	
+PFAFFTOWN | {'refID': 'A948701', 'pos': 7, 'tok': 'PFAFFTOWN'} | one	
+PHYLLIS | {'refID': 'A799281', 'pos': 1, 'tok': 'PHYLLIS'} | one	
+PFAFFTOWN  | 4	
+PL | {'refID': 'A799281', 'pos': 6, 'tok': 'PL'} | one	
+PHYLLIS  | 1	
+PL | {'refID': 'A926684', 'pos': 6, 'tok': 'PL'} | one	
+QUINN | {'refID': 'A974515', 'pos': 3, 'tok': 'QUINN'} | one	
+PL  | 2	
+RD | {'refID': 'A770538', 'pos': 6, 'tok': 'RD'} | one	
+QUINN  | 1	
+RD | {'refID': 'A776838', 'pos': 6, 'tok': 'RD'} | one	
+RD | {'refID': 'A813025', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A816319', 'pos': 6, 'tok': 'RD'} | one	
+RD | {'refID': 'A819955', 'pos': 6, 'tok': 'RD'} | one	
+RD | {'refID': 'A844925', 'pos': 6, 'tok': 'RD'} | one	
+RD | {'refID': 'A867783', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A882820', 'pos': 6, 'tok': 'RD'} | one	
+RD | {'refID': 'A920554', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A921659', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A926782', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A934767', 'pos': 7, 'tok': 'RD'} | one	
+RD | {'refID': 'A975276', 'pos': 6, 'tok': 'RD'} | one	
+REBA | {'refID': 'A864729', 'pos': 1, 'tok': 'REBA'} | one	
+RD  | 13	
+ROBERT | {'refID': 'A926684', 'pos': 1, 'tok': 'ROBERT'} | one	
+REBA  | 1	
+RODRECUS | {'refID': 'A920554', 'pos': 3, 'tok': 'RODRECUS'} | one	
+ROBERT  | 1	
+RODRECUS | {'refID': 'A934767', 'pos': 3, 'tok': 'RODRECUS'} | one	
+RURAL | {'refID': 'A864729', 'pos': 7, 'tok': 'RURAL'} | one	
+RODRECUS  | 2	
+SALEM | {'refID': 'A750205', 'pos': 10, 'tok': 'SALEM'} | one	
+RURAL  | 1	
+SALEM | {'refID': 'A755471', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A767794', 'pos': 7, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A776838', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A780828', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A799281', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A813025', 'pos': 10, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A819955', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A824917', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A830349', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A844925', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A867783', 'pos': 9, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A875214', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A887611', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A912696', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A914099', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A920554', 'pos': 10, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A921659', 'pos': 9, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A926684', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A926782', 'pos': 9, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A934767', 'pos': 10, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A942770', 'pos': 10, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A956296', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A956423', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A960838', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A963930', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A970774', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A974515', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A975276', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A985464', 'pos': 8, 'tok': 'SALEM'} | one	
+SALEM | {'refID': 'A986935', 'pos': 10, 'tok': 'SALEM'} | one	
+SANTA | {'refID': 'A944634', 'pos': 8, 'tok': 'SANTA'} | one	
+SALEM  | 31	
+SCOT | {'refID': 'A905248', 'pos': 3, 'tok': 'SCOT'} | one	
+SANTA  | 1	
+SCOT | {'refID': 'A950657', 'pos': 3, 'tok': 'SCOT'} | one	
+SCOTT | {'refID': 'A776838', 'pos': 3, 'tok': 'SCOTT'} | one	
+SCOT  | 2	
+SCOTT | {'refID': 'A844925', 'pos': 3, 'tok': 'SCOTT'} | one	
+SEVENTEENTH | {'refID': 'A914099', 'pos': 5, 'tok': 'SEVENTEENTH'} | one	
+SCOTT  | 2	
+SHIELDALE | {'refID': 'A960838', 'pos': 5, 'tok': 'SHIELDALE'} | one	
+SEVENTEENTH  | 1	
+SIERRA | {'refID': 'A944634', 'pos': 6, 'tok': 'SIERRA'} | one	
+SHIELDALE  | 1	
+SMITH | {'refID': 'A926782', 'pos': 3, 'tok': 'SMITH'} | one	
+SIERRA  | 1	
+SPAINHOUR | {'refID': 'A793513', 'pos': 3, 'tok': 'SPAINHOUR'} | one	
+SMITH  | 1	
+SPAINHOUR | {'refID': 'A938666', 'pos': 3, 'tok': 'SPAINHOUR'} | one	
+SPICEWOOD | {'refID': 'A824917', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+SPAINHOUR  | 2	
+SPICEWOOD | {'refID': 'A830349', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+SPICEWOOD | {'refID': 'A875214', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+SPICEWOOD | {'refID': 'A956296', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+SPICEWOOD | {'refID': 'A956423', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+SPICEWOOD | {'refID': 'A985464', 'pos': 5, 'tok': 'SPICEWOOD'} | one	
+ST | {'refID': 'A755471', 'pos': 6, 'tok': 'ST'} | one	
+SPICEWOOD  | 6	
+ST | {'refID': 'A793513', 'pos': 7, 'tok': 'ST'} | one	
+ST | {'refID': 'A869762', 'pos': 6, 'tok': 'ST'} | one	
+ST | {'refID': 'A912696', 'pos': 6, 'tok': 'ST'} | one	
+ST | {'refID': 'A914099', 'pos': 6, 'tok': 'ST'} | one	
+ST | {'refID': 'A938666', 'pos': 7, 'tok': 'ST'} | one	
+STACY | {'refID': 'A986935', 'pos': 1, 'tok': 'STACY'} | one	
+ST  | 6	
+STEPHEN | {'refID': 'A824917', 'pos': 3, 'tok': 'STEPHEN'} | one	
+STACY  | 1	
+STEPHEN | {'refID': 'A875214', 'pos': 3, 'tok': 'STEPHEN'} | one	
+STRATFORD | {'refID': 'A867783', 'pos': 6, 'tok': 'STRATFORD'} | one	
+STEPHEN  | 2	
+STRATFORD | {'refID': 'A921659', 'pos': 6, 'tok': 'STRATFORD'} | one	
+STRATFORD | {'refID': 'A926782', 'pos': 6, 'tok': 'STRATFORD'} | one	
+SYCAMORE | {'refID': 'A750205', 'pos': 5, 'tok': 'SYCAMORE'} | one	
+STRATFORD  | 3	
+SYCAMORE | {'refID': 'A942770', 'pos': 5, 'tok': 'SYCAMORE'} | one	
+TANTELON | {'refID': 'A799281', 'pos': 5, 'tok': 'TANTELON'} | one	
+SYCAMORE  | 2	
+TANTELON | {'refID': 'A926684', 'pos': 5, 'tok': 'TANTELON'} | one	
+TERESA | {'refID': 'A793513', 'pos': 1, 'tok': 'TERESA'} | one	
+TANTELON  | 2	
+TERESA | {'refID': 'A938666', 'pos': 1, 'tok': 'TERESA'} | one	
+TIFFANY | {'refID': 'A767794', 'pos': 1, 'tok': 'TIFFANY'} | one	
+TERESA  | 2	
+TIMOTHY | {'refID': 'A920554', 'pos': 1, 'tok': 'TIMOTHY'} | one	
+TIFFANY  | 1	
+TIMOTHY | {'refID': 'A934767', 'pos': 1, 'tok': 'TIMOTHY'} | one	
+TRACEY | {'refID': 'A934513', 'pos': 1, 'tok': 'TRACEY'} | one	
+TIMOTHY  | 2	
+TRAIL | {'refID': 'A750205', 'pos': 6, 'tok': 'TRAIL'} | one	
+TRACEY  | 1	
+TRAIL | {'refID': 'A942770', 'pos': 6, 'tok': 'TRAIL'} | one	
+TRL | {'refID': 'A780828', 'pos': 6, 'tok': 'TRL'} | one	
+TRAIL  | 2	
+TRL | {'refID': 'A887611', 'pos': 6, 'tok': 'TRL'} | one	
+TRL | {'refID': 'A944634', 'pos': 7, 'tok': 'TRL'} | one	
+TRL | {'refID': 'A970774', 'pos': 6, 'tok': 'TRL'} | one	
+TUTELO | {'refID': 'A780828', 'pos': 5, 'tok': 'TUTELO'} | one	
+TRL  | 4	
+TUTELO | {'refID': 'A887611', 'pos': 5, 'tok': 'TUTELO'} | one	
+TUTELO | {'refID': 'A970774', 'pos': 5, 'tok': 'TUTELO'} | one	
+TYLER | {'refID': 'A819955', 'pos': 3, 'tok': 'TYLER'} | one	
+TUTELO  | 3	
+TYLER | {'refID': 'A975276', 'pos': 3, 'tok': 'TYLER'} | one	
+VELMA | {'refID': 'A960838', 'pos': 1, 'tok': 'VELMA'} | one	
+TYLER  | 2	
+VERONICA | {'refID': 'A948701', 'pos': 1, 'tok': 'VERONICA'} | one	
+VELMA  | 1	
+W | {'refID': 'A793513', 'pos': 5, 'tok': 'W'} | one	
+VERONICA  | 1	
+W | {'refID': 'A938666', 'pos': 5, 'tok': 'W'} | one	
+WALKER | {'refID': 'A974515', 'pos': 5, 'tok': 'WALKER'} | one	
+W  | 2	
+WALNUT | {'refID': 'A770538', 'pos': 7, 'tok': 'WALNUT'} | one	
+WALKER  | 1	
+WALNUT | {'refID': 'A816319', 'pos': 7, 'tok': 'WALNUT'} | one	
+WALNUT | {'refID': 'A882820', 'pos': 7, 'tok': 'WALNUT'} | one	
+WEST | {'refID': 'A770538', 'pos': 5, 'tok': 'WEST'} | one	
+WALNUT  | 3	
+WEST | {'refID': 'A816319', 'pos': 5, 'tok': 'WEST'} | one	
+WEST | {'refID': 'A882820', 'pos': 5, 'tok': 'WEST'} | one	
+WILLIAMSBURG | {'refID': 'A963930', 'pos': 4, 'tok': 'WILLIAMSBURG'} | one	
+WEST  | 3	
+WINSTON | {'refID': 'A750205', 'pos': 9, 'tok': 'WINSTON'} | one	
+WILLIAMSBURG  | 1	
+WINSTON | {'refID': 'A755471', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A767794', 'pos': 6, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A776838', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A780828', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A799281', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A813025', 'pos': 9, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A819955', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A824917', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A830349', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A844925', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A867783', 'pos': 8, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A875214', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A887611', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A912696', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A914099', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A920554', 'pos': 9, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A921659', 'pos': 8, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A926684', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A926782', 'pos': 8, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A934767', 'pos': 9, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A942770', 'pos': 9, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A956296', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A956423', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A960838', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A963930', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A970774', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A974515', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A975276', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A985464', 'pos': 7, 'tok': 'WINSTON'} | one	
+WINSTON | {'refID': 'A986935', 'pos': 9, 'tok': 'WINSTON'} | one	
+WINSTON  | 31	

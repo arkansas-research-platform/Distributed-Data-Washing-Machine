@@ -1,0 +1,2 @@
+pdpDict =  {'refCnt': '1,912', 'totalMuCounts': 136, 'greaterThanMu': 0, 'greaterEpsilon': 1149, 'linkedPairs': 936, 'expectedPairs': 990, 'truePairs': 903, 'precision': 0.9647, 'recall': 0.9121, 'fMeasure': 0.9377}
+pdpBDict =  {'tokenCnt': '24,340', 'numTokenCnt': '9,044', 'uniqueTokenCnt': '5,182', 'linkedPairs': '936.0', 'expectedPairs': '990.0', 'truePairs': '903.0', 'precision': '0.9647', 'recall': '0.9121', 'fMeasure': '0.9377', 'avgFreq': '4.6868', 'stdFreq': '37.6633', 'uniqueTokenRatio': '0.2129', 'numTokenRatio': '0.3716'}
