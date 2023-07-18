@@ -30,39 +30,44 @@ delimiter = DWM10_Parms.delimiter
 tokenizerType = DWM10_Parms.tokenizerType
 removeDuplicateTokens = DWM10_Parms.removeDuplicateTokens
 
-#***********Inner Function*******************************
-#Replace delimiter with blanks, then compress token by replacing non-word characters with null
-def tokenizerCompress(line):
-    string = line.replace(delimiter,' ')
-    tokenList = re.split('[\s]+',string)
-    newList = []
-    for token in tokenList:
-        newToken = re.sub('[\W]+','',token)
-        if len(newToken)>0:
-            newList.append(newToken)
-    return newList
-#***********Inner Function*******************************
-#Replace all non-words characters with blanks, then split on blanks
-def tokenizerSplitter(line):
-    string = re.sub('[\W]+',' ',line)
-    tokenList = re.split('[\s]+',string)
-    newList = []
-    for token in tokenList:
-        if len(token)>0:
-            newList.append(token)
-    return newList
+def TokenizationMapper():
+    refCnt = 0
+    tokCnt = 0
+    tokensLeft = 0
+    numericTokCnt = 0
+    #***********Inner Function*******************************
+    #Replace delimiter with blanks, then compress token by replacing non-word characters with null
+    def tokenizerCompress(line):
+        string = line.replace(delimiter,' ')
+        tokenList = re.split('[\s]+',string)
+        newList = []
+        for token in tokenList:
+            newToken = re.sub('[\W]+','',token)
+            if len(newToken)>0:
+                newList.append(newToken)
+        return newList
+    #***********Inner Function*******************************
+    #Replace all non-words characters with blanks, then split on blanks
+    def tokenizerSplitter(line):
+        string = re.sub('[\W]+',' ',line)
+        tokenList = re.split('[\s]+',string)
+        newList = []
+        for token in tokenList:
+            if len(token)>0:
+                newList.append(token)
+        return newList
 
-goodType = False
-if tokenizerType=='Splitter':
-    tokenizerFunction = tokenizerSplitter
-    goodType = True
-if tokenizerType=='Compress':
-    tokenizerFunction = tokenizerCompress
-    goodType = True
-if goodType == False:
-    print('**Error: Invalid Parameter value for tokenizerType ',tokenizerType)
-    sys.exit()
-
+    goodType = False
+    if tokenizerType=='Splitter':
+        tokenizerFunction = tokenizerSplitter
+        goodType = True
+    if tokenizerType=='Compress':
+        tokenizerFunction = tokenizerCompress
+        goodType = True
+    if goodType == False:
+        print('**Error: Invalid Parameter value for tokenizerType ',tokenizerType)
+        sys.exit()
+    #*********** End of Inner Functions *******************************
 ##########################################################
 ##                # START OF MAPPER PROGRAM #
 ########################################################
@@ -72,11 +77,6 @@ if goodType == False:
 #if hasHeader:
 #    next(sys.stdin)
 
-def TokenizationMapper():
-    refCnt = 0
-    tokCnt = 0
-    tokensLeft = 0
-    numericTokCnt = 0
     # Read and tokenize each line
     for line in sys.stdin:
         # Convert dataset into uppercase
