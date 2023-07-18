@@ -3,18 +3,22 @@
 
 import os
 from tkinter import *
+from tkinter import Tk
 from tkinter import ttk
-#from tkmacosx import Button  # special library for macOS to change background colour in tKinter (only when using mac)
+from tkmacosx import Button  # special library for macOS to change background colour in tKinter (only when using mac)
 from tkinter import messagebox
 import tarfile
 import subprocess as sp
 import threading
+from tkinter import filedialog
+
 
 # Basic Settings (Title, Icon, Window Size)
 root = Tk()
 root.title("SCALABLE DATA WASHING MACHINE")
 root.iconphoto(False, PhotoImage(file="ualr2.png"))
 root.geometry("1200x800")
+root.configure(background='violet')
 
 #===================== Variables ==================
 # Define Functions
@@ -127,18 +131,19 @@ clusCombo = ttk.Combobox(appFrame, values=options)
 clusCombo.current(None)
 clusCombo.bind("<<ComboboxSelected>>", comboClick)
 clusCombo.grid(row=3, column=0, sticky='w', padx=5)
-configButton = Button(appFrame,text="Configure", width=15, relief="raised", justify="center", command=openWin).grid(row=4,column=0,sticky='s', padx=20) # or use ,**padding
+configButton = Button(appFrame,text="Configure", relief="raised", justify="center", command=openWin).grid(row=4,column=0,sticky='s', padx=20)#, width=15).grid(row=4,column=0,sticky='s', padx=20) # or use ,**padding
 
 #=============== HDFS Directory Frame ===============
 # Parent Frame
 hdfsDirFrame = LabelFrame(mainframe,text='HDFS Directory', labelanchor="n")
 hdfsDirFrame.grid(row=2,column=0,padx=20, pady=0,sticky="w")
 
-# Directory List Box
-hdfsTextBox= Listbox(hdfsDirFrame, height=18, width=31, bg="white")
-hdfsTextBox.grid_rowconfigure(3, weight=1)
-hdfsTextBox.grid_columnconfigure(0, weight=1)
-hdfsTextBox.grid(row=2,column=0, sticky='nsew')
+hdfsTextBox = Text(hdfsDirFrame, height=20, width=45)
+hdfsTextBox.grid()
+
+# Directly Opens root directory
+#hdfsDirFrame.directory = filedialog.askdirectory()
+#print (hdfsDirFrame.directory)
 
 '''
 foldersPath = "/Users/nick/Documents/Portfolio"
@@ -175,9 +180,9 @@ insert()
 '''
 
 # Open Directory Button
-hdfsViewButton = Button(hdfsDirFrame,text="Open", width=5, relief="raised").grid(row=3, column=0, sticky=W)
-openLogButton = Button(hdfsDirFrame,text="LogFile", width=5, relief="raised").grid(row=3, column=0, sticky=S)
-openLnkIndButton = Button(hdfsDirFrame,text="Link Index", width=5, relief="raised").grid(row=3,column=0, sticky=E)
+hdfsViewButton = Button(hdfsDirFrame,text="Open").grid(row=3, column=0, sticky=W)#, width=5, relief="raised").grid(row=3, column=0, sticky=W)
+openLogButton = Button(hdfsDirFrame,text="LogFile").grid(row=3, column=0, sticky=S)#, width=5, relief="raised").grid(row=3, column=0, sticky=S)
+openLnkIndButton = Button(hdfsDirFrame,text="Link Index").grid(row=3,column=0, sticky=E)#, width=5, relief="raised").grid(row=3,column=0, sticky=E)
 
 #=============== Parameter Summary Frame ===============
 # Parent Frame
@@ -193,11 +198,11 @@ psummText.grid()
 #psummText.grid(row=1,column=1, sticky='nsew')
 
 # View Button
-viewButton = Button(psummFrame, text="View Parms", width=10, relief="raised", command=viewParms)
+viewButton = Button(psummFrame, text="View Parms", relief="raised", command=viewParms)#,width=10, )
 viewButton.grid(row=3,column=0, sticky='w', padx=15)
 
 # Clear Button
-clearButton = Button(psummFrame, text="Clear", width=10, relief="raised", command=clearParms)
+clearButton = Button(psummFrame, text="Clear", relief="raised", command=clearParms)#, width=10)
 clearButton.grid(row=3,column=0, sticky='e', padx=15)
 
 #=============== Execution Window Frame ===============
@@ -231,7 +236,7 @@ muBox.grid(row=0, column=1, padx=3)
 epsLabel = Label(currentSettingFrame, text = "New Epsilon Value: ")
 epsLabel.grid(row=1, column=0, sticky=W, padx=5, pady=10)
 epsBox = Text(currentSettingFrame, height=2, width=5)
-epsBox.tag_configure("center",justify='center')
+epsBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 epsBox.tag_add("center",1.0,"end")
 epsBox.grid(row=1, column=1)
 
@@ -239,7 +244,7 @@ epsBox.grid(row=1, column=1)
 TCiterLabel = Label(currentSettingFrame, text = "Transitive Closure Iteration(s): ")
 TCiterLabel.grid(row=0, column=2, sticky=W, padx=15, pady=10)
 TCiterBox = Text(currentSettingFrame, height=2, width=5)
-TCiterBox.tag_configure("center",justify='center')
+TCiterBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 TCiterBox.tag_add("center",1.0,"end")
 TCiterBox.grid(row=0, column=3)
 
@@ -247,7 +252,7 @@ TCiterBox.grid(row=0, column=3)
 progIteLabel = Label(currentSettingFrame, text = "Program Iteration(s): ")
 progIteLabel.grid(row=1, column=2, sticky=W, padx=15, pady=10)
 progIteBox = Text(currentSettingFrame, height=2, width=5)
-progIteBox.tag_configure("center",justify='center')
+progIteBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 progIteBox.tag_add("center",1.0,"end")
 progIteBox.grid(row=1, column=3)
 
@@ -255,6 +260,8 @@ progIteBox.grid(row=1, column=3)
 jobLabel = Label(currentSettingFrame, text = "Current Job Running")
 jobLabel.grid(row=0, column=4, sticky=S, padx=15, pady=10)
 jobBox = Text(currentSettingFrame, height=2, width=40)
+jobBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
+jobBox.tag_add("center",1.0,"end")
 jobBox.grid(row=1, column=4)
 
 #=============== Other Buttons ===============
@@ -263,14 +270,11 @@ subexFrame = LabelFrame(mainframe, relief="ridge")
 subexFrame.grid(row=4, column=2, padx=5, pady=5, sticky='e') 
 
 # 1. Submit Button to Execute a bash script 
-submitJobButton = Button(subexFrame, text="Submit Job", width=10, bg="#82CC6C", highlightbackground="#82CC6C", 
-                         highlightthickness=3, borderwidth=0.1, relief="groove",
-                         command=lambda: start_popup1_thread(None))
+submitJobButton = Button(subexFrame, text="Submit Job", bg="#82CC6C",relief="groove",command=lambda: start_popup1_thread(None)) #, width=10)
 submitJobButton.grid(row=0, column=0, sticky='w', padx=10, pady=10)
 
 # 2. Exit Button
-exitButton = Button(subexFrame, text="Exit", width=10, bg="red", highlightbackground="red", 
-                         highlightthickness=3, borderwidth=0.1, relief="groove",command=popup2)
+exitButton = Button(subexFrame, text="Exit", bg="red", relief="groove",command=popup2) #, width=10)
 exitButton.grid(row=0, column=1, sticky='e', padx=5, pady=5)
 
 
@@ -306,70 +310,7 @@ def resetWin():
                 #sp.Popen(["bash", "kill -9", "script.sh"]) 
 
 # 3. Reset Window Button
-winResetButton = Button(mainframe, text="Reset", width=10, relief="groove", command=resetWin)
+winResetButton = Button(mainframe, text="Reset", relief="groove", command=resetWin)#, width=10)
 winResetButton.grid(row=0, column=1, columnspan=2, sticky='e', padx=80, pady=28)
-
-
-## Create Frames 
-## 1. Cluster Selection Frame
-#clusterFrame = LabelFrame(root, text="Cluster", padx=50, pady=50, relief="ridge", labelanchor="n")
-#clusterFrame.grid(row=1, column=0, sticky=W, padx=10, pady=10)  #clusterFrame.pack(padx=20, pady=20) # clusterFrame.grid(row=1, column=1, sticky="nswe", padx=10, pady=10)  
-## Connect Button inside clusterFrame
-#clusterConnectButton = Button(clusterFrame, text="Connect", width=15, relief="raised", justify="center", anchor="s")
-#clusterConnectButton.grid(row=0, column=0)
-##clusterConnectButton.pack(side="bottom", anchor="e")
-
-
-
-## 2. HDFS Directory Frame
-#hdfsDirFrame = LabelFrame(root, text="HDFS Directory", padx=50, pady=50)
-#hdfsDirFrame.grid(row=2, column=0, padx=10, pady=10)
-## Creating a ListBox and scroll Bar in hdfsDirFrame 
-#listbox_object = Listbox(hdfsDirFrame).grid(row=2, column=0) #, height=15, width=15
-##scrollbar_object = Scrollbar(hdfsDirFrame).grid(row=2, column=0, sticky='ns')
-##verticalScroll = Scrollbar(hdfsDirFrame, orient=VERTICAL).grid(sticky="S")
-#
-## 3. Parameter Summary Frame
-#summaryFrame = LabelFrame(root, text="Parameter Summary", padx=50, pady=50)
-#summaryFrame.grid(row=1, column=1, padx=10, pady=10) 
-#summaryBox = Listbox(summaryFrame).grid(row=1, column=1, sticky="W")
-#
-## 4. Execution Window Frame
-#execFrame = LabelFrame(root, text="Parameter Summary", padx=50, pady=50, width=150, height=150)
-#execFrame.grid(row=1, column=2, padx=10, pady=10) 
-#execBox = Listbox(execFrame).grid(row=1, column=2, sticky="W")
-
-
-
-
-#-------------------------------------------------------------------
-
-
-################ SCROLL BAR ###########
-'''
-# Add a canvas in the frame
-canvas = Canvas(psummFrame)
-canvas.grid(sticky="nsew")
-
-
-# Link a scrollbar to the frame and linked to the canvas
-vsb = Scrollbar(psummFrame, orient="vertical", command=canvas.yview)
-vsb.grid(row=0, column=1, sticky='ns')
-canvas.configure(yscrollcommand=vsb.set)
-
-# Link a scrollbar to the canvas
-hsb = Scrollbar(psummFrame, orient="horizontal", command=canvas.xview)
-hsb.grid(row=1, column=0, padx=5, sticky='ew')
-canvas.configure(xscrollcommand=hsb.set)
-
-# Bind Scroll Bars
-canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-# Create another Frame inside the canvas
-psummFrame2 = Frame(canvas)
-
-# Add that new frame to a new Window in the canvas
-canvas.create_window((0,0), window=psummFrame2, anchor='nw') # "0,0'" is top right corner
-'''
 
 root.mainloop()
