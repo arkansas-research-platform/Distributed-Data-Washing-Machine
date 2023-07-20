@@ -31,7 +31,9 @@ filename='parmStage.txt'
 def viewParms():
     # Open ParmStage File and Insert into TextBox if "view" button is pressed
     with open(filename, 'r') as f:
+        psummText.delete("1.0", END)
         psummText.insert(INSERT, f.read())
+        #psummText.config(state=DISABLED)
 
 def clearParms():
     psummText.delete("1.0", END)
@@ -117,8 +119,8 @@ entInputBox.grid(row=0, column=0, columnspan=2, padx=50, pady=28, sticky=E)
 appType = StringVar()
 appType.set(None)
 clusVar = StringVar()
-clusVar.set(None) # default value
-options = ["Custom Cluster", "AR HPC Center"]
+options = ["","Custom Cluster", "AR HPC Center"]
+clusVar.set(0) # default value
 # Parent Frame
 appFrame = LabelFrame(mainframe,text='Application Settings', labelanchor="n", width=80)
 appFrame.grid(row=1,column=0,padx=20, pady=20, sticky="nw")
@@ -127,7 +129,7 @@ appRadioButton2 = Radiobutton(appFrame, text="Spark Data Washing Machine", ancho
 clusLabel = Label(appFrame, text="Select Cluster Below")
 clusLabel.grid(row=2, column=0, sticky=W, padx=5, pady=10)
 #clusDD = OptionMenu(appFrame, clusVar, "Custom Cluster", "AR HPC Center").grid(row=2, column=1, sticky='w', padx=5, pady=10)
-clusCombo = ttk.Combobox(appFrame, values=options)
+clusCombo = ttk.Combobox(appFrame, values=options, state='readonly')
 clusCombo.current(None)
 clusCombo.bind("<<ComboboxSelected>>", comboClick)
 clusCombo.grid(row=3, column=0, sticky='w', padx=5)
@@ -138,7 +140,7 @@ configButton = Button(appFrame,text="Configure", relief="raised", justify="cente
 hdfsDirFrame = LabelFrame(mainframe,text='HDFS Directory', labelanchor="n")
 hdfsDirFrame.grid(row=2,column=0,padx=20, pady=0,sticky="w")
 
-hdfsTextBox = Text(hdfsDirFrame, height=20, width=45)
+hdfsTextBox = Text(hdfsDirFrame, height=20, width=45, state=DISABLED)
 hdfsTextBox.grid()
 
 # Directly Opens root directory
@@ -212,7 +214,7 @@ execFrame.grid(row=1,column=2,padx=5, pady=10,rowspan=2, sticky="w")
 
 # Execution TextBox
 #execBox= Listbox(execFrame, height=30, width=60, bg="white")
-execText = Text(execFrame, height=40, width=60)
+execText = Text(execFrame, height=40, width=60, state=DISABLED)
 execText.grid()
 #execText.grid_rowconfigure(1, weight=1)
 #execText.grid_columnconfigure(2, weight=1)
@@ -227,7 +229,7 @@ currentSettingFrame.grid(row=4, column=0, padx=20, pady=10, sticky='w', columnsp
 # Current MU
 muLabel = Label(currentSettingFrame, text = "New Mu Value: ")
 muLabel.grid(row=0, column=0, sticky=W, padx=5, pady=10)
-muBox = Text(currentSettingFrame, height=2, width=5)
+muBox = Text(currentSettingFrame, height=2, width=5, state=DISABLED)
 muBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 muBox.tag_add("center",1.0,"end")
 muBox.grid(row=0, column=1, padx=3)
@@ -235,7 +237,7 @@ muBox.grid(row=0, column=1, padx=3)
 # Current Epsilon
 epsLabel = Label(currentSettingFrame, text = "New Epsilon Value: ")
 epsLabel.grid(row=1, column=0, sticky=W, padx=5, pady=10)
-epsBox = Text(currentSettingFrame, height=2, width=5)
+epsBox = Text(currentSettingFrame, height=2, width=5, state=DISABLED)
 epsBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 epsBox.tag_add("center",1.0,"end")
 epsBox.grid(row=1, column=1)
@@ -243,7 +245,7 @@ epsBox.grid(row=1, column=1)
 # Transitive Closure Iteration
 TCiterLabel = Label(currentSettingFrame, text = "Transitive Closure Iteration(s): ")
 TCiterLabel.grid(row=0, column=2, sticky=W, padx=15, pady=10)
-TCiterBox = Text(currentSettingFrame, height=2, width=5)
+TCiterBox = Text(currentSettingFrame, height=2, width=5, state=DISABLED)
 TCiterBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 TCiterBox.tag_add("center",1.0,"end")
 TCiterBox.grid(row=0, column=3)
@@ -251,7 +253,7 @@ TCiterBox.grid(row=0, column=3)
 # Program Iteration
 progIteLabel = Label(currentSettingFrame, text = "Program Iteration(s): ")
 progIteLabel.grid(row=1, column=2, sticky=W, padx=15, pady=10)
-progIteBox = Text(currentSettingFrame, height=2, width=5)
+progIteBox = Text(currentSettingFrame, height=2, width=5, state=DISABLED)
 progIteBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 progIteBox.tag_add("center",1.0,"end")
 progIteBox.grid(row=1, column=3)
@@ -259,7 +261,7 @@ progIteBox.grid(row=1, column=3)
 # Current Job Running
 jobLabel = Label(currentSettingFrame, text = "Current Job Running")
 jobLabel.grid(row=0, column=4, sticky=S, padx=15, pady=10)
-jobBox = Text(currentSettingFrame, height=2, width=40)
+jobBox = Text(currentSettingFrame, height=2, width=40, state=DISABLED)
 jobBox.tag_configure("center",justify='center', font=("Comic Sans MS", 15))
 jobBox.tag_add("center",1.0,"end")
 jobBox.grid(row=1, column=4)
