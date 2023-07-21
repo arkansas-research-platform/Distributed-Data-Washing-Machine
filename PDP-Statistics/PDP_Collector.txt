@@ -1,24 +1,30 @@
->>> Starting PDP Statistics Collection for S1G-parms-copy.txt
-References Read: 50        
-Tokens Found: 626       
-Numeric Tokens: 226       
-Unique Tokens: 252       
+>>> Starting PDP Statistics Collection for S4G-parms-copy.txt
+References Read: 1,912     
+Tokens Found: 24,340    
+Numeric Tokens: 9,044     
+Unique Tokens: 5,182     
 >>>>> STARTING NEXT ITERATION >>>>>
-   New Mu -->  0.6
-   New Epsilon -->  0.23
-TotalMuCnts(Unduplicated Blocks): 34        
-Number of Pairs Linked(greaterThanMu): 27        
-GreaterThanEpsilon(RefsInGoodCluster): 34        
+   New Mu -->  0.74
+   New Epsilon -->  0.31
+TotalMuCnts(Unduplicated Blocks): 1,604     
+Number of Pairs Linked(greaterThanMu): 907       
+GreaterThanEpsilon(RefsInGoodCluster): 1,149     
 >>>>> STARTING NEXT ITERATION >>>>>
-   New Mu -->  0.65
-   New Epsilon -->  0.23
-   Total Ref Pairs (D) = 1225.0	
-   Linked Pairs (L) = 27.0	
-   Equivalent Pairs (E) =  27.0	
-   True Positive Pairs (TP) =  27.0	
-   False Positive Pairs (FP) =  0.0	
-   False Negative Pairs (FN) =  0.0	
-   True Negative Pairs (TN) =  1198.0	
-   Precision = 1.0	
-   Recall = 1.0	
-   F-score = 1.0	
+   New Mu -->  0.8
+   New Epsilon -->  0.31
+TotalMuCnts(Unduplicated Blocks): 136       
+Number of Pairs Linked(greaterThanMu): 0         
+   Total Ref Pairs (D) = 1826916.0	
+   Linked Pairs (L) = 936.0	
+   Equivalent Pairs (E) =  990.0	
+   True Positive Pairs (TP) =  903.0	
+   False Positive Pairs (FP) =  33.0	
+   False Negative Pairs (FN) =  87.0	
+   True Negative Pairs (TN) =  1825893.0	
+   Precision = 0.9647	
+   Recall = 0.9121	
+   F-score = 0.9377	
+
+Max Token Frequency:  1805
+Mean of Token Frequencies:  4.6868
+Standard Dev of Token Frequencies:  37.6633

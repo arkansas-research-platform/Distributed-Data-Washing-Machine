@@ -19,16 +19,25 @@ inputRDD = spark.sparkContext.textFile("hdfs://snodemain:9000/user/nick/HadoopDW
 inpSplitRDD = inputRDD.map(lambda word:word.strip().split(delimiter))
 filterRDD = inpSplitRDD.filter(lambda x:len(x) == 2)
 freqValRDD = filterRDD.map(lambda x: int(x[1].strip()))
+
+
+# Extract the stats
+    # Using stats in PySpark
+allStats = freqValRDD.stats()
+    # Alternatively, use accumulators (long process to extract these stats but works)
 frqMean = freqValRDD.mean()
 frqStdDev = freqValRDD.stdev()
+maxFreq = freqValRDD.max()
 
 # Accumulator (like custom counters in MR)
-totalFreq = freqValRDD.foreach(lambda x: accum.add(x))
-totalFreqValShow = accum.value
+#totalFreq = freqValRDD.foreach(lambda x: accum.add(x))
+#totalFreqValShow = accum.value
 
-
+#print(allStats)
+print('Max Token Frequency: ', maxFreq, file=log)
 print('Mean of Token Frequencies: ', round(frqMean, 4), file=log)
 print('Standard Dev of Token Frequencies: ', round(frqStdDev, 4), file=log)
+
 log.close()
 # 3. View or Save Results
 #filterRDD.coalesce(1).saveAsTextFile("hdfs://snodemain:9000/user/nick/HadoopDWM/Spark-PDP")

@@ -1,0 +1,32 @@
+pdpBDict:
+    DWM16-BuildTokFreq
+        tokenCnt (ss)
+        uniqueTokenCnt (ss)
+        uniqueTokenRatio (ss)
+        numTokenCnt (ss)
+        numTokenRatio (ss)
+        maxTokenFreq (ss)
+        avgFreq (ss)
+        stdFreq (ss)
+
+    DWM99-ERmetrics
+        precision (ss)
+        recall (ss)
+        fMeasure (ss)
+
+
+pdpDict:
+    DWM00 - Driver
+    	refCnt (si)
+    DWM55-LinkBlockPairs
+        totalMuCounts (si)
+        greaterThanMu (si)
+
+    DWM90-Iterate RefsInGoodCluster
+        greaterEpsilon (si)
+    
+    DWM99-ERmetrics
+        truePairs (si)
+        expectedPairs (si)
+        linkedPairs (si)
+

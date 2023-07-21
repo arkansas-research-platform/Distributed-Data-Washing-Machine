@@ -7,3 +7,6 @@
 spark-submit \
 	--master local[4] \
 	krisCalculator.py
+
+# Execute the 'statsExtractor.py file'
+python statsExtractor.py
