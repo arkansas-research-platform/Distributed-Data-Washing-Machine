@@ -91,19 +91,15 @@ def TokenizationMapper(data):
     value = unclean_file[0:firstDelimiter]
     keyTokens = unclean_file[firstDelimiter+1:]
     cleanLine = tokenizerFunction(keyTokens)
-    #valCleanline = [value] + cleanLine
-    #return valCleanline
+    valCleanline = [value] + cleanLine
+    return valCleanline
 
+    '''
     if removeDuplicateTokens:
         cleanLine = list(dict.fromkeys(cleanLine))
     valCleanline = [value] + cleanLine
     return valCleanline
-    
-#def tokenRefIDmapping(x):
-#    refID = x[0]
-#    toks = x[1:]
-#    pair = [enumerate(toks,1)] #n is a num/position using enumerate and starts from 1
-#    return pair
+    '''
 
     #mypair = {'refID':refID, 'item': pair}#'pos': pair[0], 'tok': pair[1]}
     #return mypair
@@ -150,7 +146,6 @@ def TokenizationMapper(data):
         mypair = str(mypair).replace('(', '').replace(')', '')
         return('%s | %s | %s'% (key, mypair, 'one')) 
 '''
-
 ############################################################
 #               END OF MAPPER       
 ############################################################

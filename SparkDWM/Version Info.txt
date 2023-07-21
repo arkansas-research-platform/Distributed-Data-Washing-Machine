@@ -1,4 +1,8 @@
 v1.00
     - Created SDWM00_Driver, SDWM010_Tokenization, runSpark scripts
     - Ships parmsfile, DWM-Modules to distributed cache to be used by both Driver and Executors
-    - Phase 1: Frequency Generation, Tokenization, and Join Operations successfully completed
+    - Phase 1: Frequency Generation, Tokenization, and Join process successfully completed
+
+v1.01
+    - Started a SDWM_Log.txt file to record statistics
+    - Phase 2: Reference Reformation process successfully completed

@@ -22,6 +22,6 @@ spark-submit \
 	--name 'Spark Data Washing Machine' \
 	--master local[4] \
 	--deploy-mode client \
-	--py-files DWM-Modules.zip,SDWM010_Tokenization.py \
+	--py-files DWM-Modules.zip,SDWM010_Tokenization.py,SDWM025_BlockTokenPair.py  \
 	--files S8P-parms-copy.txt \
 	SDWM00_Driver.py
