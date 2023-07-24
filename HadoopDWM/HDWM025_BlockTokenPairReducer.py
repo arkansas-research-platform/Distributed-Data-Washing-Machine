@@ -75,6 +75,27 @@ def BlockTokenPairReduce():
             current_refID = refID
             current_block_keyPairs = block_keyPairs  
 
+    # Process last group
+    if current_block_keyPairs == block_keyPairs:
+        refID_split = current_refID.split('|')
+        # Creating pairs
+        for x in range(0, len(refID_split)-1):
+            for y in range(x+1, len(refID_split)):
+                Xtoken = refID_split[x]
+                Ytoken = refID_split[y]
+                if Xtoken < Ytoken:
+                    pair = (Xtoken + ',' + Ytoken)
+                    print('%s : %s' % (pair, 'one'))
+                    # Reporting to MapReduce Counter
+                    sys.stderr.write("reporter:counter:Blocking Counters,Pairs Created-by-Blocks,1\n")
+                    blkPairCnt +=1
+                else:
+                    pair = (Ytoken + ',' + Xtoken )
+                    print('%s : %s' % (pair, 'one'))
+                    # Reporting to MapReduce Counter
+                    sys.stderr.write("reporter:counter:Blocking Counters,Pairs Created-by-Blocks,1\n")
+                    blkPairCnt +=1
+
 if __name__ == '__main__':
     BlockTokenPairReduce()      
 ############################################################
