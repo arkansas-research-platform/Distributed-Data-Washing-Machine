@@ -6,3 +6,4 @@ v1.00
 v1.01
     - Started a SDWM_Log.txt file to record statistics
     - Phase 2: Reference Reformation process successfully completed
+    - Phase 3: Blocking successfully completed

@@ -18,10 +18,12 @@ user_home=$(eval echo ~$USER)
 # Submit spark Application
 # --master <local, standalone, or yarn> eg. local[4] (local mode with 4 cpu cores)
 # --deploy-mode < client or cluster >
+#--conf spark.eventLog.enabled=true \
+#--conf spark.eventLog.dir='/home/nick/Distributed-DWM/SDWM/tmp/spark-events' \
 spark-submit \
 	--name 'Spark Data Washing Machine' \
 	--master local[4] \
 	--deploy-mode client \
-	--py-files DWM-Modules.zip,SDWM010_Tokenization.py,SDWM025_BlockTokenPair.py  \
-	--files S8P-parms-copy.txt \
+	--py-files DWM-Modules.zip,SDWM010_Tokenization.py,SDWM025_Blocking.py  \
+	--files S1G-parms-copy.txt \
 	SDWM00_Driver.py
