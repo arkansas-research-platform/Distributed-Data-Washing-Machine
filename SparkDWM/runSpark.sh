@@ -147,9 +147,9 @@ then
 		--name 'Spark Data Washing Machine' \
 		--master local[4] \
 		--deploy-mode client \
-		--py-files $(pwd)/DWM-Modules.zip,$(pwd)/SparkDWM/SDWM010_Tokenization.py,$(pwd)/SparkDWM/SDWM025_Blocking.py  \
+		--py-files $(pwd)/DWM-Modules.zip,$(pwd)/SDWM/SDWM010_Tokenization.py,$(pwd)/SDWM/SDWM025_Blocking.py  \
 		--files $(pwd)/parmStage.txt \
-		$(pwd)/SparkDWM/SDWM00_Driver.py
+		$(pwd)/SDWM/SDWM00_Driver.py
 
 
     # Exiting program if the parameter file specified does not exists

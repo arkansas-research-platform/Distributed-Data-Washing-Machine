@@ -1,5 +1,2 @@
-#pdpDict =  {'totalMuCounts': [1604, 136], 'greaterThanMu': [907, 0], 'greaterEpsilon': [1149], 'linkedPairs': 936, 'expectedPairs': 990, 'truePairs': 903, 'precision': 0.9647, 'recall': 0.9121, 'fMeasure': 0.9377}
-#pdpBDict =  {'tokenCnt': '24,340', 'numTokenCnt': '9,044', 'uniqueTokenCnt': '5,182', 'linkedPairs': 936, 'expectedPairs': 990, 'truePairs': 903, 'precision': '0.9647', 'recall': '0.9121', 'fMeasure': '0.9377', 'maxTokenFreq': '1805', 'avgFreq': '4.6868', 'stdFreq': '37.6633', 'uniqueTokenRatio': '0.2129', 'numTokenRatio': '0.3716'}
-
 pdpDict =  {'refCnt': 1912, 'totalMuCounts': 1740, 'greaterThanMu': 907, 'greaterEpsilon': 1149, 'linkedPairs': 936, 'expectedPairs': 990, 'truePairs': 903, 'precision': 0.9647, 'recall': 0.9121, 'fMeasure': 0.9377}
 pdpBDict =  {'tokenCnt': '24,340', 'numTokenCnt': '9,044', 'uniqueTokenCnt': '5,182', 'linkedPairs': 936, 'expectedPairs': 990, 'truePairs': 903, 'precision': '0.9647', 'recall': '0.9121', 'fMeasure': '0.9377', 'maxTokenFreq': '1805', 'avgFreq': '4.6868', 'stdFreq': '37.6633', 'uniqueTokenRatio': '0.2129', 'numTokenRatio': '0.3716'}

@@ -17,7 +17,7 @@ import DWM10_Parms
 #########################################################
 
 #====== Read Parms file ====== 
-DWM10_Parms.getParms('S1G-parms-copy.txt')
+DWM10_Parms.getParms('parmStage.txt')
 beta = DWM10_Parms.beta
 excludeNumericBlocks = DWM10_Parms.excludeNumericBlocks
 minBlkTokenLen = DWM10_Parms.minBlkTokenLen
@@ -99,25 +99,25 @@ def bySingles(keyList):
     return pairList
 
 #=================================================================================== 
-#def refIDPairing(refIDList):
-#    keyPairList = []
-#    tokKey = refIDList[0]
-#    refIDs = refIDList[1]
-#    tokKeySplit = refIDs.split(',')
-#
-#    for x in range(0, len(tokKeySplit)-1):
-#        for y in range(x+1, len(tokKeySplit)):
-#            Xtoken = tokKeySplit[x]
-#            Ytoken = tokKeySplit[y]
-#            if Xtoken < Ytoken:
-#                pair = (Xtoken+','+Ytoken)
-#                keyPair = ('%s:%s' % (pair, 'one'))
-#                keyPairList.append(keyPair)
-#            else:
-#                pair = (Ytoken+','+Xtoken )
-#                keyPair = ('%s:%s' % (pair, 'one'))
-#                keyPairList.append(keyPair)
-#    return keyPairList
+def refIDPairing(refIDList):
+    keyPairList = []
+    tokKey = refIDList[0]
+    refIDs = refIDList[1]
+    tokKeySplit = refIDs.split(',')
+
+    for x in range(0, len(tokKeySplit)-1):
+        for y in range(x+1, len(tokKeySplit)):
+            Xtoken = tokKeySplit[x]
+            Ytoken = tokKeySplit[y]
+            if Xtoken < Ytoken:
+                pair = (Xtoken+','+Ytoken)
+                keyPair = ('%s:%s' % (pair, 'one'))
+                keyPairList.append(keyPair)
+            else:
+                pair = (Ytoken+','+Xtoken )
+                keyPair = ('%s:%s' % (pair, 'one'))
+                keyPairList.append(keyPair)
+    return keyPairList
 #===================================================================================
 
 ############################################################
