@@ -1,0 +1,19 @@
+***********************************************
+Input File to process      -->  S1G.txt 
+Delimeter                  -->  ',' 
+File has Header            -->  True
+Tokenizer type             -->  Splitter
+TruthSet File              -->  truthABCgoodDQ.txt
+Beta                       -->  6
+Block by Pairs             -->  True
+Min. Blocking Token Length -->  4
+Exclude Num. Block Tokens  -->  True
+Sigma                      -->  7
+Remove Dup. Ref. Tokens    -->  True
+Remove Excl. Block Tokens  -->  True
+Mu                         -->  0.6
+Mu Iterate                 -->  0.05
+Matrix Comparator          -->  ScoringMatrixKris
+Epsilon                    -->  0.23
+Epsilon Iterate            -->  0.0
+***********************************************

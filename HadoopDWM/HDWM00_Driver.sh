@@ -44,6 +44,9 @@ then
     # Final Log file to give to user
     Log_File="$(pwd)/HDWM_Log_$startTime.txt"
 
+	# Log File for parameter summary
+    Sum_Log="$(pwd)/parmSummary.txt"
+
     # For Kris - Create a file to collect Statistics for PDP 
     PDP_File="$(pwd)/PDP-Statistics/PDP_Collector.txt"
     echo ">>> Starting PDP Statistics Collection for $parmFile" > $PDP_File
@@ -63,13 +66,13 @@ then
         if [[ "$line" = inputFileName* ]]
         then
             echo "HADOOP DATA WASHING MACHINE" >> $Log_File
-            echo "***********************************************" >> $Log_File
-            echo "         Summary of Parameter Settings         " >> $Log_File
-            echo "         -----------------------------         " >> $Log_File
+            echo "***********************************************" > $Sum_Log
+            #echo "         Summary of Parameter Settings         " >> $Log_File
+            #echo "         -----------------------------         " >> $Log_File
             inputFile="$val"
             # Copy Input file to a Stagging file
             cp $(pwd)/$inputFile $(pwd)/inputStage.txt
-            echo "Input File to process      -->  $inputFile " >> $Log_File       
+            echo "Input File to process      -->  $inputFile " >> $Sum_Log       
             continue
         elif [[ "$line" = hasHeader* ]]
         then
@@ -79,83 +82,83 @@ then
             then
                 sed -i '1d' $(pwd)/inputStage.txt
             fi
-            echo "File has Header            -->  $header" >> $Log_File         
+            echo "File has Header            -->  $header" >> $Sum_Log         
             continue
         elif [[ "$line" = delimiter* ]]
         then
             delimiter="$val"
-            echo "Delimeter                  -->  '$delimiter' " >> $Log_File
+            echo "Delimeter                  -->  '$delimiter' " >> $Sum_Log
             continue
         elif [[ "$line" = tokenizerType* ]]
         then
             tokenizer="$val"
-            echo "Tokenizer type             -->  $tokenizer" >> $Log_File     
+            echo "Tokenizer type             -->  $tokenizer" >> $Sum_Log     
             continue
         elif [[ "$line" = truthFileName* ]]
         then
             truthFile="$val"
-            echo "TruthSet File              -->  $truthFile" >> $Log_File    
+            echo "TruthSet File              -->  $truthFile" >> $Sum_Log    
             continue 
         elif [[ "$line" = beta* ]]
         then
             beta="$val"
-            echo "Beta                       -->  $beta" >> $Log_File        
+            echo "Beta                       -->  $beta" >> $Sum_Log        
             continue 
         elif [[ "$line" = blockByPairs* ]]
         then
             blockByPairs="$val"
-            echo "Block by Pairs             -->  $blockByPairs" >> $Log_File 
+            echo "Block by Pairs             -->  $blockByPairs" >> $Sum_Log 
             continue 
         elif [[ "$line" = minBlkTokenLen* ]]
         then
             minBlkTokenLen="$val"
-            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $Log_File  
+            echo "Min. Blocking Token Length -->  $minBlkTokenLen" >> $Sum_Log  
             continue 
         elif [[ "$line" = excludeNumericBlocks* ]]
         then
             excludeNumTok="$val"
-            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $Log_File  
+            echo "Exclude Num. Block Tokens  -->  $excludeNumTok" >> $Sum_Log  
             continue 
         elif [[ "$line" = sigma* ]]
         then
             sigma="$val"
-            echo "Sigma                      -->  $sigma" >> $Log_File        
+            echo "Sigma                      -->  $sigma" >> $Sum_Log        
             continue 
         elif [[ "$line" = removeDuplicateTokens* ]]
         then
             deDupTokens="$val"
-            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $Log_File  
+            echo "Remove Dup. Ref. Tokens    -->  $deDupTokens" >> $Sum_Log  
             continue
         elif [[ "$line" = removeExcludedBlkTokens* ]]
         then
             removeExcBlkTok="$val"
-            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $Log_File  
+            echo "Remove Excl. Block Tokens  -->  $removeExcBlkTok" >> $Sum_Log  
             continue
         elif [[ "$line" = comparator* ]]
         then
             comparator="$val"
-            echo "Matrix Comparator          -->  $comparator" >> $Log_File   
+            echo "Matrix Comparator          -->  $comparator" >> $Sum_Log   
             continue
         elif [[ "$line" = mu ]]
         then
             export mu="$val"
-            echo "Mu                         -->  $mu" >> $Log_File           
+            echo "Mu                         -->  $mu" >> $Sum_Log           
             continue
         elif [[ "$line" = muIterate ]]
         then
             muIter="$val"
-            echo "Mu Iterate                 -->  $muIter" >> $Log_File           
+            echo "Mu Iterate                 -->  $muIter" >> $Sum_Log           
             continue
         elif [[ "$line" = epsilon ]]
         then
             export epsilon="$val"
-            echo "Epsilon                    -->  $epsilon" >> $Log_File           
+            echo "Epsilon                    -->  $epsilon" >> $Sum_Log           
             continue
         elif [[ "$line" = epsilonIterate ]]
         then
             epsilonIter="$val"
-            echo "Epsilon Iterate            -->  $epsilonIter" >> $Log_File 
-            echo "***********************************************" >> $Log_File           
+            echo "Epsilon Iterate            -->  $epsilonIter" >> $Sum_Log 
+            echo "***********************************************" >> $Sum_Log           
             continue
         fi
     done < "$(pwd)/$parmFile"
@@ -196,7 +199,7 @@ then
     echo "        " >> $Log_File
     echo ">> Starting Tokenization Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM010_TokenizationMapper.py,$(pwd)/HDWM/HDWM010_TokenizationReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/DWM-Modules.zip \
+        -files $(pwd)/HadoopDWM/HDWM010_TokenizationMapper.py,$(pwd)/HadoopDWM/HDWM010_TokenizationReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/DWM-Modules.zip \
         -input HadoopDWM/inputStage.txt \
         -output HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TokenizationMapper.py \
@@ -243,7 +246,7 @@ then
     #echo "        " >> $Log_File 
     #echo ">> Starting Metadata with Frequency Update  Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM015_JoinMapper.py,$(pwd)/HDWM/HDWM015_JoinReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM015_JoinMapper.py,$(pwd)/HadoopDWM/HDWM015_JoinReducer.py \
         -input HadoopDWM/job1_Tokens-Freq \
         -output HadoopDWM/job2_Updated-Mdata \
         -mapper HDWM015_JoinMapper.py \
@@ -273,7 +276,7 @@ then
     #echo "        " >> $Log_File
     #echo ">> Starting Reference Reformation Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM020_RefRecreationMapper.py,$(pwd)/HDWM/HDWM020_RefRecreationReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM020_RefRecreationMapper.py,$(pwd)/HadoopDWM/HDWM020_RefRecreationReducer.py \
         -input HadoopDWM/job2_Updated-Mdata\
         -output HadoopDWM/job3_RecreateRefs \
         -mapper HDWM020_RefRecreationMapper.py \
@@ -345,7 +348,7 @@ then
         echo ">> Starting Blocking Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM025_BlockTokenPairMapper.py,$(pwd)/HDWM/HDWM025_BlockTokenPairReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/DWM-Modules.zip \
+            -files $(pwd)/HadoopDWM/HDWM025_BlockTokenPairMapper.py,$(pwd)/HadoopDWM/HDWM025_BlockTokenPairReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$(pwd)/DWM-Modules.zip \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -411,7 +414,7 @@ then
         #echo ">> Starting Blocking Key Deduplication Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job5_BlockDedup
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM030_RefPairDedupReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM030_RefPairDedupReducer.py \
             -input HadoopDWM/job4_BlockTokens \
             -output HadoopDWM/job5_BlockDedup \
             -mapper $Identity_Mapper \
@@ -441,7 +444,7 @@ then
         #echo ">> Starting Block & Reformed Refs Join Process" >> $Log_File 
         hdfs dfs -rm -r HadoopDWM/job6_tmp_out
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM035_RefIDMetadataMapper.py,$(pwd)/HDWM/HDWM035_RefIDMetadataReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM035_RefIDMetadataMapper.py,$(pwd)/HadoopDWM/HDWM035_RefIDMetadataReducer.py \
             -Dstream.num.map.output.key.fields=2 \
             -input HadoopDWM/job3_RecreateRefs \
             -input HadoopDWM/job5_BlockDedup \
@@ -472,7 +475,7 @@ then
         #echo ">> Starting Unduplicated Blocking Ref Pairs  Process" >> $Log_File 
         hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM036_UnduplicateRefsReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM036_UnduplicateRefsReducer.py \
             -input HadoopDWM/job6_tmp_out \
             -output HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
@@ -510,7 +513,7 @@ then
         echo ">> Starting Similarity Comparison Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM050_SimilarityComparisonReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip,$(pwd)/textdistance.zip \
+            -files $(pwd)/HadoopDWM/HDWM050_SimilarityComparisonReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip,$(pwd)/textdistance.zip \
             -input HadoopDWM/job6_UndupBlockPairs \
             -output HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
@@ -572,7 +575,7 @@ then
             then
                 hdfs dfs -rm -r HadoopDWM/job8_tmpOut
                 hadoop jar $STREAMJAR \
-                    -files $(pwd)/HDWM/HDWM055_TransitiveClosureCCMR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms \
+                    -files $(pwd)/HadoopDWM/HDWM055_TransitiveClosureCCMR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt#parms \
                     -D stream.map.output.field.separator=, \
                     -D stream.num.map.output.key.fields=2 \
                     -input HadoopDWM/job8_tmpIn \
@@ -645,7 +648,7 @@ then
         #echo ">> Starting Update RefID with Metadata Process" >> $Log_File
         hdfs dfs -rm -r HadoopDWM/job9_TCout-Mdata
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM060_ClusterRemainRefMapper.py,$(pwd)/HDWM/HDWM060_ClusterRemainRefReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM060_ClusterRemainRefMapper.py,$(pwd)/HadoopDWM/HDWM060_ClusterRemainRefReducer.py \
             -input HadoopDWM/job8_tmpIn \
             -input HadoopDWM/job3_RecreateRefs \
             -output HadoopDWM/job9_TCout-Mdata  \
@@ -675,7 +678,7 @@ then
         echo ">> Starting Cluster Evaluation Process" >> $Log_File  
         hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM070_ClusterEvaluationReducer.py,$tmpDir/epsilonReport.txt \
+            -files $(pwd)/HadoopDWM/HDWM070_ClusterEvaluationReducer.py,$tmpDir/epsilonReport.txt \
             -input HadoopDWM/job9_TCout-Mdata \
             -output HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
@@ -718,7 +721,7 @@ then
         #echo ">> Starting Reference Tagging Process" >> $Log_File 
         hdfs dfs -rm -r HadoopDWM/job10_tmpLinkIndex
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM075_TagClusterRefsMapper.py,$(pwd)/HDWM/HDWM075_TagClusterRefsReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM075_TagClusterRefsMapper.py,$(pwd)/HadoopDWM/HDWM075_TagClusterRefsReducer.py \
             -input HadoopDWM/job10_ClusterEval \
             -output HadoopDWM/job10_tmpLinkIndex \
             -mapper HDWM075_TagClusterRefsMapper.py \
@@ -761,7 +764,7 @@ then
     echo "        " >> $Log_File
     echo ">> Starting Write-To-LinkIndex Process" >> $Log_File  
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM077_LinkedIndexMapper.py,$(pwd)/HDWM/HDWM077_LinkedIndexReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM077_LinkedIndexMapper.py,$(pwd)/HadoopDWM/HDWM077_LinkedIndexReducer.py \
         -input HadoopDWM/job_LinkIndexDirty \
         -input HadoopDWM/job3_RecreateRefs \
         -output HadoopDWM/LinkedIndex_$inputFile \
@@ -803,7 +806,7 @@ then
     #echo "        " >> $Log_File 
     #echo ">> Starting Pre-Cluster Profile Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM080_PreClusterProfileMapper.py,$(pwd)/HDWM/HDWM080_PreClusterProfileReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM080_PreClusterProfileMapper.py,$(pwd)/HadoopDWM/HDWM080_PreClusterProfileReducer.py \
         -input HadoopDWM/LinkedIndex_$inputFile \
         -output HadoopDWM/job_PreClusterProfile \
         -mapper HDWM080_PreClusterProfileMapper.py \
@@ -832,7 +835,7 @@ then
     echo "        " >> $Log_File 
     echo ">> Starting Cluster Profile Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM081_ClusterProfileReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM081_ClusterProfileReducer.py \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
@@ -876,7 +879,7 @@ then
         #echo "        " >> $Log_File
         #echo ">> Starting Pre-ER Matrix Process" >> $Log_File
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM095_PreERMatrixMapper.py,$(pwd)/HDWM/HDWM095_PreERMatrixReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM095_PreERMatrixMapper.py,$(pwd)/HadoopDWM/HDWM095_PreERMatrixReducer.py \
             -input HadoopDWM/$truthFile \
             -input HadoopDWM/LinkedIndex_$inputFile \
             -output HadoopDWM/job12_PreMatrix \
@@ -906,7 +909,7 @@ then
         echo "        " >> $Log_File
         echo ">> Starting ER Matrix Process" >> $Log_File
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM099_ERMatrixReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM099_ERMatrixReducer.py \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
