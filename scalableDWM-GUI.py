@@ -24,7 +24,7 @@ root.configure(background='violet')
 # Define Functions
 padding = dict(padx=50,pady=50)
 
-filename='parmStage.txt'
+filename='parmSummary.txt'
 
 #================= Define Functions ==================
 # ---- Fxns used in Parameter Summary Widget 
@@ -33,7 +33,7 @@ def viewParms():
     with open(filename, 'r') as f:
         psummText.delete("1.0", END)
         psummText.insert(INSERT, f.read())
-        psummText.config(state=DISABLED)
+        #psummText.config(state=DISABLED)
 
 def clearParms():
     psummText.config(state=NORMAL)
@@ -56,7 +56,7 @@ def popup1():
         output = process.stdout.readline()
         if output:
             execText.insert(INSERT, output)
-            execText.config(state=DISABLED)
+            #execText.config(state=DISABLED)
         result = process.poll()
         if result is not None:
             break
@@ -195,7 +195,7 @@ psummFrame.grid(row=1, column=1, padx=5, pady=10, rowspan=2, sticky="w")
 
 # Parameter Summary TextBox
 #psummBox= Listbox(psummFrame, height=30, width=45, bg="white")
-psummText = Text(psummFrame, height=38, width=45)
+psummText = Text(psummFrame, height=38, width=50)
 psummText.grid()
 #psummText.grid_rowconfigure(1, weight=1)
 #psummText.grid_columnconfigure(1, weight=1)
