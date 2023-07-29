@@ -18,7 +18,7 @@ import DWM66_ScoringMatrixKris
 import textdistance
 
 # Read Parms file
-DWM10_Parms.getParms('parms')
+DWM10_Parms.getParms('parmStage.txt')
 
 #Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
 #       Ignoring this line will cause the job to fail ( 4 days researching to discover this )

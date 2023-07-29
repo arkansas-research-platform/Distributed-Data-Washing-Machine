@@ -14,7 +14,6 @@ then
 	username=$(whoami)
 	user_home=$(eval echo ~$USER)
 
-
 	# Log File for parameter summary
     Sum_Log="$(pwd)/parmSummary.txt"
 
@@ -147,10 +146,10 @@ then
 		--name 'Spark Data Washing Machine' \
 		--master local[4] \
 		--deploy-mode client \
-		--py-files $(pwd)/DWM-Modules.zip,$(pwd)/SDWM/SDWM010_Tokenization.py,$(pwd)/SDWM/SDWM025_Blocking.py  \
+		--py-files $(pwd)/SDWM/DWM10_Parms.py,$(pwd)/SDWM/DWM65_ScoringMatrixStd.py,$(pwd)/SDWM/DWM66_ScoringMatrixKris.py,$(pwd)/SDWM/StopWord.py,$(pwd)/SDWM/SDWM010_Tokenization.py,$(pwd)/SDWM/SDWM025_Blocking.py,$(pwd)/SDWM/SDWM050_SimilarityComparison.py \
 		--files $(pwd)/parmStage.txt \
 		$(pwd)/SDWM/SDWM00_Driver.py
-
+    #$(pwd)/DWM-Modules.zip,
 
     # Exiting program if the parameter file specified does not exists
     exit 0

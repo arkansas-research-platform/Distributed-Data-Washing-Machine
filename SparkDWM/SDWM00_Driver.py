@@ -11,6 +11,11 @@ from operator import add
 import DWM10_Parms
 import SDWM010_Tokenization
 import SDWM025_Blocking
+import SDWM050_SimilarityComparison
+import StopWord
+import DWM65_ScoringMatrixStd
+import DWM66_ScoringMatrixKris
+import textdistance
 from pyspark import SparkConf
 from pyspark import SparkFiles
 from pyspark.sql import SparkSession
@@ -158,12 +163,27 @@ print('    Total Unduplicated Blocks:', uniqueBlockPairList.count(), file=logFil
 #==============================================================================
 
 #=================== PHASE 4: SIMILARITY COMPARISON PROCESS =================== 
-
-
+print('\n>> Starting Similarity Comparison Process', file=logFile)
+#prepRefPair = pairsWithMetadata.map(lambda x: x.split('<>'))
+    #linkedPairs = '%s.%s,%s' % (refID1,refID2,refID2) # Original Linked Pairs 
+    #inversedLinkedPairs = '%s.%s,%s' % (refID2, refID1,refID1) # Inverted Linked Pairs
+    #pairSelf = '%s.%s,%s' % (refID1,refID1,refID1) # PairSelf
+linkPairs = pairsWithMetadata.map(SDWM050_SimilarityComparison.similarPairs) \
+                                    .filter(lambda x: x != None)
+links = linkPairs.map(lambda x: (x.split(',')[0].strip() + '.'+ x.split(',')[1].strip(), x.split(',')[1].strip()))
+inversedLinkedPairs = linkPairs.map(lambda x: (x.split(',')[1].strip() + '.'+ x.split(',')[0].strip(), x.split(',')[0].strip()))
+pairSelf = linkPairs.map(lambda x: (x.split(',')[0].strip() + '.'+ x.split(',')[0].strip(), x.split(',')[0].strip()))
+unionAllForTransClosure = links.union(inversedLinkedPairs).union(pairSelf)
+#==============================================================================
+# ------------------- Job Statistics -----------------
+print('  ----- Job Statistics ----- ', file=logFile)
+print('    Number of Pairs Linked:', linkPairs.count(), file=logFile)
 #==============================================================================
 
+
+
 #=================== FINAL OUTPUT =================== 
-pairsWithMetadata.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
+unionAllForTransClosure.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
 #checkRDD.coalesce(1).saveAsTextFile("hdfs://snodemain:9000/user/nick/SparkDWM/SDWM-Out")   # Output to HDFS
 
 logFile.close()

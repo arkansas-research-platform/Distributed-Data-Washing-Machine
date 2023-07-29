@@ -13,7 +13,7 @@ sys.path.append('DWM-Modules.zip')
 import DWM10_Parms 
 
 # Read Parms file
-DWM10_Parms.getParms('parms')
+DWM10_Parms.getParms('parmStage.txt')
  #########################################################
  #              DEVELOPER's NOTES
  #     --TOKENIZATION Mapper (Metadata Creation)--

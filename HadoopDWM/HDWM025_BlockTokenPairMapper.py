@@ -12,7 +12,7 @@ sys.path.append('DWM-Modules.zip')
 import DWM10_Parms 
 
 # Read PArms file
-DWM10_Parms.getParms('parms')
+DWM10_Parms.getParms('parmStage.txt')
  #########################################################
 
  #                     DEVELOPER's NOTES

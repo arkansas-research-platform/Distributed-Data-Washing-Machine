@@ -7,7 +7,7 @@
 from textdistance import DamerauLevenshtein
 import DWM10_Parms
 # Read Parms file
-DWM10_Parms.getParms('parms')
+DWM10_Parms.getParms('parmStage.txt')
 
 matrixNumTokenRule = DWM10_Parms.matrixNumTokenRule
 matrixInitialRule = DWM10_Parms.matrixInitialRule

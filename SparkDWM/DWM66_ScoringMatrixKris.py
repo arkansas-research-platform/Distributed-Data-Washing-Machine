@@ -16,9 +16,11 @@ matrixNumTokenRule = DWM10_Parms.matrixNumTokenRule
 matrixInitialRule = DWM10_Parms.matrixInitialRule
 
 # Loading muReport file from Distributed Cache
-with open('muReport.txt', 'r') as openMuFile:
-    muVal = str(openMuFile.readline()).strip()
-mu = float(muVal)
+#with open('muReport.txt', 'r') as openMuFile:
+#    muVal = str(openMuFile.readline()).strip()
+#mu = float(muVal)
+
+mu = DWM10_Parms.mu
 
 ##### ScoringMatrixKris Function #####
 def normalized_similarity(refList1, refList2):

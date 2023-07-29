@@ -18,7 +18,7 @@ import DWM10_Parms
  #########################################################
 
 #====== Read Parms file ====== 
-DWM10_Parms.getParms('S1G-parms-copy.txt')
+DWM10_Parms.getParms('parmStage.txt')
 hasHeader = DWM10_Parms.hasHeader
 delimiter = DWM10_Parms.delimiter
 tokenizerType = DWM10_Parms.tokenizerType

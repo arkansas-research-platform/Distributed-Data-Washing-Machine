@@ -7,3 +7,7 @@ v1.01
     - Started a SDWM_Log.txt file to record statistics
     - Phase 2: Reference Reformation process successfully completed
     - Phase 3: Blocking successfully completed
+
+v1.02
+    - Phase 4: Similarity Comparison completed
+    - Moved DWM-Modules as a zip into parent directory
