@@ -86,3 +86,6 @@ v1.13
 
 v1.14
     - Remaned Modules and Converted Scripts as Modules whose Functions can be imported 
+
+v1.15
+    - Remaned parms to parmsStage.txt for consistency between SDWM and HDWM 
