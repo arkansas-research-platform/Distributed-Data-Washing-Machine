@@ -66,13 +66,15 @@ then
         if [[ "$line" = inputFileName* ]]
         then
             echo "HADOOP DATA WASHING MACHINE" >> $Log_File
+            echo "***********************************************" > $Log_File
             echo "***********************************************" > $Sum_Log
             #echo "         Summary of Parameter Settings         " >> $Log_File
             #echo "         -----------------------------         " >> $Log_File
             inputFile="$val"
             # Copy Input file to a Stagging file
             cp $(pwd)/$inputFile $(pwd)/inputStage.txt
-            echo "Input File to process      -->  $inputFile " >> $Sum_Log       
+            echo "Input File to process      -->  $inputFile " >> $Sum_Log  
+            echo "Input File to process      -->  $inputFile " >> $Log_File       
             continue
         elif [[ "$line" = hasHeader* ]]
         then
