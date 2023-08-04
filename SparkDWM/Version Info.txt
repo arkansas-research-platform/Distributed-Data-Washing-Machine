@@ -11,3 +11,6 @@ v1.01
 v1.02
     - Phase 4: Similarity Comparison completed
     - Moved DWM-Modules as a zip into parent directory
+
+v1.03
+    - Phase 5: Transitive Closure completed

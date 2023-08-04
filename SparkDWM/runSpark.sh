@@ -146,7 +146,7 @@ then
 		--name 'Spark Data Washing Machine' \
 		--master local[4] \
 		--deploy-mode client \
-		--py-files $(pwd)/SDWM/DWM10_Parms.py,$(pwd)/SDWM/DWM65_ScoringMatrixStd.py,$(pwd)/SDWM/DWM66_ScoringMatrixKris.py,$(pwd)/SDWM/StopWord.py,$(pwd)/SDWM/SDWM010_Tokenization.py,$(pwd)/SDWM/SDWM025_Blocking.py,$(pwd)/SDWM/SDWM050_SimilarityComparison.py \
+		--py-files $(pwd)/SDWM/DWM10_Parms.py,$(pwd)/SDWM/DWM65_ScoringMatrixStd.py,$(pwd)/SDWM/DWM66_ScoringMatrixKris.py,$(pwd)/SDWM/StopWord.py,$(pwd)/SDWM/SDWM010_Tokenization.py,$(pwd)/SDWM/SDWM025_Blocking.py,$(pwd)/SDWM/SDWM050_SimilarityComparison.py,$(pwd)/SDWM/SDWM055_TransitiveClosureCCMR.py \
 		--files $(pwd)/parmStage.txt \
 		$(pwd)/SDWM/SDWM00_Driver.py
     #$(pwd)/DWM-Modules.zip,
