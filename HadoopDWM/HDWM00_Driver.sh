@@ -215,9 +215,11 @@ then
     mapred job -history $tokJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
     refsRead=$( grep 'Map input records' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     toksFound=$( grep 'Tokens Found' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+    tFound=$(echo "$toksFound"  | tr -d ",") #This removes all ',' in between numbers
     numToks=$( grep 'Numeric Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     remainToks=$( grep 'Remaining Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
-    dupToks=$(( toksFound-remainToks ))
+    tRemain=$(echo "$remainToks"  | tr -d ",") #This removes all ',' in between numbers
+    dupToks=$(( $tFound-$tRemain ))
     uniqueToks=$( grep 'Unique Tokens' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     J1maps=$( grep 'Launched map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     J1reds=$( grep 'Launched reduce tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
@@ -376,6 +378,7 @@ then
         remainRefs=$( grep 'Remaining References' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         blckRefCreate=$( grep 'Blocking References Created' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         pairsGen=$( grep 'Pairs Created-by-Blocks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        pairGenCnt=$(echo "$pairsGen"  | tr -d ",") #This removes all ',' in between numbers
         J4maps=$( grep 'Launched map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         J4reds=$( grep 'Launched reduce tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         J4mapTime=$( grep 'Total time spent by all map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
@@ -396,7 +399,7 @@ then
 
         # Phase 3: Check if Block Pair List is empty
         #blkPairListCheck=$(cat $tmpDir/tmpReport.txt)
-        if [ "$pairsGen" -eq "0" ]
+        if [ "$pairGenCnt" -eq "0" ]
         then
             echo "--- Ending because Block Pair List is empty"
             echo "--- Ending because Block Pair List is empty" >> $Log_File
@@ -528,6 +531,7 @@ then
         lnkJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
         mapred job -history $lnkJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
         linkPairs=$( grep 'Linked Pairs' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+        lnkPairCnt=$(echo "$linkPairs"  | tr -d ",") #This removes all ',' in between numbers
         J7maps=$( grep 'Launched map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         J7reds=$( grep 'Launched reduce tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
         J7mapTime=$( grep 'Total time spent by all map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
@@ -546,7 +550,7 @@ then
 
         # Phase 3: Check if Linked Pair List is empty
         #linkPairListCheck=$(cat $tmpDir/tmpReport.txt)
-        if [ "$linkPairs" -eq "0" ]
+        if [ "$lnkPairCnt" -eq "0" ]
         then
             echo "--- Ending because Link Pair List is empty"
             echo "--- Ending because Link Pair List is empty" >> $Log_File
@@ -608,6 +612,7 @@ then
                 locMaxStateJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
                 mapred job -history $locMaxStateJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
                 clusterListCheck=$( grep 'Cluster List' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
+                clusterListCnt=$(echo "$clusterListCheck"  | tr -d ",") #This removes all ',' in between numbers
                 J8maps=$( grep 'Launched map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
                 J8reds=$( grep 'Launched reduce tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
                 J8mapTime=$( grep 'Total time spent by all map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
@@ -626,7 +631,7 @@ then
                 echo "9999" > $tmpDir/reportTCiteration.txt
 
                 # Phase 3: Check if Cluster List is empty
-                if [[ "$clusterListCheck" == "0" ]]
+                if [[ "$clusterListCnt" == "0" ]]
                 then
                     echo "--- Ending because Cluster List is empty"
                     echo "--- Ending because Cluster List is empty" >> $Log_File
@@ -787,7 +792,8 @@ then
     lnkIndJobID=$( cat $user_home/JobLog/yarn-appIDs.txt |sort -n| head -n -2 | tail -n 1 | cut -f1 ) # Extract the application ID from the last line in the list
     mapred job -history $lnkIndJobID > $user_home/JobLog/yarn-appLogs.txt  # Get the job history counter
     indRefs=$( grep 'Reduce output records' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
-    lnkIndRefs=$(( indRefs-1 ))
+    indRefCnt=$(echo "$indRefs"  | tr -d ",") #This removes all ',' in between numbers
+    lnkIndRefs=$(( $indRefCnt-1 ))
     J11amaps=$( grep 'Launched map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     J11areds=$( grep 'Launched reduce tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
     J11amapTime=$( grep 'Total time spent by all map tasks' $user_home/JobLog/yarn-appLogs.txt | cut -d'|' -f6 )
