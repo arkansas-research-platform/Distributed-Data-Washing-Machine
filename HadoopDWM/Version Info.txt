@@ -95,3 +95,9 @@ v1.16
 
 v1.17
     - Renamed HDWM to HadoopDWM
+
+v1.18
+    - Unused libraries cleanup
+
+v1.19
+    - New way to append textdistance library location

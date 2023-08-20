@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env /usr/bin/python3.10
 # coding: utf-8
 
 # Importing libraries
@@ -6,25 +6,24 @@ import sys
 import re
 import os
 from operator import itemgetter
-from pathlib import Path
+
+# Read Parms file
+DWM10_Parms.getParms('parmStage.txt')
 
 # Making DWM modules available for MapReduce
-sys.path.append('textdistance.zip')
+#Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
+#       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
+#'/home/nick/.local/lib/python3.10/site-packages'
+textdistanceDir='/usr/local/lib/python3.10/dist-packages'
+sys.path.append(textdistanceDir)
 sys.path.append('DWM-Modules.zip')
+#sys.path.append('textdistance.zip')
+
 import DWM10_Parms 
 import StopWord
 import DWM65_ScoringMatrixStd
 import DWM66_ScoringMatrixKris
 import textdistance
-
-# Read Parms file
-DWM10_Parms.getParms('parmStage.txt')
-
-#Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
-#       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
-#'/home/nick/.local/lib/python3.10/site-packages'
-#textdistanceDir = '/usr/local/lib/python*/dist-packages'
-#sys.path.append(textdistanceDir)
 
 from textdistance import DamerauLevenshtein
 from textdistance import Cosine
@@ -138,4 +137,3 @@ if __name__ == '__main__':
 ############################################################
 #               END OF REDUCER      
 ############################################################
-
