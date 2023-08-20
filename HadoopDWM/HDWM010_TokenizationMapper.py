@@ -116,9 +116,9 @@ def TokenizationMapper():
         
         for n,key in enumerate(cleanLine,1): #n is a num/position using enumerate and starts from 1
             # Generate json-like output with metadata information
-            mypair = {'refID':value, 
-                    'pos': n, 
-                    'tok': key}
+            #mypair = {'refID':value, 'pos': n, 'tok': key}
+            #mypair = {'refID':value, 'pos': n, 'tok': key} #Messing up in HPC MapRed but works fine in local cluster. USe below
+            mypair = '{' + 'refID:'+str(value) +','+ 'pos:'+str(n) +','+ 'tok:'+str(key) +'}'
             mypair = str(mypair).replace('(', '').replace(')', '')
             print('%s | %s | %s'% (key, mypair, 'one')) 
 

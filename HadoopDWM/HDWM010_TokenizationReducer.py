@@ -5,7 +5,6 @@
 import itertools
 import sys
 import os
-from pathlib import Path
 from operator import itemgetter
  #########################################################
  #        TOKENIZATION Reducer (Frequency Computation)

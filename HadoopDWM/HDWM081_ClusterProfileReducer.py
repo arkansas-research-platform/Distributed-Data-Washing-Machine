@@ -5,7 +5,6 @@
 import sys
 import os
 from operator import itemgetter
-from pathlib import Path
  #########################################################
  #        Cluster Profile Reducer
  # Takes the LinkedIndex file as input and compute the 

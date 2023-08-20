@@ -5,7 +5,6 @@
 import sys
 import re
 import os
-from pathlib import Path
 
 # Making DWM modules available for MapReduce
 sys.path.append('DWM-Modules.zip')
