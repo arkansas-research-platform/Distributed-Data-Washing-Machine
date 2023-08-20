@@ -89,3 +89,6 @@ v1.14
 
 v1.15
     - Remaned parms to parmsStage.txt for consistency between SDWM and HDWM 
+
+v1.16
+    - Added "sysCheck.sh" to extract system information before job starts
