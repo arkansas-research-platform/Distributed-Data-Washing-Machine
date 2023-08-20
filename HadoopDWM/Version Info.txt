@@ -92,3 +92,6 @@ v1.15
 
 v1.16
     - Added "sysCheck.sh" to extract system information before job starts
+
+v1.17
+    - Renamed HDWM to HadoopDWM

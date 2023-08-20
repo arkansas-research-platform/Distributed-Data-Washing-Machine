@@ -169,29 +169,30 @@ then
     # Create HDFS directory
     #hdfs dfs -mkdir <Directory Name>
     # Once a job is started, a directory is automatically created in HDFS
-    hdfs dfs -rm -r HadoopDWM   
-    hdfs dfs -mkdir HadoopDWM
+    hdfs dfs -rm -r /HadoopDWM   
+    hdfs dfs -mkdir /HadoopDWM
 
     # Copy input data and truthSet from local directory to HDFS
-    hdfs dfs -put $(pwd)/inputStage.txt HadoopDWM
+    hdfs dfs -put $(pwd)/inputStage.txt /HadoopDWM
     
     if [[ "$truthFile" != "" ]]
     then
-        hdfs dfs -put $(pwd)/$truthFile HadoopDWM
+        hdfs dfs -put $(pwd)/$truthFile /HadoopDWM
     fi
 
     # Copy contents of the given parameter file to a staging area to be shipped to Distributed Cache
     cp $(pwd)/$parmFile $(pwd)/parmStage.txt
-    hdfs dfs -put $(pwd)/parmStage.txt HadoopDWM
+    #hdfs dfs -put $(pwd)/parmStage.txt /HadoopDWM
     
     # Create some variables to be reused. These are just paths to important repetitive JAR Libraries
     Identity_Mapper=/bin/cat
     Identity_Reducer=org.apache.hadoop.mapred.lib.IdentityReducer
-    STREAMJAR=/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar
+    streamLocation=/usr/local/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar
+    STREAMJAR=$streamLocation
 
-    #hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt
+    #$(pwd)/parmStage.txt
     #################################################
-    # START EXECUTION OF HDWM JOBS
+    # START EXECUTION OF HadoopDWM JOBS
     #################################################
 #--------->  PHASE 1: TOKENIZATION & FREQUENCY CALCULATION PROCESS <---------
 #---> JOB 1: Tokenize each row of Ref and form Metadata and Calculate Frequency of Tokens 
@@ -201,9 +202,9 @@ then
     echo "        " >> $Log_File
     echo ">> Starting Tokenization Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM010_TokenizationMapper.py,$(pwd)/HDWM/HDWM010_TokenizationReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt,$(pwd)/DWM-Modules.zip \
-        -input HadoopDWM/inputStage.txt \
-        -output HadoopDWM/job1_Tokens-Freq \
+        -files $(pwd)/HadoopDWM/HDWM010_TokenizationMapper.py,$(pwd)/HadoopDWM/HDWM010_TokenizationReducer.py,$(pwd)/parmStage.txt,$(pwd)/DWM-Modules.zip \
+        -input /HadoopDWM/inputStage.txt \
+        -output /HadoopDWM/job1_Tokens-Freq \
         -mapper HDWM010_TokenizationMapper.py \
         -reducer HDWM010_TokenizationReducer.py
 
@@ -250,9 +251,9 @@ then
     #echo "        " >> $Log_File 
     #echo ">> Starting Metadata with Frequency Update  Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM015_JoinMapper.py,$(pwd)/HDWM/HDWM015_JoinReducer.py \
-        -input HadoopDWM/job1_Tokens-Freq \
-        -output HadoopDWM/job2_Updated-Mdata \
+        -files $(pwd)/HadoopDWM/HDWM015_JoinMapper.py,$(pwd)/HadoopDWM/HDWM015_JoinReducer.py \
+        -input /HadoopDWM/job1_Tokens-Freq \
+        -output /HadoopDWM/job2_Updated-Mdata \
         -mapper HDWM015_JoinMapper.py \
         -reducer HDWM015_JoinReducer.py
 
@@ -280,9 +281,9 @@ then
     #echo "        " >> $Log_File
     #echo ">> Starting Reference Reformation Process" >> $Log_File
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM020_RefRecreationMapper.py,$(pwd)/HDWM/HDWM020_RefRecreationReducer.py \
-        -input HadoopDWM/job2_Updated-Mdata\
-        -output HadoopDWM/job3_RecreateRefs \
+        -files $(pwd)/HadoopDWM/HDWM020_RefRecreationMapper.py,$(pwd)/HadoopDWM/HDWM020_RefRecreationReducer.py \
+        -input /HadoopDWM/job2_Updated-Mdata\
+        -output /HadoopDWM/job3_RecreateRefs \
         -mapper HDWM020_RefRecreationMapper.py \
         -reducer HDWM020_RefRecreationReducer.py
 
@@ -303,7 +304,7 @@ then
     #echo "   Total time taken by all reduce tasks (ms): $J3redTime" >> $Log_File 
 
     # Copy job3_RecreateRefs output to a tmp file
-    hdfs dfs -cp HadoopDWM/job3_RecreateRefs HadoopDWM/progLoop_in
+    hdfs dfs -cp /HadoopDWM/job3_RecreateRefs /HadoopDWM/progLoop_in
 
 ####################################################
 ########## STARTING PROGRAM ITERATIVE LOOP #########
@@ -339,7 +340,7 @@ then
             echo "        " >> $Log_File
             echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/progLoop_in HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp /HadoopDWM/progLoop_in /HadoopDWM/job_LinkIndexDirty
         break
         fi
     
@@ -350,9 +351,9 @@ then
         echo ">> Starting Blocking Process"
         echo "        " >> $Log_File
         echo ">> Starting Blocking Process" >> $Log_File
-        hdfs dfs -rm -r HadoopDWM/job4_BlockTokens
+        hdfs dfs -rm -r /HadoopDWM/job4_BlockTokens
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM025_BlockTokenPairMapper.py,$(pwd)/HDWM/HDWM025_BlockTokenPairReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt,$(pwd)/DWM-Modules.zip \
+            -files $(pwd)/HadoopDWM/HDWM025_BlockTokenPairMapper.py,$(pwd)/HadoopDWM/HDWM025_BlockTokenPairReducer.py,$(pwd)/parmStage.txt,$(pwd)/DWM-Modules.zip \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
@@ -362,8 +363,8 @@ then
             -D stream.map.output.field.separator=: \
             -D stream.reduce.input.field.separator=: \
             -D stream.reduce.output.field.separator=: \
-            -input HadoopDWM/progLoop_in \
-            -output HadoopDWM/job4_BlockTokens \
+            -input /HadoopDWM/progLoop_in \
+            -output /HadoopDWM/job4_BlockTokens \
             -mapper HDWM025_BlockTokenPairMapper.py \
             -reducer HDWM025_BlockTokenPairReducer.py
         
@@ -407,7 +408,7 @@ then
             echo "        " >> $Log_File
             echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job4_BlockTokens HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp /HadoopDWM/job4_BlockTokens /HadoopDWM/job_LinkIndexDirty
         break
         fi
         
@@ -417,11 +418,11 @@ then
         echo ">> Starting Blocking Key Deduplication Process"
         #echo "        " >> $Log_File
         #echo ">> Starting Blocking Key Deduplication Process" >> $Log_File
-        hdfs dfs -rm -r HadoopDWM/job5_BlockDedup
+        hdfs dfs -rm -r /HadoopDWM/job5_BlockDedup
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM030_RefPairDedupReducer.py \
-            -input HadoopDWM/job4_BlockTokens \
-            -output HadoopDWM/job5_BlockDedup \
+            -files $(pwd)/HadoopDWM/HDWM030_RefPairDedupReducer.py \
+            -input /HadoopDWM/job4_BlockTokens \
+            -output /HadoopDWM/job5_BlockDedup \
             -mapper $Identity_Mapper \
             -reducer HDWM030_RefPairDedupReducer.py
 
@@ -447,13 +448,13 @@ then
         echo ">> Starting Block & Reformed Refs Join Process"
         #echo "        " >> $Log_File 
         #echo ">> Starting Block & Reformed Refs Join Process" >> $Log_File 
-        hdfs dfs -rm -r HadoopDWM/job6_tmp_out
+        hdfs dfs -rm -r /HadoopDWM/job6_tmp_out
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM035_RefIDMetadataMapper.py,$(pwd)/HDWM/HDWM035_RefIDMetadataReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM035_RefIDMetadataMapper.py,$(pwd)/HadoopDWM/HDWM035_RefIDMetadataReducer.py \
             -Dstream.num.map.output.key.fields=2 \
-            -input HadoopDWM/job3_RecreateRefs \
-            -input HadoopDWM/job5_BlockDedup \
-            -output HadoopDWM/job6_tmp_out  \
+            -input /HadoopDWM/job3_RecreateRefs \
+            -input /HadoopDWM/job5_BlockDedup \
+            -output /HadoopDWM/job6_tmp_out  \
             -mapper HDWM035_RefIDMetadataMapper.py \
             -reducer HDWM035_RefIDMetadataReducer.py
 
@@ -478,11 +479,11 @@ then
         echo ">> Starting Unduplicated Blocking Ref Pairs  Process"
         #echo "        " >> $Log_File 
         #echo ">> Starting Unduplicated Blocking Ref Pairs  Process" >> $Log_File 
-        hdfs dfs -rm -r HadoopDWM/job6_UndupBlockPairs
+        hdfs dfs -rm -r /HadoopDWM/job6_UndupBlockPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM036_UnduplicateRefsReducer.py \
-            -input HadoopDWM/job6_tmp_out \
-            -output HadoopDWM/job6_UndupBlockPairs \
+            -files $(pwd)/HadoopDWM/HDWM036_UnduplicateRefsReducer.py \
+            -input /HadoopDWM/job6_tmp_out \
+            -output /HadoopDWM/job6_UndupBlockPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM036_UnduplicateRefsReducer.py
 
@@ -516,11 +517,11 @@ then
         echo ">> Starting Similarity Comparison Process"
         echo "        " >> $Log_File
         echo ">> Starting Similarity Comparison Process" >> $Log_File
-        hdfs dfs -rm -r HadoopDWM/job7_LinkedPairs
+        hdfs dfs -rm -r /HadoopDWM/job7_LinkedPairs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM050_SimilarityComparisonReducer.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip,$(pwd)/textdistance.zip \
-            -input HadoopDWM/job6_UndupBlockPairs \
-            -output HadoopDWM/job7_LinkedPairs \
+            -files $(pwd)/HadoopDWM/HDWM050_SimilarityComparisonReducer.py,$(pwd)/parmStage.txt,$tmpDir/muReport.txt,$(pwd)/DWM-Modules.zip \
+            -input /HadoopDWM/job6_UndupBlockPairs \
+            -output /HadoopDWM/job7_LinkedPairs \
             -mapper $Identity_Mapper \
             -reducer HDWM050_SimilarityComparisonReducer.py
 
@@ -558,7 +559,7 @@ then
             echo "        " >> $Log_File
             echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
             # Copy this job's output to a file ready to be processed for final LinkedIndex
-            hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job_LinkIndexDirty
+            hdfs dfs -cp /HadoopDWM/job7_LinkedPairs /HadoopDWM/job_LinkIndexDirty
         break
         fi
 
@@ -570,26 +571,27 @@ then
         echo "        " >> $Log_File
         echo ">> Starting Transitive Closure Process" >> $Log_File       
         # Move job 7 output into a temp_in directory which will serve as input for TC 
-        hdfs dfs -rm -r HadoopDWM/job8_tmpIn
-        hdfs dfs -cp HadoopDWM/job7_LinkedPairs HadoopDWM/job8_tmpIn
+        hdfs dfs -rm -r /HadoopDWM/job8_tmpIn
+        hdfs dfs -cp /HadoopDWM/job7_LinkedPairs /HadoopDWM/job8_tmpIn
         iterationCounter=0
         while true
         do
             count=$(cat $tmpDir/reportTCiteration.txt)
-            echo "**** Current RunNextIteration Counter is:---->>>> $count"
-            if (( "$count" > 0 ))
+            msCnt=$(echo "$count"  | tr -d ",")
+            echo "**** Current RunNextIteration Counter is:---->>>> $msCnt"
+            if [ "$msCnt" != "0" ]
             then
-                hdfs dfs -rm -r HadoopDWM/job8_tmpOut
+                hdfs dfs -rm -r /HadoopDWM/job8_tmpOut
                 hadoop jar $STREAMJAR \
-                    -files $(pwd)/HDWM/HDWM055_TransitiveClosureCCMR.py,hdfs://$host:9000/user/$username/HadoopDWM/parmStage.txt \
+                    -files $(pwd)/HadoopDWM/HDWM055_TransitiveClosureCCMR.py,$(pwd)/parmStage.txt \
                     -D stream.map.output.field.separator=, \
                     -D stream.num.map.output.key.fields=2 \
-                    -input HadoopDWM/job8_tmpIn \
-                    -output HadoopDWM/job8_tmpOut \
+                    -input /HadoopDWM/job8_tmpIn \
+                    -output /HadoopDWM/job8_tmpOut \
                     -mapper $Identity_Mapper \
                     -reducer HDWM055_TransitiveClosureCCMR.py
-                hdfs dfs -rm -r HadoopDWM/job8_tmpIn    
-                hdfs dfs -mv HadoopDWM/job8_tmpOut HadoopDWM/job8_tmpIn
+                hdfs dfs -rm -r /HadoopDWM/job8_tmpIn    
+                hdfs dfs -mv /HadoopDWM/job8_tmpOut /HadoopDWM/job8_tmpIn
 
                 # Analyzing JOB 8 Counters for useful Statistics (Merge-State Statistics)
                     # Phase 1: Getting the Job Counter Logs
@@ -639,7 +641,7 @@ then
                     echo "        " >> $Log_File
                     echo "+++++++++ END OF PROGRAM LOOP WITH  [ $programCounter ] ITERATION(S) +++++++++" >> $Log_File
                     # Copy this job's output to a file ready to be processed for final LinkedIndex
-                    hdfs dfs -cp HadoopDWM/job8_tmpIn HadoopDWM/job_LinkIndexDirty
+                    hdfs dfs -cp /HadoopDWM/job8_tmpIn /HadoopDWM/job_LinkIndexDirty
                 break
                 fi
             break
@@ -653,12 +655,12 @@ then
         echo ">> Starting Update RefID with Metadata Process"
         #echo "        " >> $Log_File
         #echo ">> Starting Update RefID with Metadata Process" >> $Log_File
-        hdfs dfs -rm -r HadoopDWM/job9_TCout-Mdata
+        hdfs dfs -rm -r /HadoopDWM/job9_TCout-Mdata
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM060_ClusterRemainRefMapper.py,$(pwd)/HDWM/HDWM060_ClusterRemainRefReducer.py \
-            -input HadoopDWM/job8_tmpIn \
-            -input HadoopDWM/job3_RecreateRefs \
-            -output HadoopDWM/job9_TCout-Mdata  \
+            -files $(pwd)/HadoopDWM/HDWM060_ClusterRemainRefMapper.py,$(pwd)/HadoopDWM/HDWM060_ClusterRemainRefReducer.py \
+            -input /HadoopDWM/job8_tmpIn \
+            -input /HadoopDWM/job3_RecreateRefs \
+            -output /HadoopDWM/job9_TCout-Mdata  \
             -mapper HDWM060_ClusterRemainRefMapper.py \
             -reducer HDWM060_ClusterRemainRefReducer.py
 
@@ -683,11 +685,11 @@ then
         echo ">> Starting Cluster Evaluation Process"
         echo "        " >> $Log_File
         echo ">> Starting Cluster Evaluation Process" >> $Log_File  
-        hdfs dfs -rm -r HadoopDWM/job10_ClusterEval
+        hdfs dfs -rm -r /HadoopDWM/job10_ClusterEval
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM070_ClusterEvaluationReducer.py,$tmpDir/epsilonReport.txt \
-            -input HadoopDWM/job9_TCout-Mdata \
-            -output HadoopDWM/job10_ClusterEval \
+            -files $(pwd)/HadoopDWM/HDWM070_ClusterEvaluationReducer.py,$tmpDir/epsilonReport.txt \
+            -input /HadoopDWM/job9_TCout-Mdata \
+            -output /HadoopDWM/job10_ClusterEval \
             -mapper $Identity_Mapper \
             -reducer HDWM070_ClusterEvaluationReducer.py
 
@@ -726,11 +728,11 @@ then
         echo ">> Starting Reference Tagging Process"
         #echo "        " >> $Log_File 
         #echo ">> Starting Reference Tagging Process" >> $Log_File 
-        hdfs dfs -rm -r HadoopDWM/job10_tmpLinkIndex
+        hdfs dfs -rm -r /HadoopDWM/job10_TaggedRefs
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM075_TagClusterRefsMapper.py,$(pwd)/HDWM/HDWM075_TagClusterRefsReducer.py \
-            -input HadoopDWM/job10_ClusterEval \
-            -output HadoopDWM/job10_tmpLinkIndex \
+            -files $(pwd)/HadoopDWM/HDWM075_TagClusterRefsMapper.py,$(pwd)/HadoopDWM/HDWM075_TagClusterRefsReducer.py \
+            -input /HadoopDWM/job10_ClusterEval \
+            -output /HadoopDWM/job10_TaggedRefs \
             -mapper HDWM075_TagClusterRefsMapper.py \
             -reducer HDWM075_TagClusterRefsReducer.py
 
@@ -753,8 +755,8 @@ then
         # Increase the program loop counter after each successful loop
         programCounter=$((programCounter+1))
         # Coping and Deleting
-        hdfs dfs -rm -r HadoopDWM/progLoop_in  
-        hdfs dfs -cp HadoopDWM/job10_tmpLinkIndex HadoopDWM/progLoop_in
+        hdfs dfs -rm -r /HadoopDWM/progLoop_in  
+        hdfs dfs -cp /HadoopDWM/job10_TaggedRefs /HadoopDWM/progLoop_in
 
         # Increase the values of Mu and Epsilon at the end of each iteration
         mu="$(awk 'BEGIN{ print '$mu'+'$muIter' }')"
@@ -771,10 +773,10 @@ then
     echo "        " >> $Log_File
     echo ">> Starting Write-To-LinkIndex Process" >> $Log_File  
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM077_LinkedIndexMapper.py,$(pwd)/HDWM/HDWM077_LinkedIndexReducer.py \
-        -input HadoopDWM/job_LinkIndexDirty \
-        -input HadoopDWM/job3_RecreateRefs \
-        -output HadoopDWM/LinkedIndex_$inputFile \
+        -files $(pwd)/HadoopDWM/HDWM077_LinkedIndexMapper.py,$(pwd)/HadoopDWM/HDWM077_LinkedIndexReducer.py \
+        -input /HadoopDWM/job_LinkIndexDirty \
+        -input /HadoopDWM/job3_RecreateRefs \
+        -output /HadoopDWM/LinkedIndex_$inputFile \
         -mapper HDWM077_LinkedIndexMapper.py \
         -reducer HDWM077_LinkedIndexReducer.py
 
@@ -782,7 +784,7 @@ then
     # Linked Index file to give to user
     LnkIndexFile="$(pwd)/HDWM_LinkedIndex_$inputFile"
     
-    ind=$(hdfs dfs -cat HadoopDWM/LinkedIndex_$inputFile/part-*)
+    ind=$(hdfs dfs -cat /HadoopDWM/LinkedIndex_$inputFile/part-*)
     echo "$ind" >> $LnkIndexFile
 
     # Analyzing JOB 11a (Link Index Process) Counters for useful Statistics
@@ -814,9 +816,9 @@ then
     #echo "        " >> $Log_File 
     #echo ">> Starting Pre-Cluster Profile Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM080_PreClusterProfileMapper.py,$(pwd)/HDWM/HDWM080_PreClusterProfileReducer.py \
-        -input HadoopDWM/LinkedIndex_$inputFile \
-        -output HadoopDWM/job_PreClusterProfile \
+        -files $(pwd)/HadoopDWM/HDWM080_PreClusterProfileMapper.py,$(pwd)/HadoopDWM/HDWM080_PreClusterProfileReducer.py \
+        -input /HadoopDWM/LinkedIndex_$inputFile \
+        -output /HadoopDWM/job_PreClusterProfile \
         -mapper HDWM080_PreClusterProfileMapper.py \
         -reducer HDWM080_PreClusterProfileReducer.py
 
@@ -843,18 +845,18 @@ then
     echo "        " >> $Log_File 
     echo ">> Starting Cluster Profile Process" >> $Log_File 
     hadoop jar $STREAMJAR \
-        -files $(pwd)/HDWM/HDWM081_ClusterProfileReducer.py \
+        -files $(pwd)/HadoopDWM/HDWM081_ClusterProfileReducer.py \
         -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
         -Dstream.num.map.output.key.fields=2 \
         -D mapreduce.map.output.key.field.separator=, \
         -D mapreduce.partition.keycomparator.options="-k1,1n -k2,2" \
-        -input HadoopDWM/job_PreClusterProfile \
-        -output HadoopDWM/job11_ClusterProfile \
+        -input /HadoopDWM/job_PreClusterProfile \
+        -output /HadoopDWM/job11_ClusterProfile \
         -mapper $Identity_Mapper \
         -reducer HDWM081_ClusterProfileReducer.py
     
     # Log Cluster Profile to LogFile
-    profile=$(hdfs dfs -cat HadoopDWM/job11_ClusterProfile/part-*)
+    profile=$(hdfs dfs -cat /HadoopDWM/job11_ClusterProfile/part-*)
     echo "$profile" >> $Log_File
 
         # Phase 1: Getting the Job Counter Logs
@@ -887,10 +889,10 @@ then
         #echo "        " >> $Log_File
         #echo ">> Starting Pre-ER Matrix Process" >> $Log_File
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM095_PreERMatrixMapper.py,$(pwd)/HDWM/HDWM095_PreERMatrixReducer.py \
-            -input HadoopDWM/$truthFile \
-            -input HadoopDWM/LinkedIndex_$inputFile \
-            -output HadoopDWM/job12_PreMatrix \
+            -files $(pwd)/HadoopDWM/HDWM095_PreERMatrixMapper.py,$(pwd)/HadoopDWM/HDWM095_PreERMatrixReducer.py \
+            -input /HadoopDWM/$truthFile \
+            -input /HadoopDWM/LinkedIndex_$inputFile \
+            -output /HadoopDWM/job12_PreMatrix \
             -mapper HDWM095_PreERMatrixMapper.py \
             -reducer HDWM095_PreERMatrixReducer.py
 
@@ -917,18 +919,18 @@ then
         echo "        " >> $Log_File
         echo ">> Starting ER Matrix Process" >> $Log_File
         hadoop jar $STREAMJAR \
-            -files $(pwd)/HDWM/HDWM099_ERMatrixReducer.py \
+            -files $(pwd)/HadoopDWM/HDWM099_ERMatrixReducer.py \
             -D mapred.output.key.comparator.class=org.apache.hadoop.mapred.lib.KeyFieldBasedComparator \
             -Dstream.num.map.output.key.fields=2 \
             -D mapreduce.map.output.key.field.separator=, \
             -D mapreduce.partition.keycomparator.options="-k1,1 -k2,2n" \
-            -input HadoopDWM/job12_PreMatrix \
-            -output HadoopDWM/job13_ERmatrix \
+            -input /HadoopDWM/job12_PreMatrix \
+            -output /HadoopDWM/job13_ERmatrix \
             -mapper $Identity_Mapper \
             -reducer HDWM099_ERMatrixReducer.py \
 
         # Log ER Matrix to LogFile
-        matrix=$(hdfs dfs -cat HadoopDWM/job13_ERmatrix/part-*)
+        matrix=$(hdfs dfs -cat /HadoopDWM/job13_ERmatrix/part-*)
         echo "$matrix" >> $Log_File
         echo "$matrix" >> $PDP_File
 
