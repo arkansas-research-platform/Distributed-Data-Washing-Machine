@@ -7,9 +7,6 @@ import re
 import os
 from operator import itemgetter
 
-# Read Parms file
-DWM10_Parms.getParms('parmStage.txt')
-
 # Making DWM modules available for MapReduce
 #Note: The line below is important in order for Hadoop to recognize the 'textdistance' library
 #       Ignoring this line will cause the job to fail ( 4 days researching to discover this )
@@ -20,6 +17,8 @@ sys.path.append('DWM-Modules.zip')
 #sys.path.append('textdistance.zip')
 
 import DWM10_Parms 
+# Read Parms file
+DWM10_Parms.getParms('parmStage.txt')
 import StopWord
 import DWM65_ScoringMatrixStd
 import DWM66_ScoringMatrixKris
