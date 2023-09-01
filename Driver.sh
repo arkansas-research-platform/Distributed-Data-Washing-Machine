@@ -43,12 +43,12 @@ do
 done < "$(pwd)/sysrequirement.txt"
 
 # ----------------> GETTING PARAMETER FILE FROM USER <----------------
-read -p "Select processing framework.. [1]->pySpark, [2]->MapReduce: " option
+read -p "Select processing framework.. [1]->PySpark, [2]->MapReduce: " option
 
 # -----> Settings for PySpark Option
 if [[ "$option" -eq 1 ]]
 then
-    sysOption=pySpark
+    sysOption=PySpark
     echo "You opted to use, $sysOption, for data processing."
 
     # Confirm user's choice before proceesing
@@ -70,8 +70,9 @@ then
         echo "System requirements successfully transferred to program..."
 
         # Execute the HadoopDWM Driver Script
-        echo "Executing $option Data Washing Machine Driver Script ..."
+        echo "Executing '$sysOption Data Washing Machine' Driver Script ..."
         ./script.sh
+        #cd SparkDWM && ./runSparkDWM.sh
 
         # Exiting program if the parameter file specified does not exists
         exit 0
@@ -108,7 +109,7 @@ then
         echo "System requirements successfully transferred to program..."
 
         # Execute the HadoopDWM Driver Script
-        echo "Executing $option Data Washing Machine Driver Script ..."
+        echo "Executing '$sysOption Data Washing Machine' Driver Script ..."
         #./script.sh #testing script
         cd HadoopDWM && ./runHadoopDWM.sh
 
