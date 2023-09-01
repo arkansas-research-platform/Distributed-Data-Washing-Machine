@@ -5,23 +5,26 @@
 import os
 import sys
 import re
+import subprocess
 import time
 import datetime
 from operator import add
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark import StorageLevel
 import DWM10_Parms
 import SDWM010_Tokenization
 import SDWM025_Blocking
 import SDWM050_SimilarityComparison
 import SDWM055_TransitiveClosureCCMR
+import SDWM070_ClusterEvaluator
 import StopWord
 import DWM65_ScoringMatrixStd
 import DWM66_ScoringMatrixKris
 import textdistance
-from pyspark import SparkConf
-from pyspark import SparkFiles
-from pyspark.sql import SparkSession
-from pyspark.sql.types import *
-from pyspark.sql.functions import udf
+
+with open('tcReport.txt', 'w') as f:
+    f.write("9999")
 
 # Initialize Spark
 spark = SparkSession.builder.appName('Spark Data Washing Machine').getOrCreate()
@@ -110,7 +113,7 @@ logFile = open('SDWM_Log_'+tag+'.txt', 'w')
 #=================== STARTING JOB =================== 
 print('SPARK DATA WASHING MACHINE', file=logFile) 
 
-#====== Read Parms file ====== 
+#====== readline Parms file ====== 
 DWM10_Parms.getParms('parmStage.txt')
 hasHeader = DWM10_Parms.hasHeader
 delimiter = DWM10_Parms.delimiter
@@ -121,7 +124,7 @@ blockByPairs = DWM10_Parms.blockByPairs
 #=================== PHASE 1: TOKENIZATION PROCESS =================== 
 print('\n>> Starting Tokenization Process', file=logFile)
 
-# Read Input Data
+# readline Input Data
 inputRDD = spark.sparkContext.textFile("inputStage.txt")
 #inputRDD = spark.sparkContext.textFile("hdfs://snodemain:9000/user/nick/SparkDWM/inputStage.txt")    # Reading input file from HDFS directory
 
@@ -155,7 +158,7 @@ remainToksCnt = cleanRefTokens.flatMap(lambda tok: tok[1]).count()
 duplicateToksCnt = int(tokenCnt) - int(remainToksCnt)
 uniqueToksCnt = tokenFrequencies.count()
 print('  ----- Job Statistics ----- ', file=logFile)
-print('    Total References Read:', inputRefsCnt, file=logFile)
+print('    Total References readline:', inputRefsCnt, file=logFile)
 print('    Total Tokens Found:', tokenCnt, file=logFile)
 print('    Total Numeric Tokens:', numTokensCnt, file=logFile)
 print('    Remaining Tokens:', remainToksCnt, file=logFile)
@@ -171,6 +174,9 @@ reformedCleanRefs = regroupTokens.map(lambda f: (f[0], {int(str(k).replace('(','
                                         for k,v in (x.split(',', maxsplit=1) \
                                         for x in str(f[1]).split('-'))})) \
                                 .map(lambda d: (d[0], dict(sorted(d[1].items(), key=lambda item: item[0]))))
+
+# ======= Job 4b: Create a dummy Linked Index file that contains only refID and no clusterID
+dummyLnkIndex = reformedCleanRefs.map(lambda x: (x[0], ''))
 #==============================================================================
 
 #=================== PHASE 3: BLOCKING PROCESS =================== 
@@ -259,52 +265,118 @@ print('\n>> Starting Transitive Closure Process', file=logFile)
 print('  ----- Iteration Statistics ----- ', file=logFile)
 
 transitiveClosureIn = unionPairsForTC
-transitiveClosureIn.persist()     # Caching will prevent the Transitive Closure RDD from starting from the entire program in each iteration. Can also use .cache()
-transClosureCounter = 9999      # Default value to always start the first TC iteration
+transitiveClosureIn.persist(StorageLevel.MEMORY_AND_DISK)  # Caching will prevent the Transitive Closure RDD from starting from the entire program in each iteration. Can also use .cache()
+#transClosureCounter = 9999      # Default value to always start the first TC iteration
 transitiveClosIterationCnt = 0  # Counter for Transitive Closure iterations
 
-while transClosureCounter > 0:
-    mergeStateAccum = sc.accumulator(0)
-    locMaxStateAccum = sc.accumulator(0)
-    clusterListAccum = sc.accumulator(0)
+##---- Debugger Code 1 (1st iteration = 60secs) ---
+#mergeStateAccum = sc.accumulator(0)
+#locMaxStateAccum = sc.accumulator(0)
+#clusterListAccum = sc.accumulator(0)
+#keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
+#                        .reduceByKey(lambda x,y:(x+','+y)) \
+#                        .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+#valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
+#                        .reduceByKey(lambda x,y:(x+','+y)) \
+#                        .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+#keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey()
+#transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
+#                                .filter(lambda x: x != None) \
+#                                .flatMap(lambda x: tuple(y for y in x)) \
+#                                .map(lambda x:tuple(x.split(',')))
+#transitiveClosureOut.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
+#print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
+#print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
+#print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
 
+
+#---- Debugger Code 2 (Saving each iteration & re-reading it = ...secs) ---
+#unionPairsForTC.coalesce(1).saveAsTextFile("Tclosure-Out")
+while True:
+    with open('tcReport.txt') as f:
+        transClosureCounter = f.readline()
     print('  == Computing Transitive Closure at Counter ===> ', transClosureCounter, file=logFile)
     print('     PairIn Count:', transitiveClosureIn.count(), file=logFile)
-
-    keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
-                            .reduceByKey(lambda x,y:(x+','+y)) \
-                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-    valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
-                            .reduceByKey(lambda x,y:(x+','+y)) \
-                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-    keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey()
-
-    ##transitiveClosure = keyValueSet.map(SDWM055_TransitiveClosureCCMR.ConnectedComponentsMR) 
-    ##counterLines = transitiveClosure.filter(lambda x: x[1] == 'MergeStateCnt')# \
-    ###                                .flatMap(lambda x: (y for y in x))
-    ##transitiveClosurePairs = transitiveClosure.filter(lambda x: x != None) \
-    ##                                        .flatMap(lambda x: (y for y in x))
-
-    transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
-                                    .filter(lambda x: x != None) \
-                                    .flatMap(lambda x: tuple(y for y in x)) \
-                                    .map(lambda x:tuple(x.split(',')))
-
-    transitiveClosureIn.unpersist()      # unpersist transitiveClosureIn since it will be overwritten for next iteration
-    transitiveClosureOut.persist()
-
-    print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
-    print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
-    print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
-    print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
-    transClosureCounter = mergeStateAccum.value
-
-    transitiveClosureIn = transitiveClosureOut      # Update transitiveClosureIn for the next iteration
-
-    transitiveClosIterationCnt +=1
-
+    if transClosureCounter != "0":
+        startTime = time.time()
+        mergeStateAccum = sc.accumulator(0)
+        locMaxStateAccum = sc.accumulator(0)
+        clusterListAccum = sc.accumulator(0)
+        keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
+                                .reduceByKey(lambda x,y:(x+','+y)) \
+                                .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+        valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
+                                .reduceByKey(lambda x,y:(x+','+y)) \
+                                .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+        keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey().coalesce(1)
+        transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
+                                        .filter(lambda x: x != None) \
+                                        .flatMap(lambda x: tuple(y for y in x)) \
+                                        .map(lambda x:tuple(x.split(',')))
+        transitiveClosureOut.persist(StorageLevel.MEMORY_AND_DISK)
+        print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
+        with open('tcReport.txt', 'w') as f:
+            f.write(str(mergeStateAccum.value))
+        print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
+        print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
+        print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
+        #subprocess.run(["rm", "-r", "Tclosure-Out"])
+        #subprocess.run(["mv", "SDWM-Out", "Tclosure-Out"])
+        transitiveClosureIn = transitiveClosureOut
+        endTime = time.time()
+        print('Time Taken = ', (endTime-startTime), file=logFile)
+    
+    else:
+        break
 finalTransitiveClosure = transitiveClosureOut
+finalTransitiveClosure.coalesce(1).saveAsTextFile("Tclosure-Out")
 
+#---- Original Code (all oterations = 10mins) ---
+##while transClosureCounter > 0:
+##    startTime = time.time()
+##    print('  == Computing Transitive Closure at Counter ===> ', transClosureCounter, file=logFile)
+##    print('     PairIn Count:', transitiveClosureIn.count(), file=logFile)
+##
+##    mergeStateAccum = sc.accumulator(0)
+##    locMaxStateAccum = sc.accumulator(0)
+##    clusterListAccum = sc.accumulator(0)
+##
+##    keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
+##                            .reduceByKey(lambda x,y:(x+','+y)) \
+##                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+##    valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
+##                            .reduceByKey(lambda x,y:(x+','+y)) \
+##                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+##    keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey()
+##
+##    ##transitiveClosure = keyValueSet.map(SDWM055_TransitiveClosureCCMR.ConnectedComponentsMR) 
+##    ##counterLines = transitiveClosure.filter(lambda x: x[1] == 'MergeStateCnt')# \
+##    ###                                .flatMap(lambda x: (y for y in x))
+##    ##transitiveClosurePairs = transitiveClosure.filter(lambda x: x != None) \
+##    ##                                        .flatMap(lambda x: (y for y in x))
+##
+##    transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
+##                                    .filter(lambda x: x != None) \
+##                                    .flatMap(lambda x: tuple(y for y in x)) \
+##                                    .map(lambda x:tuple(x.split(',')))
+##
+##    transitiveClosureOut.persist(StorageLevel.MEMORY_AND_DISK)
+##
+##    print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
+##    print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
+##    print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
+##    print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
+##    
+##    transClosureCounter = mergeStateAccum.value
+##    transitiveClosureIn.unpersist(blocking=False)      # unpersist transitiveClosureIn since it will be overwritten for next iteration
+##    transitiveClosureIn = transitiveClosureOut      # Update transitiveClosureIn for the next iteration
+##    transitiveClosIterationCnt +=1
+##    endTime = time.time()
+##    print('Time Taken = ', (endTime-startTime), file=logFile)
+##
+##finalTransitiveClosure = transitiveClosureOut
+
+'''
 #==============================================================================
 # ------------------- Job Statistics -----------------
 print('\n  ----- Job Statistics ----- ', file=logFile)
@@ -312,9 +384,81 @@ print('    Total Transitive Closure Iterations:', transitiveClosIterationCnt, fi
 print('    Size of Cluster List Formed from TC:', finalTransitiveClosure.count(), file=logFile)
 #==============================================================================
 
+#=================== PHASE 6: CLUSTER EVALUATION PROCESS ===================
+epsilon = DWM10_Parms.epsilon
 
+print('\n>> Starting Cluster Evaluation Process', file=logFile) 
+reformedRefCID = reformedCleanRefs.map(lambda x:(x[0], str(x[1])))
+cIDrefIDPair = finalTransitiveClosure.map(lambda x:x[0])
+createCopyLeft = cIDrefIDPair.map(lambda x: (x.split('.')[0], x))
+createCopyRight = cIDrefIDPair.map(lambda x: (x.split('.')[1], x))
+
+# CID.RID joined with their metadata in the format (CID, (RID <> Tokens))
+JoinCIDnRIDnMData = createCopyLeft.union(createCopyRight) \
+                    .join(reformedRefCID) \
+                    .map(lambda x: (x[1][0], (str(x[0]) +'-'+ str(x[1][1])))) \
+                    .reduceByKey(lambda x,y: (str(x)+'<>'+str(y)) if x<y else (str(y)+'<>'+str(x))) \
+                    .map(lambda x: (str(x[0]).split('.')[0], str(x[1]).split('<>')[1].replace('-', '<>'))) 
+
+# The Remainder of refIDs that dont have CID (Unprocessed Refs) in the format (CID, (RID <> Tokens))
+unprocessedRefs = createCopyLeft.union(createCopyRight) \
+                    .union(reformedRefCID) \
+                    .reduceByKey(lambda x,y: (str(x)+'-'+str(y))) \
+                    .map(lambda x: (x[0], str(x[1]).split('-'))) \
+                    .filter(lambda a: len(a[1]) == 1) \
+                    .map(lambda x: (str(x[0]), str(x[0])+'<>'+str(x[1][0])))
+
+# Merge 'JoinCIDnRIDnMData' & 'remainRIDwoCID'. Total should always be equaly to len of original Refs 
+clusterPairs = JoinCIDnRIDnMData.map(lambda x: (x[0], (x[1].split('<>')[0], (x[1].split('<>')[1]).replace('{', '').replace('}', '')))) \
+                    .map(lambda x: (x[0], (x[1][0], [str(y.split(':')[1]).split('^')[0].strip().replace('"','').replace("'","") for y in str(x[1][1]).split(',')])))
+
+# Get all corresponding RefIDs in each clusterGroup (clusID, [refID1, refID2, refID3])
+refIdGroupInCluster = clusterPairs.map(lambda x: (x[0], x[1][0])) \
+                                        .groupByKey().mapValues(list)
+
+# Get all corresponding Tokens in each clusterGroup (clusID, [[list1], [list2], [list3]])
+tokenGroupInCluster = clusterPairs.map(lambda x: (x[0], x[1][1])) \
+                                        .groupByKey().mapValues(list)
+
+# Get total individual tokens in each cluster group (clusID, [tok1, tok2, tok3, tok4, tok5, tok6])
+indivTokensInClusterGrp = clusterPairs.map(lambda x: (x[0], x[1][1])) \
+                                        .reduceByKey(lambda x,y: x+y)
+
+# Input to send to Cluster Evaluation
+clusterDetails = refIdGroupInCluster.join(tokenGroupInCluster) \
+                                    .join(indivTokensInClusterGrp)
+
+clusterQuality = clusterDetails.map(SDWM070_ClusterEvaluator.entropyCalculator)
+
+# Filter Good Clusters and write them out as (RefID, ClusterID) in the linked index file
+goodClusters = clusterQuality.filter(lambda x: x[1]>=epsilon) 
+refsInGoodClusters = goodClusters.map(lambda x: (x[0],x[2])) \
+                            .flatMapValues(lambda x: x) \
+                            .map(lambda x: (x[1],x[0]))
+
+# Filter Bad Clusters and join them with their Metadata 
+badClusters = clusterQuality.filter(lambda x: x[1]<epsilon) 
+refsInBadClusters = badClusters.map(lambda x: (x[0],x[2])) \
+                            .flatMapValues(lambda x: x) \
+                            .map(lambda x: (x[1],x[1]))
+badClusterMdata = refsInBadClusters.join(reformedRefCID) \
+                                    .map(lambda x: x[1])
+
+# Combine Bad Clusters with Unprocessed Refs for reprocessing in the next iteration
+badCluster_UnprocessedRefs = unprocessedRefs.map(lambda x: (x[0], x[1].split('<>')[1])) \
+                                            .union(badClusterMdata)
+#==============================================================================
+# ------------------- Job Statistics -----------------
+#print('\n  ----- Job Statistics ----- ', file=logFile)
+print('    Total Clusters Processed:', refIdGroupInCluster.count(), file=logFile)
+print('    Total References in Clusters:', clusterPairs.count(), file=logFile)
+print('    Number of Cluster > 1:', refIdGroupInCluster.filter(lambda c: len(c)>1).count(), file=logFile)
+print('    Total Good Clusters:', goodClusters.count(), file=logFile)
+print('    Total References in Good Cluster:', refsInGoodClusters.count(), file=logFile)
+#==============================================================================
+'''
 #=================== FINAL OUTPUT =================== 
-unionPairsForTC.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
+#transitiveClosureOut.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
 #checkRDD.coalesce(1).saveAsTextFile("hdfs://snodemain:9000/user/nick/SparkDWM/SDWM-Out")   # Output to HDFS
 
 logFile.close()

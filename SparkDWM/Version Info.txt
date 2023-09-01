@@ -14,3 +14,6 @@ v1.02
 
 v1.03
     - Phase 5: Transitive Closure completed
+
+v1.04
+    - Transitive Closure execution time correctio 
