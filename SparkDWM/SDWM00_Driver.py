@@ -23,9 +23,6 @@ import DWM65_ScoringMatrixStd
 import DWM66_ScoringMatrixKris
 import textdistance
 
-with open('tcReport.txt', 'w') as f:
-    f.write("9999")
-
 # Initialize Spark
 spark = SparkSession.builder.appName('Spark Data Washing Machine').getOrCreate()
 sc = spark.sparkContext
@@ -265,118 +262,48 @@ print('\n>> Starting Transitive Closure Process', file=logFile)
 print('  ----- Iteration Statistics ----- ', file=logFile)
 
 transitiveClosureIn = unionPairsForTC
-transitiveClosureIn.persist(StorageLevel.MEMORY_AND_DISK)  # Caching will prevent the Transitive Closure RDD from starting from the entire program in each iteration. Can also use .cache()
-#transClosureCounter = 9999      # Default value to always start the first TC iteration
+transitiveClosureIn.persist(StorageLevel.MEMORY_AND_DISK)  # Caching will prevent the Transitive Closure RDD from starting from the entire program in each iteration. 
+transClosureCounter = 9999      # Default value to always start the first TC iteration
 transitiveClosIterationCnt = 0  # Counter for Transitive Closure iterations
 
-##---- Debugger Code 1 (1st iteration = 60secs) ---
-#mergeStateAccum = sc.accumulator(0)
-#locMaxStateAccum = sc.accumulator(0)
-#clusterListAccum = sc.accumulator(0)
-#keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
-#                        .reduceByKey(lambda x,y:(x+','+y)) \
-#                        .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-#valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
-#                        .reduceByKey(lambda x,y:(x+','+y)) \
-#                        .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-#keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey()
-#transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
-#                                .filter(lambda x: x != None) \
-#                                .flatMap(lambda x: tuple(y for y in x)) \
-#                                .map(lambda x:tuple(x.split(',')))
-#transitiveClosureOut.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
-#print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
-#print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
-#print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
-
-
-#---- Debugger Code 2 (Saving each iteration & re-reading it = ...secs) ---
-#unionPairsForTC.coalesce(1).saveAsTextFile("Tclosure-Out")
-while True:
-    with open('tcReport.txt') as f:
-        transClosureCounter = f.readline()
+while transClosureCounter > 0:
+    startTime = time.time()
     print('  == Computing Transitive Closure at Counter ===> ', transClosureCounter, file=logFile)
     print('     PairIn Count:', transitiveClosureIn.count(), file=logFile)
-    if transClosureCounter != "0":
-        startTime = time.time()
-        mergeStateAccum = sc.accumulator(0)
-        locMaxStateAccum = sc.accumulator(0)
-        clusterListAccum = sc.accumulator(0)
-        keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
-                                .reduceByKey(lambda x,y:(x+','+y)) \
-                                .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-        valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
-                                .reduceByKey(lambda x,y:(x+','+y)) \
-                                .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-        keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey().coalesce(1)
-        transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
-                                        .filter(lambda x: x != None) \
-                                        .flatMap(lambda x: tuple(y for y in x)) \
-                                        .map(lambda x:tuple(x.split(',')))
-        transitiveClosureOut.persist(StorageLevel.MEMORY_AND_DISK)
-        print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
-        with open('tcReport.txt', 'w') as f:
-            f.write(str(mergeStateAccum.value))
-        print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
-        print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
-        print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
-        #subprocess.run(["rm", "-r", "Tclosure-Out"])
-        #subprocess.run(["mv", "SDWM-Out", "Tclosure-Out"])
-        transitiveClosureIn = transitiveClosureOut
-        endTime = time.time()
-        print('Time Taken = ', (endTime-startTime), file=logFile)
+
+    mergeStateAccum = sc.accumulator(0)
+    locMaxStateAccum = sc.accumulator(0)
+    clusterListAccum = sc.accumulator(0)
+
+    keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
+                            .reduceByKey(lambda x,y:(x+','+y)) \
+                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+    valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
+                            .reduceByKey(lambda x,y:(x+','+y)) \
+                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
+    keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey().coalesce(1)
+
+    transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
+                                    .filter(lambda x: x != None) \
+                                    .flatMap(lambda x: tuple(y for y in x)) \
+                                    .map(lambda x:tuple(x.split(',')))
+
+    transitiveClosureOut.persist(StorageLevel.MEMORY_AND_DISK)
+
+    print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
+    print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
+    print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
+    print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
     
-    else:
-        break
+    transClosureCounter = mergeStateAccum.value
+    transitiveClosureIn.unpersist(blocking=False)      # unpersist transitiveClosureIn since it will be overwritten for next iteration
+    transitiveClosureIn = transitiveClosureOut      # Update transitiveClosureIn for the next iteration
+    transitiveClosIterationCnt +=1
+    endTime = time.time()
+    print('Time Taken = ', (endTime-startTime), file=logFile)
+
 finalTransitiveClosure = transitiveClosureOut
-finalTransitiveClosure.coalesce(1).saveAsTextFile("Tclosure-Out")
 
-#---- Original Code (all oterations = 10mins) ---
-##while transClosureCounter > 0:
-##    startTime = time.time()
-##    print('  == Computing Transitive Closure at Counter ===> ', transClosureCounter, file=logFile)
-##    print('     PairIn Count:', transitiveClosureIn.count(), file=logFile)
-##
-##    mergeStateAccum = sc.accumulator(0)
-##    locMaxStateAccum = sc.accumulator(0)
-##    clusterListAccum = sc.accumulator(0)
-##
-##    keySet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[0])) \
-##                            .reduceByKey(lambda x,y:(x+','+y)) \
-##                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-##    valueSet = transitiveClosureIn.map(lambda x: (x[0].split('.')[0], x[1])) \
-##                            .reduceByKey(lambda x,y:(x+','+y)) \
-##                            .map(lambda x: (x[0], sorted(list(set([v.strip() for v in x[1].split(',')])))))
-##    keyValueSet = keySet.union(valueSet).reduceByKey(lambda x,y: [x, y]).sortByKey()
-##
-##    ##transitiveClosure = keyValueSet.map(SDWM055_TransitiveClosureCCMR.ConnectedComponentsMR) 
-##    ##counterLines = transitiveClosure.filter(lambda x: x[1] == 'MergeStateCnt')# \
-##    ###                                .flatMap(lambda x: (y for y in x))
-##    ##transitiveClosurePairs = transitiveClosure.filter(lambda x: x != None) \
-##    ##                                        .flatMap(lambda x: (y for y in x))
-##
-##    transitiveClosureOut = keyValueSet.map(ConnectedComponentsMR) \
-##                                    .filter(lambda x: x != None) \
-##                                    .flatMap(lambda x: tuple(y for y in x)) \
-##                                    .map(lambda x:tuple(x.split(',')))
-##
-##    transitiveClosureOut.persist(StorageLevel.MEMORY_AND_DISK)
-##
-##    print('     PairOut Count:', transitiveClosureOut.count(), file=logFile)
-##    print('     MergeState Counter:', mergeStateAccum.value, file=logFile)
-##    print('     Local Max State Counter:', locMaxStateAccum.value, file=logFile)
-##    print('     Cluster List Counter:', clusterListAccum.value, file=logFile)
-##    
-##    transClosureCounter = mergeStateAccum.value
-##    transitiveClosureIn.unpersist(blocking=False)      # unpersist transitiveClosureIn since it will be overwritten for next iteration
-##    transitiveClosureIn = transitiveClosureOut      # Update transitiveClosureIn for the next iteration
-##    transitiveClosIterationCnt +=1
-##    endTime = time.time()
-##    print('Time Taken = ', (endTime-startTime), file=logFile)
-##
-##finalTransitiveClosure = transitiveClosureOut
-
-'''
 #==============================================================================
 # ------------------- Job Statistics -----------------
 print('\n  ----- Job Statistics ----- ', file=logFile)
@@ -449,16 +376,16 @@ badCluster_UnprocessedRefs = unprocessedRefs.map(lambda x: (x[0], x[1].split('<>
                                             .union(badClusterMdata)
 #==============================================================================
 # ------------------- Job Statistics -----------------
-#print('\n  ----- Job Statistics ----- ', file=logFile)
+print('\n  ----- Job Statistics ----- ', file=logFile)
 print('    Total Clusters Processed:', refIdGroupInCluster.count(), file=logFile)
 print('    Total References in Clusters:', clusterPairs.count(), file=logFile)
 print('    Number of Cluster > 1:', refIdGroupInCluster.filter(lambda c: len(c)>1).count(), file=logFile)
 print('    Total Good Clusters:', goodClusters.count(), file=logFile)
 print('    Total References in Good Cluster:', refsInGoodClusters.count(), file=logFile)
 #==============================================================================
-'''
+
 #=================== FINAL OUTPUT =================== 
-#transitiveClosureOut.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
+badCluster_UnprocessedRefs.coalesce(1).saveAsTextFile("SDWM-Out")   # Output to local fs
 #checkRDD.coalesce(1).saveAsTextFile("hdfs://snodemain:9000/user/nick/SparkDWM/SDWM-Out")   # Output to HDFS
 
 logFile.close()

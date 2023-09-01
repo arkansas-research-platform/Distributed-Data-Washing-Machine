@@ -16,4 +16,7 @@ v1.03
     - Phase 5: Transitive Closure completed
 
 v1.04
-    - Transitive Closure execution time correctio 
+    - Transitive Closure execution time correction
+
+v1.05
+    Phase 6: Cluster Evaluation process completed
